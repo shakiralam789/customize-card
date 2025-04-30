@@ -11,7 +11,7 @@ export default function TextAlign() {
     setAllText(newText);
   }
   return (
-    <div className="flex space-x-1 items-center">
+    <>
       <button
         onClick={() => changeTextAlign("left")}
         className={`${
@@ -36,6 +36,6 @@ export default function TextAlign() {
       >
         <AlignRight />
       </button>
-    </div>
+    </>
   );
 }

@@ -1,0 +1,113 @@
+export function curvedText({
+  text = "Curved Text Example",
+  curveValue = 0,
+  style = {},
+  className = "",
+}) {
+  // Ensure curveValue is within -100 to 100 range
+  const safeValue = Math.max(-100, Math.min(100, curveValue));
+
+  // Split text into individual characters
+  const chars = text.split("");
+
+  // Calculate the arc angle based on the curve value
+  // At 100%, we want a full semicircle (180 degrees)
+  const totalArcAngle = (safeValue / 100) * 180;
+
+  // Radius calculation - increase with higher curve values for better effect
+  const baseRadius = 100; // Base radius in pixels
+  const radiusMultiplier = Math.max(1, Math.abs(safeValue) / 25); // Increase radius with curve intensity
+  const radius = baseRadius * radiusMultiplier;
+
+  // Calculate the angle step between each character
+  const angleStep = chars.length > 1 ? totalArcAngle / (chars.length - 1) : 0;
+
+  // Process each character and create HTML for it
+  let charElementsHTML = "";
+
+  // Calculate the container height to accommodate the curve
+  const containerHeight =
+    Math.abs(safeValue) > 20 ? `${Math.abs(safeValue) * 1.5}px` : "auto";
+
+  chars.forEach((char, index) => {
+    // Skip spaces, add a non-breaking space instead
+    if (char === " ") {
+      charElementsHTML += "&nbsp;";
+      return;
+    }
+
+    // Calculate angle for this character
+    // For center-aligned text, start from -totalArcAngle/2 to totalArcAngle/2
+    const startAngle = -totalArcAngle / 2;
+    const charAngle = startAngle + index * angleStep;
+
+    // Convert angle to radians for math calculations
+    const charAngleRad = (charAngle * Math.PI) / 180;
+
+    // Calculate position based on polar coordinates
+    // For a circle/arc, we use sin and cos functions
+    const yOffset =
+      safeValue >= 0
+        ? -Math.sin(charAngleRad) * radius // Curve upward
+        : Math.sin(charAngleRad) * radius; // Curve downward
+
+    const xOffset = Math.cos(charAngleRad) * radius - radius;
+
+    // Calculate rotation for this character (tangent to the curve)
+    const charRotation = safeValue >= 0 ? charAngle : -charAngle;
+
+    // Style for this character - apply both position and rotation
+    const charStyle = `
+        display: inline-block;
+        position: absolute;
+        transform-origin: center;
+        transform: translate(${xOffset}px, ${yOffset}px) rotate(${charRotation}deg);
+        transition: transform 0.3s ease-out;
+      `;
+
+    // Add this character with its style to the HTML
+    charElementsHTML += `<span style="${charStyle}">${char}</span>`;
+  });
+
+  // Process any additional styles passed in
+  let additionalStyles = "";
+  if (style) {
+    // Convert style object to CSS string
+    for (const property in style) {
+      // Convert camelCase to kebab-case for CSS
+      const cssProperty = property.replace(/([A-Z])/g, "-$1").toLowerCase();
+      additionalStyles += `${cssProperty}: ${style[property]}; `;
+    }
+  }
+
+  // Build the container with all the character spans
+  // Position relative to allow absolute positioning of characters
+  const containerHTML = `
+      <div class="curved-text-container ${className || ""}" 
+           style="display: inline-block; position: relative; height: ${containerHeight}; min-width: 100%; text-align: center; ${additionalStyles}">
+        ${charElementsHTML}
+      </div>
+    `;
+
+  return containerHTML;
+}
+
+export function getWidthAndAspectRatio(element) {
+  if (!element) {
+    return {
+      width: null,
+      height: null,
+      ratio: null,
+    };
+  }
+  
+  let width = element.scrollWidth;
+  let height = element.clientHeight;
+  let ratio = width / height;
+
+  return {
+    width,
+    height,
+    ratio,
+  };
+}

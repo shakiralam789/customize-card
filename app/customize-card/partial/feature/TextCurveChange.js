@@ -1,18 +1,32 @@
 import CcContext from "@/context/ccContext";
+import curvedText from "@/helper/helper";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
-export default function LetterSpacingChange() {
-  const { allText, setAllText, ignoreBlurRef, activeEditIndex } =
+export default function TextCurveChange() {
+  const { allText, setAllText, ignoreBlurRef, activeEditIndex, editableRefs } =
     useContext(CcContext);
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null);
 
   function handleChange(value) {
     let newText = [...allText];
-    if (!newText[activeEditIndex].letterSpacing) {
-      newText[activeEditIndex].letterSpacing = 0;
+    if (!newText[activeEditIndex].textCurve) {
+      newText[activeEditIndex].textCurve = 0;
     }
-    newText[activeEditIndex].letterSpacing = parseFloat(value);
+
+    const element = editableRefs.current[activeEditIndex];
+
+    if (parseFloat(value) != 0) {
+      element.innerHTML = curvedText({
+        text: newText[activeEditIndex].text,
+        curveValue: parseFloat(value),
+      });
+    } else {
+      element.innerHTML = newText[activeEditIndex].text;
+    }
+
+    newText[activeEditIndex].textCurve = parseFloat(value);
+
     setAllText(newText);
   }
 
@@ -39,7 +53,7 @@ export default function LetterSpacingChange() {
 
   const getCurrent = () => {
     if (activeEditIndex === null) return 0;
-    return allText[activeEditIndex]?.letterSpacing || 0;
+    return allText[activeEditIndex]?.textCurve || 0;
   };
 
   return (
@@ -52,17 +66,16 @@ export default function LetterSpacingChange() {
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
+          width="25"
           height="24"
           fill="none"
-          viewBox="0 1 24 24"
         >
           <path
             stroke="currentColor"
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="1.5"
-            d="m16.28 15.916 2.835 2.835m0 0-2.835 2.835m2.835-2.835H5.885m0 0 2.835-2.835M5.885 18.75l2.835 2.835m3.202-9.01-3.51-8.033-3.51 8.034m15.196-8.034-3.51 8.034-3.51-8.034m-6.92 5.162h4.51"
+            d="M11.402 12.875 7.435 5.39l-2.797 7.997m1-2.859 4.346-.328m-6.449 9.553c2.53-1.454 5.71-2.25 9.004-2.223s6.446.873 8.926 2.366m-5.75-14.744 2.485.345c1.006.14 1.803 1 1.76 2.016a1.946 1.946 0 0 1-2.213 1.85l-2.567-.356zm-.535 3.853 3.174.442c1.007.14 1.804 1 1.76 2.016a1.946 1.946 0 0 1-2.212 1.85l-3.258-.453z"
           ></path>
         </svg>
       </button>
@@ -74,22 +87,18 @@ export default function LetterSpacingChange() {
           style={{ width: "200px" }}
         >
           <div className="flex justify-between mb-1">
-            <span className="text-xs">Letter Spacing</span>
-            <span className="text-xs font-medium">{getCurrent()}</span>
+            <span className="text-xs">Curved text</span>
+            <span className="text-xs font-medium">{getCurrent()}%</span>
           </div>
           <input
             type="range"
-            min="1"
-            max="10"
-            step="0.1"
+            min="-100"
+            max="100"
+            step="1"
             value={getCurrent()}
             onChange={(e) => handleChange(e.target.value)}
             className="w-full"
           />
-          <div className="flex justify-between mt-1">
-            <span className="text-xs">1</span>
-            <span className="text-xs">10</span>
-          </div>
         </div>
       )}
     </div>

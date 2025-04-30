@@ -10,9 +10,12 @@ import LineHeightChange from "./feature/LineHeightChange";
 import LetterSpacingChange from "./feature/LetterSpacingChange";
 import DeleteText from "./feature/DeleteText";
 import { ImageIcon, Languages, MessageCircleCode, Sticker } from "lucide-react";
+import TextCurveChange from "./feature/TextCurveChange";
+import Drawer from "@/components/Drawer";
 
 export default function Nav() {
-  const { addNewText, ignoreBlurRef, activeEditIndex } = useContext(CcContext);
+  const { addNewText, ignoreBlurRef, activeEditIndex, setIsStickerDrawerOpen } =
+    useContext(CcContext);
 
   const handleMouseDown = useCallback(
     (e) => {
@@ -42,17 +45,29 @@ export default function Nav() {
               onClick={addNewText}
               className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-semibold hover:bg-gray-100 rounded"
             >
-              <Languages className="mr-2"/>
+              <Languages className="mr-2" />
               Text
             </button>
 
-            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">
-             <Sticker className="mr-2"/>
-              Sticker
-            </button>
+            <Drawer
+              title="Sticker"
+              trigger={
+                <button
+                  onClick={() => setIsStickerDrawerOpen(true)}
+                  className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded"
+                >
+                  <Sticker className="mr-2" />
+                  Sticker
+                </button>
+              }
+            >
+              <div className="p-4 grid grid-cols-3 gap-2">
+                <div></div>
+              </div>
+            </Drawer>
 
             <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">
-              <ImageIcon className="mr-2"/>
+              <ImageIcon className="mr-2" />
               Image
             </button>
 
@@ -75,7 +90,7 @@ export default function Nav() {
             </button>
 
             <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">
-              <MessageCircleCode className="mr-2"/>
+              <MessageCircleCode className="mr-2" />
               Create RSVP
             </button>
           </div>
@@ -113,16 +128,13 @@ export default function Nav() {
           <DeleteText />
           <FontChange />
           <ColorChange />
+          <TextTransform />
           <TextAlign />
-          <div className="flex space-x-1 items-center">
-            <FontWeight />
-            <FontStyle />
-          </div>
+          <FontWeight />
+          <FontStyle />
           <LineHeightChange />
           <LetterSpacingChange />
-          <div className="flex space-x-1 items-center">
-            <TextTransform />
-          </div>
+          <TextCurveChange />
         </div>
       </div>
     </nav>

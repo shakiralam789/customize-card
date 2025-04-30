@@ -55,7 +55,6 @@ export default function LineHeightChange() {
           width="25"
           height="24"
           fill="none"
-          className="icon"
         >
           <path
             stroke="currentColor"

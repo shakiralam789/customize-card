@@ -32,7 +32,7 @@ button{
 .movable-handle {
   cursor: pointer;
   border: 2px solid transparent;
-  width: fit-content;
+  /* width: fit-content; */
   padding: 8px;
   caret-color: #1BC47D
 }

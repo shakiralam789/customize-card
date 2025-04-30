@@ -5,22 +5,43 @@ import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 
 const CcProvider = ({ children }) => {
+  const [isStickerDrawerOpen, setIsStickerDrawerOpen] = useState(false);
+
   const [activeEditIndex, setActiveEditIndex] = useState(null);
 
   const ignoreBlurRef = useRef(false);
+  const editableRefs = useRef({});
 
   const [allText, setAllText] = useState([
     {
       id: uuid4(),
-      text: "<div>Welcome Come</div><div>Home</div>",
+      text: `<div>Saturday, June 17, 2025</div>
+            <div>at three o'clock in the afternoon</div>
+            <div>Grace Community Church</div>`,
       isPlaceholder: false,
-      position: { x: 200, y: 200 },
+      position: { x: 67, y: 200 },
+      fontSize: 18,
+      contentEditable: true,
+      textAlign: "center",
+      color: "rgb(255, 163, 72)",
+      fontWeight: "normal",
+      lineHeight: "2",
+      fontStyle: "normal",
+      letterSpacing: "0",
+      textTransform: "uppercase",
+      active: false,
+    },
+    {
+      id: uuid4(),
+      text: `<div>4551 East Street Wilmot, Virginia</div>`,
+      isPlaceholder: false,
+      position: { x: 125, y: 310 },
       fontSize: 16,
       contentEditable: true,
       textAlign: "center",
-      color: "#fffff",
+      color: "#7faeb9",
       fontWeight: "normal",
-      lineHeight: "1.2",
+      lineHeight: "2",
       fontStyle: "normal",
       letterSpacing: "0",
       textTransform: "none",
@@ -28,7 +49,6 @@ const CcProvider = ({ children }) => {
     },
   ]);
   function addNewText() {
-    
     let newText = [...allText].map((item) => {
       return { ...item, active: false };
     });
@@ -50,42 +70,12 @@ const CcProvider = ({ children }) => {
         letterSpacing: "0",
         textTransform: "none",
         active: true,
+        textCurve: 0,
       },
     ]);
 
     setActiveEditIndex(allText.length);
   }
-
-  const handleBlur = (e, index) => {
-    if (ignoreBlurRef.current) {
-      setTimeout(() => {
-        if (editableRefs.current[index]) {
-          editableRefs.current[index].focus();
-        }
-      }, 0);
-      return;
-    }
-
-    let newText = [...allText];
-    newText[index].active = false;
-    setActiveEditIndex(null);
-
-    // Get the current HTML content directly from the DOM element
-    const htmlContent = e.currentTarget.innerHTML;
-
-    if (htmlContent.trim() === "") {
-      // If empty, set placeholder
-      newText[index].isPlaceholder = true;
-      newText[index].text = "";
-      e.currentTarget.innerHTML = "Enter text...";
-    } else {
-      // Save the HTML content
-      newText[index].isPlaceholder = false;
-      newText[index].text = htmlContent;
-    }
-
-    setAllText(newText);
-  };
 
   return (
     <CcContext.Provider
@@ -96,6 +86,9 @@ const CcProvider = ({ children }) => {
         ignoreBlurRef,
         activeEditIndex,
         setActiveEditIndex,
+        editableRefs,
+        isStickerDrawerOpen,
+        setIsStickerDrawerOpen,
       }}
     >
       {children}
