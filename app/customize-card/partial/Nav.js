@@ -12,10 +12,16 @@ import DeleteText from "./feature/DeleteText";
 import { ImageIcon, Languages, MessageCircleCode, Sticker } from "lucide-react";
 import TextCurveChange from "./feature/TextCurveChange";
 import Drawer from "@/components/Drawer";
+import DrawerContent from "./DrawerContent";
 
 export default function Nav() {
-  const { addNewText, ignoreBlurRef, activeEditIndex, setIsStickerDrawerOpen } =
-    useContext(CcContext);
+  const {
+    addNewText,
+    ignoreBlurRef,
+    activeEditIndex,
+    isStickerDrawerOpen,
+    setIsStickerDrawerOpen,
+  } = useContext(CcContext);
 
   const handleMouseDown = useCallback(
     (e) => {
@@ -50,20 +56,17 @@ export default function Nav() {
             </button>
 
             <Drawer
+              isOpen={isStickerDrawerOpen}
+              setIsOpen={setIsStickerDrawerOpen}
               title="Sticker"
               trigger={
-                <button
-                  onClick={() => setIsStickerDrawerOpen(true)}
-                  className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded"
-                >
+                <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">
                   <Sticker className="mr-2" />
                   Sticker
                 </button>
               }
             >
-              <div className="p-4 grid grid-cols-3 gap-2">
-                <div></div>
-              </div>
+              <DrawerContent />
             </Drawer>
 
             <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">

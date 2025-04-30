@@ -8,9 +8,13 @@ const CcProvider = ({ children }) => {
   const [isStickerDrawerOpen, setIsStickerDrawerOpen] = useState(false);
 
   const [activeEditIndex, setActiveEditIndex] = useState(null);
+  const [activeStickerIndex, setActiveStickerIndex] = useState(null);
 
   const ignoreBlurRef = useRef(false);
   const editableRefs = useRef({});
+  const stickerRefs = useRef({});
+
+  const [stickers, setStickers] = useState([]);
 
   const [allText, setAllText] = useState([
     {
@@ -48,6 +52,7 @@ const CcProvider = ({ children }) => {
       active: false,
     },
   ]);
+
   function addNewText() {
     let newText = [...allText].map((item) => {
       return { ...item, active: false };
@@ -77,6 +82,22 @@ const CcProvider = ({ children }) => {
     setActiveEditIndex(allText.length);
   }
 
+  function addNewSticker(e,data) {
+    let newStickers = [...stickers]
+
+    newStickers.push({
+      ...data,
+      position: { x: 200, y: 200 },
+      width: 100
+    });
+
+    setStickers(newStickers);
+    setActiveStickerIndex(newStickers.length);
+    console.log('asd');
+    
+    setIsStickerDrawerOpen(false);
+  }
+
   return (
     <CcContext.Provider
       value={{
@@ -85,10 +106,16 @@ const CcProvider = ({ children }) => {
         addNewText,
         ignoreBlurRef,
         activeEditIndex,
+        activeStickerIndex,
         setActiveEditIndex,
+        setActiveStickerIndex,
         editableRefs,
+        stickerRefs,
         isStickerDrawerOpen,
         setIsStickerDrawerOpen,
+        addNewSticker,
+        stickers,
+        setStickers,
       }}
     >
       {children}

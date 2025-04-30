@@ -10,20 +10,32 @@ export default function DraggableWrapper({
   className = "",
   style = {},
   textObj = {},
+  stickerObj = {},
   index,
   element,
+  mode,
+  isActive,
   ...props
 }) {
-  const { allText, setAllText } = useContext(CcContext);
+  const { allText, setAllText, stickers, setStickers } = useContext(CcContext);
 
   const initialFontSize = textObj.fontSize;
-
+  const initialWidth = stickerObj.width;
+  
   const { position, isDragging, startDrag } = useDraggable({
     initialValue: { position: initialPosition, element },
     onDragging: (data) => {
-      let newText = [...allText];
-      newText[index].fontSize = initialFontSize * data?.scale;
-      setAllText(newText);
+      if (mode == "text") {
+        let newText = [...allText];
+        newText[index].fontSize = initialFontSize * data?.scale;
+        setAllText(newText);
+      }
+      
+      if (mode == "sticker") {
+        let sticker = [...stickers];
+        sticker[index].width = initialWidth * data?.scale;
+        setStickers(sticker);
+      }
     },
   });
 
@@ -43,7 +55,7 @@ export default function DraggableWrapper({
         className={`move-icon absolute -right-2 -top-0 transform -translate-y-1/2 
                           bg-gray-800 p-1 rounded hover:bg-gray-700 z-10
                           ${
-                            isDragging || textObj.active
+                            isDragging || isActive
                               ? "block"
                               : "hidden group-hover:block"
                           }`}
@@ -57,26 +69,20 @@ export default function DraggableWrapper({
       <span
         onMouseDown={(e) => startDrag({ e, type: "resize", dir: "tl" })}
         className={`${
-          textObj.active
-            ? "block cursor-nwse-resize"
-            : "hidden pointer-events-none"
+          isActive ? "block cursor-nwse-resize" : "hidden pointer-events-none"
         } size-handler size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
       ></span>
       <span
         onMouseDown={(e) => startDrag({ e, type: "resize", dir: "bl" })}
         className={`${
-          textObj.active
-            ? "block cursor-nesw-resize"
-            : "hidden pointer-events-none"
+          isActive ? "block cursor-nesw-resize" : "hidden pointer-events-none"
         } size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 left-0.5 -translate-x-1/2 translate-y-1/2`}
       ></span>
 
       <span
         onMouseDown={(e) => startDrag({ e, type: "resize", dir: "br" })}
         className={`${
-          textObj.active
-            ? "block cursor-nwse-resize"
-            : "hidden pointer-events-none"
+          isActive ? "block cursor-nwse-resize" : "hidden pointer-events-none"
         } size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2`}
       ></span>
     </div>

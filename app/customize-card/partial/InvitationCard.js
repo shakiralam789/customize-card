@@ -1,15 +1,21 @@
 "use client";
 import CcContext from "@/context/ccContext";
-import React, { useContext, useEffect } from "react";
+import React, { act, useContext, useEffect } from "react";
 import DraggableWrapper from "@/components/DraggableWrapper";
+import Image from "next/image";
 
 export default function InvitationCard() {
   const {
     allText,
     setAllText,
     ignoreBlurRef,
+    activeEditIndex,
     setActiveEditIndex,
+    setActiveStickerIndex,
     editableRefs,
+    stickerRefs,
+    setStickers,
+    stickers,
   } = useContext(CcContext);
 
   useEffect(() => {
@@ -50,33 +56,51 @@ export default function InvitationCard() {
     setAllText(newText);
   };
 
-  const handleBlur = (e, index) => {
+  const handleBlur = (e) => {
     if (ignoreBlurRef.current) {
       setTimeout(() => {
-        if (editableRefs.current[index]) {
-          editableRefs.current[index].focus();
+        if (editableRefs.current[activeEditIndex]) {
+          editableRefs.current[activeEditIndex].focus();
         }
       }, 0);
       return;
     }
 
     let newText = [...allText];
-    newText[index].active = false;
-    setActiveEditIndex(null);
+    newText[activeEditIndex].active = false;
 
-    const htmlContent = e.currentTarget.innerHTML;
+    const htmlContent = editableRefs.current[activeEditIndex].innerHTML;
 
     if (htmlContent.trim() === "") {
-      newText[index].isPlaceholder = true;
-      newText[index].text = "";
-      e.currentTarget.innerHTML = "Enter text...";
+      newText[activeEditIndex].isPlaceholder = true;
+      newText[activeEditIndex].text = "";
+      editableRefs.current[activeEditIndex].innerHTML = "Enter text...";
     } else {
-      newText[index].isPlaceholder = false;
-      newText[index].text = htmlContent;
+      newText[activeEditIndex].isPlaceholder = false;
+      newText[activeEditIndex].text = htmlContent;
     }
 
+    setActiveEditIndex(null);
     setAllText(newText);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (e.target.closest(".sticker-parent")) return;
+      const newStickers = stickers?.map((s) => ({ ...s, active: false }));
+      setActiveStickerIndex(null);
+      if (JSON.stringify(newStickers) !== JSON.stringify(stickers)) {
+        setStickers(newStickers);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+
+  }, [stickers]);
 
   return (
     <div
@@ -98,6 +122,8 @@ export default function InvitationCard() {
               textObj={text}
               element={editableRefs.current[index]}
               index={index}
+              isActive={text.active}
+              mode="text"
             >
               {({ isDragging }) => (
                 <>
@@ -111,7 +137,7 @@ export default function InvitationCard() {
                       text.isPlaceholder ? "!text-[#20f39b]" : "text-white"
                     } ${isDragging ? "movable-handle-hover" : ""}`}
                     onFocus={(e) => handleFocus(e, index)}
-                    onBlur={(e) => handleBlur(e, index)}
+                    onBlur={(e) => handleBlur(e)}
                     style={{
                       fontSize: `${text?.fontSize}px`,
                       textAlign: `${text?.textAlign}`,
@@ -124,6 +150,58 @@ export default function InvitationCard() {
                     }}
                   >
                     Enter Text...
+                  </div>
+                </>
+              )}
+            </DraggableWrapper>
+          );
+        })}
+
+      {stickers &&
+        stickers.length > 0 &&
+        stickers.map((item, index) => {
+          return (
+            <DraggableWrapper
+              className={`${item.active ? "active" : ""} sticker-parent movable-handle-parent`}
+              initialPosition={item.position}
+              key={index}
+              index={index}
+              isActive={item.active}
+              stickerObj={item}
+              mode="sticker"
+              element={stickerRefs.current[index]}
+            >
+              {({ isDragging }) => (
+                <>
+                  <div
+                    ref={(el) => (stickerRefs.current[index] = el)}
+                    className={`${
+                      item.active ? "active" : ""
+                    } movable-handle p-2 focus:outline-none ${
+                      isDragging ? "movable-handle-hover" : ""
+                    }`}
+                    style={{
+                      width: `${item?.width}px`,
+                    }}
+                    onMouseDown={(e) => {
+                      // e.stopPropagation();
+
+                      const newSticker = stickers.map((s, i) => ({
+                        ...s,
+                        active: i === index,
+                      }));
+
+                      setStickers(newSticker);
+                      setActiveStickerIndex(index);
+                    }}
+                  >
+                    <Image
+                      className="w-full"
+                      width={400}
+                      height={400}
+                      src={item.src}
+                      alt={item?.alt || "image"}
+                    />
                   </div>
                 </>
               )}
