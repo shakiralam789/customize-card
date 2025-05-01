@@ -17,6 +17,7 @@ import DeleteSticker from "./feature/DeleteSticker";
 import FlipShape from "./feature/FlipShape";
 import FlipVerticalShape from "./feature/FlipVertiacalShape";
 import RotateShape from "./feature/RotateShape";
+import RotateText from "./feature/RotateText";
 
 export default function Nav() {
   const {
@@ -126,6 +127,7 @@ export default function Nav() {
             <LineHeightChange />
             <LetterSpacingChange />
             <TextCurveChange />
+            <RotateText />
           </div>
         )}
         {activeStickerIndex != null && (

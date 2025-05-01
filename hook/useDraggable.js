@@ -15,6 +15,7 @@ export default function useDraggable({
   const [scale, setScale] = useState(1);
   const [width, setWidth] = useState(null);
   const [height, setHeight] = useState(null);
+  const [angle, setAngle] = useState(0);
 
   const startDrag = ({ e, type, dir }) => {
     e.preventDefault();
@@ -40,7 +41,7 @@ export default function useDraggable({
     setStartElementPos(position);
 
     if (onDragStart) {
-      onDragStart({ e, scale, position });
+      onDragStart({ e, scale, position, type });
     }
   };
 
@@ -49,6 +50,7 @@ export default function useDraggable({
 
     let newScale = scale;
     let newPos = { ...position };
+    let newAngle = angle;
 
     if (type === "move") {
       const dx = e.clientX - startMousePos.x;
@@ -93,8 +95,34 @@ export default function useDraggable({
       setScale(newScale);
     }
 
+    if (type == "rotate") {
+      
+      const box = initialValue?.element;
+
+      if (box) {
+        const rect = box.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+
+        const dx = e.clientX - centerX;
+        const dy = e.clientY - centerY;
+
+        newAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+
+        newAngle = Math.round((newAngle + 360) % 360);
+
+        setAngle(newAngle);
+      }
+    }
+
     if (onDragging) {
-      onDragging({ e, scale: newScale, position: newPos });
+      onDragging({
+        e,
+        scale: newScale,
+        position: newPos,
+        angle: newAngle,
+        type,
+      });
     }
   };
 
@@ -102,8 +130,10 @@ export default function useDraggable({
     setIsDragging(false);
     setScale(1);
     setType(null);
+    setAngle(0);
+
     if (onDragEnd) {
-      onDragEnd();
+      onDragEnd({ type });
     }
   };
 

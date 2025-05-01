@@ -165,6 +165,9 @@ export default function InvitationCard() {
               index={index}
               isActive={text.active}
               mode="text"
+              style={{
+                transform: `rotate(${text?.rotate || defText.rotate}deg)`,
+              }}
             >
               {({ isDragging, startDrag }) => (
                 <>

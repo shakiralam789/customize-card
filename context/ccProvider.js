@@ -16,6 +16,7 @@ const CcProvider = ({ children }) => {
     letterSpacing: "0",
     textTransform: "none",
     textCurve: 0,
+    rotate: 0,
   };
 
   const defSticker = {

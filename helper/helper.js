@@ -100,7 +100,7 @@ export function getWidthAndAspectRatio(element) {
       ratio: null,
     };
   }
-  
+
   let width = element.scrollWidth;
   let height = element.clientHeight;
   let ratio = width / height;
@@ -110,4 +110,72 @@ export function getWidthAndAspectRatio(element) {
     height,
     ratio,
   };
+}
+
+export function tlRotation(rotate) {
+  let dir;
+
+  if (!rotate) return;
+
+  if (rotate > 315 || rotate < 45) {
+    dir = "tl";
+  } else if (rotate > 45 && rotate < 135) {
+    dir = "tr";
+  } else if (rotate > 135 && rotate < 225) {
+    dir = "br";
+  } else if (rotate > 225 && rotate < 315) {
+    dir = "bl";
+  }
+  return dir;
+}
+
+export function trRotation(rotate) {
+  let dir;
+
+  if (!rotate) return;
+
+  if (rotate > 315 || rotate < 45) {
+    dir = "tr";
+  } else if (rotate > 45 && rotate < 135) {
+    dir = "br";
+  } else if (rotate > 135 && rotate < 225) {
+    dir = "bl";
+  } else if (rotate > 225 && rotate < 315) {
+    dir = "tl";
+  }
+  return dir;
+}
+
+export function blRotation(rotate) {
+  let dir;
+
+  if (!rotate) return;
+
+  if (rotate > 315 || rotate < 45) {
+    dir = "bl";
+  } else if (rotate > 45 && rotate < 135) {
+    dir = "tl";
+  } else if (rotate > 135 && rotate < 225) {
+    dir = "tr";
+  } else if (rotate > 225 && rotate < 315) {
+    dir = "br";
+  }
+  return dir;
+}
+
+export function brRotation(rotate) {
+  let dir;
+
+  if (!rotate) return;
+
+  if (rotate > 315 || rotate < 45) {
+    dir = "br";
+  } else if (rotate > 45 && rotate < 135) {
+    dir = "bl";
+  } else if (rotate > 135 && rotate < 225) {
+    dir = "tl";
+  } else if (rotate > 225 && rotate < 315) {
+    dir = "tr";
+  }
+  return dir;
 }
