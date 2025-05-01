@@ -13,31 +13,22 @@ import { ImageIcon, Languages, MessageCircleCode, Sticker } from "lucide-react";
 import TextCurveChange from "./feature/TextCurveChange";
 import Drawer from "@/components/Drawer";
 import DrawerContent from "./DrawerContent";
+import DeleteSticker from "./feature/DeleteSticker";
+import FlipShape from "./feature/FlipShape";
+import FlipVerticalShape from "./feature/FlipVertiacalShape";
+import RotateShape from "./feature/RotateShape";
 
 export default function Nav() {
   const {
     addNewText,
-    ignoreBlurRef,
     activeEditIndex,
+    activeStickerIndex,
     isStickerDrawerOpen,
     setIsStickerDrawerOpen,
   } = useContext(CcContext);
 
-  const handleMouseDown = useCallback(
-    (e) => {
-      ignoreBlurRef.current = true;
-      setTimeout(() => {
-        ignoreBlurRef.current = false;
-      }, 100);
-    },
-    [ignoreBlurRef]
-  );
-
   return (
-    <nav
-      onMouseDown={handleMouseDown}
-      className="h-[54px] flex items-center relative text-sm bg-white shadow-sm border-b border-gray-200 px-2 py-1.5"
-    >
+    <nav className="customize-card-navbar h-[54px] flex items-center relative text-sm bg-white shadow-sm border-b border-gray-200 px-2 py-1.5">
       <div className="w-full">
         <div className="flex items-center justify-between">
           <div>
@@ -121,24 +112,32 @@ export default function Nav() {
             </button>
           </div>
         </div>
-        <div
-          className={`${
-            activeEditIndex != null
-              ? "opacity-100"
-              : "opacity-0 pointer-events-none"
-          } space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-800 py-2 px-4 flex items-center justify-center`}
-        >
-          <DeleteText />
-          <FontChange />
-          <ColorChange />
-          <TextTransform />
-          <TextAlign />
-          <FontWeight />
-          <FontStyle />
-          <LineHeightChange />
-          <LetterSpacingChange />
-          <TextCurveChange />
-        </div>
+        {activeEditIndex != null && (
+          <div
+            className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-800 py-2 px-4 flex items-center justify-center`}
+          >
+            <DeleteText />
+            <FontChange />
+            <ColorChange />
+            <TextTransform />
+            <TextAlign />
+            <FontWeight />
+            <FontStyle />
+            <LineHeightChange />
+            <LetterSpacingChange />
+            <TextCurveChange />
+          </div>
+        )}
+        {activeStickerIndex != null && (
+          <div
+            className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-800 py-2 px-4 flex items-center justify-center`}
+          >
+            <DeleteSticker />
+            <FlipShape />
+            <FlipVerticalShape />
+            <RotateShape />
+          </div>
+        )}
       </div>
     </nav>
   );

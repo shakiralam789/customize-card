@@ -1,9 +1,9 @@
 import CcContext from "@/context/ccContext";
-import curvedText from "@/helper/helper";
+import { curvedText } from "@/helper/helper";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 export default function TextCurveChange() {
-  const { allText, setAllText, ignoreBlurRef, activeEditIndex, editableRefs } =
+  const { allText, setAllText, activeEditIndex, editableRefs } =
     useContext(CcContext);
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null);
@@ -13,6 +13,9 @@ export default function TextCurveChange() {
     if (!newText[activeEditIndex].textCurve) {
       newText[activeEditIndex].textCurve = 0;
     }
+
+    newText[activeEditIndex].textCurve = parseFloat(value);
+    setAllText(newText);
 
     const element = editableRefs.current[activeEditIndex];
 
@@ -24,18 +27,10 @@ export default function TextCurveChange() {
     } else {
       element.innerHTML = newText[activeEditIndex].text;
     }
-
-    newText[activeEditIndex].textCurve = parseFloat(value);
-
-    setAllText(newText);
   }
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
-    ignoreBlurRef.current = true;
-    setTimeout(() => {
-      ignoreBlurRef.current = false;
-    }, 100);
   };
 
   useEffect(() => {

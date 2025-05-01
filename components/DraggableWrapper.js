@@ -17,25 +17,30 @@ export default function DraggableWrapper({
   isActive,
   ...props
 }) {
-  const { allText, setAllText, stickers, setStickers } = useContext(CcContext);
+  const { allText, setAllText, stickers, setStickers, setShouldBeSelected } =
+    useContext(CcContext);
 
   const initialFontSize = textObj.fontSize;
   const initialWidth = stickerObj.width;
-  
+
   const { position, isDragging, startDrag } = useDraggable({
     initialValue: { position: initialPosition, element },
     onDragging: (data) => {
+      setShouldBeSelected(false);
       if (mode == "text") {
         let newText = [...allText];
         newText[index].fontSize = initialFontSize * data?.scale;
         setAllText(newText);
       }
-      
+
       if (mode == "sticker") {
         let sticker = [...stickers];
         sticker[index].width = initialWidth * data?.scale;
         setStickers(sticker);
       }
+    },
+    onDragEnd: (data) => {
+      setShouldBeSelected(true);
     },
   });
 
@@ -50,18 +55,22 @@ export default function DraggableWrapper({
         ...style,
       }}
     >
-      <div
-        onMouseDown={(e) => startDrag({ e, type: "move" })}
-        className={`move-icon absolute -right-2 -top-0 transform -translate-y-1/2 
+      {mode == "text" && (
+        <div
+          onMouseDown={(e) => startDrag({ e, type: "move" })}
+          className={`move-icon absolute -right-2 -top-0 transform -translate-y-1/2 
                           bg-gray-800 p-1 rounded hover:bg-gray-700 z-10
-                          ${
-                            isDragging || isActive
-                              ? "block"
-                              : "hidden group-hover:block"
-                          }`}
-      >
-        <Move size={16} className="text-white" />
-      </div>
+                          ${isActive ? "block" : "hidden"}`}
+        >
+          <Move size={16} className="text-white" />
+        </div>
+      )}
+      {/* {mode == "sticker" && (
+        <div
+          onMouseDown={(e) => startDrag({ e, type: "move" })}
+          className="cursor-move absolute inset-0 bg-red-400/50"
+        ></div>
+      )} */}
       {typeof children === "function"
         ? children({ startDrag, isDragging, position })
         : children}
@@ -71,6 +80,12 @@ export default function DraggableWrapper({
         className={`${
           isActive ? "block cursor-nwse-resize" : "hidden pointer-events-none"
         } size-handler size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
+      ></span>
+      <span
+        onMouseDown={(e) => startDrag({ e, type: "resize", dir: "tr" })}
+        className={`${
+          isActive ? "block cursor-nesw-resize" : "hidden pointer-events-none"
+        } size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
       ></span>
       <span
         onMouseDown={(e) => startDrag({ e, type: "resize", dir: "bl" })}

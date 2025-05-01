@@ -72,7 +72,6 @@ export default function useDraggable({
         newScale = Math.max(0.5, scale + dy / width);
         newPos.x = startElementPos.x - dy / 2;
       } else if (dir === "tl") {
-
         newScale = Math.max(0.5, scale - dy / width);
         const scaleChange = newScale - scale;
 
@@ -80,7 +79,14 @@ export default function useDraggable({
 
         newPos.y = startElementPos.y - pixelChange / 2;
         newPos.x = startElementPos.x + dy / 2;
-        
+      } else if (dir === "tr") {
+        newScale = Math.max(0.5, scale - dy / width);
+        const scaleChange = newScale - scale;
+
+        const pixelChange = scaleChange * height;
+
+        newPos.y = startElementPos.y - pixelChange / 2;
+        newPos.x = startElementPos.x + dy / 2;
       }
 
       setPosition(newPos);

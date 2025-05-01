@@ -16,6 +16,10 @@ export default function InvitationCard() {
     stickerRefs,
     setStickers,
     stickers,
+    activeStickerIndex,
+    shouldBeSelected,
+    defText,
+    defSticker,
   } = useContext(CcContext);
 
   useEffect(() => {
@@ -44,10 +48,16 @@ export default function InvitationCard() {
 
   const handleFocus = (e, index) => {
     let plch = allText[index].isPlaceholder;
-    let newText = [...allText];
+    // let newText = [...allText];
 
-    newText[index].active = true;
+    const newText = allText.map((s, i) => ({
+      ...s,
+      active: i === index,
+      contentEditable: i === index,
+    }));
+
     setActiveEditIndex(index);
+
     if (plch) {
       e.currentTarget.innerHTML = "";
       newText[index].isPlaceholder = false;
@@ -56,37 +66,29 @@ export default function InvitationCard() {
     setAllText(newText);
   };
 
-  const handleBlur = (e) => {
-    if (ignoreBlurRef.current) {
-      setTimeout(() => {
-        if (editableRefs.current[activeEditIndex]) {
-          editableRefs.current[activeEditIndex].focus();
-        }
-      }, 0);
-      return;
-    }
+  // useEffect(() => {
+  //   if (
+  //     activeEditIndex !== null &&
+  //     editableRefs.current[activeEditIndex] &&
+  //     allText[activeEditIndex]?.contentEditable
+  //   ) {
+  //     editableRefs.current[activeEditIndex].focus();
 
-    let newText = [...allText];
-    newText[activeEditIndex].active = false;
-
-    const htmlContent = editableRefs.current[activeEditIndex].innerHTML;
-
-    if (htmlContent.trim() === "") {
-      newText[activeEditIndex].isPlaceholder = true;
-      newText[activeEditIndex].text = "";
-      editableRefs.current[activeEditIndex].innerHTML = "Enter text...";
-    } else {
-      newText[activeEditIndex].isPlaceholder = false;
-      newText[activeEditIndex].text = htmlContent;
-    }
-
-    setActiveEditIndex(null);
-    setAllText(newText);
-  };
+  //     const isPlaceholder = allText[activeEditIndex].isPlaceholder;
+  //     if (isPlaceholder) {
+  //       editableRefs.current[activeEditIndex].innerHTML = "";
+  //     }
+  //   }
+  // }, [activeEditIndex, allText]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (e.target.closest(".sticker-parent")) return;
+      if (
+        e.target.closest(".customize-card-navbar") ||
+        e.target.closest(".sticker-parent") ||
+        activeStickerIndex == null
+      )
+        return;
       const newStickers = stickers?.map((s) => ({ ...s, active: false }));
       setActiveStickerIndex(null);
       if (JSON.stringify(newStickers) !== JSON.stringify(stickers)) {
@@ -99,8 +101,45 @@ export default function InvitationCard() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-
   }, [stickers]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        e.target.closest(".customize-card-navbar") ||
+        e.target.closest(".text-parent") ||
+        activeEditIndex == null
+      )
+        return;
+
+      const newText = allText?.map((s) => ({
+        ...s,
+        active: false,
+        contentEditable: false,
+      }));
+      setActiveEditIndex(null);
+      if (JSON.stringify(newText) !== JSON.stringify(stickers)) {
+        setAllText(newText);
+      }
+
+      const htmlContent = editableRefs.current[activeEditIndex].innerHTML;
+
+      if (htmlContent.trim() === "") {
+        newText[activeEditIndex].isPlaceholder = true;
+        newText[activeEditIndex].text = "";
+        editableRefs.current[activeEditIndex].innerHTML = "Enter text...";
+      } else {
+        newText[activeEditIndex].isPlaceholder = false;
+        newText[activeEditIndex].text = htmlContent;
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [allText]);
 
   return (
     <div
@@ -116,7 +155,9 @@ export default function InvitationCard() {
         allText.map((text, index) => {
           return (
             <DraggableWrapper
-              className={`${text.active ? "active" : ""} movable-handle-parent`}
+              className={`${
+                text.active ? "active" : ""
+              } text-parent movable-handle-parent`}
               initialPosition={text.position}
               key={index}
               textObj={text}
@@ -125,28 +166,42 @@ export default function InvitationCard() {
               isActive={text.active}
               mode="text"
             >
-              {({ isDragging }) => (
+              {({ isDragging, startDrag }) => (
                 <>
                   <div
+                    onMouseDown={(e) => {
+                      if (text.active) return;
+                      startDrag({ e, type: "move" });
+                    }}
                     ref={(el) => (editableRefs.current[index] = el)}
                     contentEditable={text.contentEditable}
                     suppressContentEditableWarning
                     className={`${
-                      text.active ? "active" : ""
+                      text.active ? "active" : "!cursor-move"
                     } movable-handle p-2 focus:outline-none ${
                       text.isPlaceholder ? "!text-[#20f39b]" : "text-white"
                     } ${isDragging ? "movable-handle-hover" : ""}`}
-                    onFocus={(e) => handleFocus(e, index)}
-                    onBlur={(e) => handleBlur(e)}
+                    onMouseUp={(e) => {
+                      if (!shouldBeSelected) return;
+                      handleFocus(e, index);
+                    }}
                     style={{
-                      fontSize: `${text?.fontSize}px`,
-                      textAlign: `${text?.textAlign}`,
-                      color: `${text?.color}`,
-                      fontWeight: `${text?.fontWeight}`,
-                      fontStyle: `${text?.fontStyle}`,
-                      lineHeight: `${text?.lineHeight}`,
-                      letterSpacing: `${text?.letterSpacing}px`,
-                      textTransform: `${text?.textTransform}`,
+                      fontSize: `${text?.fontSize || defText.fontSize}px`,
+                      textAlign: `${text?.textAlign || defText.textAlign}`,
+                      color: `${text?.color || defText.color}`,
+                      fontWeight: `${text?.fontWeight || defText.fontWeight}`,
+                      fontStyle: `${text?.fontStyle || defText.fontStyle}`,
+                      lineHeight: `${
+                        text?.lineHeight || text?.lineHeight.toString() == "0"
+                          ? text.lineHeight
+                          : defText.lineHeight
+                      }`,
+                      letterSpacing: `${
+                        text?.letterSpacing || defText.letterSpacing
+                      }px`,
+                      textTransform: `${
+                        text?.textTransform || defText.textTransform
+                      }`,
                     }}
                   >
                     Enter Text...
@@ -162,7 +217,9 @@ export default function InvitationCard() {
         stickers.map((item, index) => {
           return (
             <DraggableWrapper
-              className={`${item.active ? "active" : ""} sticker-parent movable-handle-parent`}
+              className={`${
+                item.active ? "active" : ""
+              } sticker-parent movable-handle-parent`}
               initialPosition={item.position}
               key={index}
               index={index}
@@ -170,21 +227,30 @@ export default function InvitationCard() {
               stickerObj={item}
               mode="sticker"
               element={stickerRefs.current[index]}
+              style={{
+                transform: `rotate(${item?.rotate || defSticker.rotate}deg)`,
+              }}
             >
-              {({ isDragging }) => (
+              {({ isDragging, startDrag }) => (
                 <>
                   <div
+                    onMouseDown={(e) => {
+                      startDrag({ e, type: "move" });
+                    }}
                     ref={(el) => (stickerRefs.current[index] = el)}
                     className={`${
                       item.active ? "active" : ""
-                    } movable-handle p-2 focus:outline-none ${
+                    } movable-handle !cursor-move p-2 focus:outline-none ${
                       isDragging ? "movable-handle-hover" : ""
                     }`}
                     style={{
-                      width: `${item?.width}px`,
+                      width: `${item?.width || defSticker.width}px`,
+                      transform: `scale(${item?.scaleX || defSticker.scaleX}, ${
+                        item?.scaleY || defSticker.scaleY
+                      })`,
                     }}
-                    onMouseDown={(e) => {
-                      // e.stopPropagation();
+                    onMouseUp={(e) => {
+                      if (!shouldBeSelected) return;
 
                       const newSticker = stickers.map((s, i) => ({
                         ...s,

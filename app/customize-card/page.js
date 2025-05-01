@@ -93,7 +93,7 @@ export default function Home() {
       <div>
         <div
           className="cursor-move flex flex-col items-center justify-center p-4 relative overflow-hidden"
-          style={{ height: "calc(100vh - 72px)" }}
+          style={{ height: "calc(100vh - 54px)" }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}

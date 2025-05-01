@@ -5,7 +5,30 @@ import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 
 const CcProvider = ({ children }) => {
+  const defText = {
+    position: { x: 200, y: 100 },
+    fontSize: 20,
+    textAlign: "center",
+    color: "white",
+    fontWeight: "normal",
+    lineHeight: "1.2",
+    fontStyle: "normal",
+    letterSpacing: "0",
+    textTransform: "none",
+    textCurve: 0,
+  };
+
+  const defSticker = {
+    position: { x: 200, y: 200 },
+    width: 100,
+    scaleX: 1,
+    scaleY: 1,
+    rotate: 0,
+  };
+
   const [isStickerDrawerOpen, setIsStickerDrawerOpen] = useState(false);
+
+  const [shouldBeSelected, setShouldBeSelected] = useState(true);
 
   const [activeEditIndex, setActiveEditIndex] = useState(null);
   const [activeStickerIndex, setActiveStickerIndex] = useState(null);
@@ -14,7 +37,15 @@ const CcProvider = ({ children }) => {
   const editableRefs = useRef({});
   const stickerRefs = useRef({});
 
-  const [stickers, setStickers] = useState([]);
+  const [stickers, setStickers] = useState([
+    {
+      id: uuid4(),
+      src: "/images/stickers/birthday-invitation.png",
+      alt: "birthday-invitation",
+      ...defSticker,
+      position: { x: 200, y: 368 },
+    },
+  ]);
 
   const [allText, setAllText] = useState([
     {
@@ -25,7 +56,7 @@ const CcProvider = ({ children }) => {
       isPlaceholder: false,
       position: { x: 67, y: 200 },
       fontSize: 18,
-      contentEditable: true,
+      contentEditable: false,
       textAlign: "center",
       color: "rgb(255, 163, 72)",
       fontWeight: "normal",
@@ -41,7 +72,7 @@ const CcProvider = ({ children }) => {
       isPlaceholder: false,
       position: { x: 125, y: 310 },
       fontSize: 16,
-      contentEditable: true,
+      contentEditable: false,
       textAlign: "center",
       color: "#7faeb9",
       fontWeight: "normal",
@@ -64,37 +95,25 @@ const CcProvider = ({ children }) => {
         id: uuid4(),
         text: "",
         isPlaceholder: true,
-        position: { x: 200, y: 100 },
-        fontSize: 20,
-        contentEditable: true,
-        textAlign: "center",
-        color: "white",
-        fontWeight: "normal",
-        lineHeight: "1.2",
-        fontStyle: "normal",
-        letterSpacing: "0",
-        textTransform: "none",
         active: true,
-        textCurve: 0,
+        contentEditable: true,
+        ...defText,
       },
     ]);
 
     setActiveEditIndex(allText.length);
   }
 
-  function addNewSticker(e,data) {
-    let newStickers = [...stickers]
+  function addNewSticker(e, data) {
+    let newStickers = [...stickers];
 
     newStickers.push({
       ...data,
-      position: { x: 200, y: 200 },
-      width: 100
+      ...defSticker,
     });
 
     setStickers(newStickers);
-    setActiveStickerIndex(newStickers.length);
-    console.log('asd');
-    
+
     setIsStickerDrawerOpen(false);
   }
 
@@ -116,6 +135,10 @@ const CcProvider = ({ children }) => {
         addNewSticker,
         stickers,
         setStickers,
+        shouldBeSelected,
+        setShouldBeSelected,
+        defText,
+        defSticker,
       }}
     >
       {children}
