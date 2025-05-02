@@ -1,24 +1,29 @@
+import IconBtn from "@/components/IconBtn";
 import CcContext from "@/context/ccContext";
+import useItemsMap from "@/hook/useItemMap";
 import { FlipVertical2 } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function FlipVerticalShape() {
-  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
+  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const itemsMap = useItemsMap(allItems);
+  const activeItem = itemsMap.get(activeID);
   function handleFlip() {
-    let newItem = [...allItems];
-    newItem[activeIndex].scaleY =
-      newItem[activeIndex].scaleY === 1 ? -1 : 1;
-    setAllItems(newItem);
+    setAllItems((prev) =>
+      prev.map((item) =>
+        item.id === activeID
+          ? { ...item, scaleY: item.scaleY === 1 ? -1 : 1 }
+          : item
+      )
+    );
   }
 
   return (
-    <button
+    <IconBtn
       onMouseDown={handleFlip}
-      className={`${
-        allItems[activeIndex]?.scaleY === -1 ? "active" : ""
-      }  size-7 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center border border-gray-200`}
+      className={`${activeItem?.scaleY === -1 ? "active" : ""} `}
     >
       <FlipVertical2 />
-    </button>
+    </IconBtn>
   );
 }

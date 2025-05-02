@@ -1,24 +1,41 @@
 import CcContext from "@/context/ccContext";
+import useItemsMap from "@/hook/useItemMap";
 import React, { useContext } from "react";
 
 export default function FontChange() {
-  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
+  const { allItems, setAllItems, activeID } = useContext(CcContext);
+
   function changeFontSize(value) {
-    let newItem = [...allItems];
-    newItem[activeIndex].fontSize = value;
-    setAllItems(newItem);
+    if (!activeID) return;
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID ? { ...item, fontSize: value } : item
+      )
+    );
   }
+
   function increaseFontSize() {
-    let newItem = [...allItems];
-    newItem[activeIndex].fontSize += 1;
-    setAllItems(newItem);
+    if (!activeID) return;
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID
+          ? { ...item, fontSize: (item.fontSize || 0) + 1 }
+          : item
+      )
+    );
   }
 
   function decreaseFontSize() {
-    let newItem = [...allItems];
-    newItem[activeIndex].fontSize -= 1;
-    setAllItems(newItem);
+    if (!activeID) return;
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID
+          ? { ...item, fontSize: (item.fontSize || 0) - 1 }
+          : item
+      )
+    );
   }
+  
   return (
     <div className="flex items-center border border-gray-200 divide-gray-200 rounded divide-x">
       <button
@@ -44,7 +61,7 @@ export default function FontChange() {
       <div className="px-3 py-1 flex items-center">
         <input
           onChange={(e) => changeFontSize(e.target.value)}
-          value={allItems[activeIndex]?.fontSize || 16}
+          value={allItems[activeID]?.fontSize || 16}
           className="w-4 outline-none text-sm"
         />
       </div>

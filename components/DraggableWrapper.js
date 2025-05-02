@@ -23,6 +23,7 @@ export default function DraggableWrapper({
   isActive,
   ...props
 }) {
+
   const { allItems, setAllItems, setShouldBeSelected } = useContext(CcContext);
 
   const initialFontSize = textObj.fontSize;

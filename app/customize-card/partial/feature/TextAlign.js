@@ -1,41 +1,42 @@
+import IconBtn from "@/components/IconBtn";
 import CcContext from "@/context/ccContext";
+import useItemsMap from "@/hook/useItemMap";
 import { AlignCenter, AlignLeft, AlignRight } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function TextAlign() {
-  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
-
+  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const itemsMap = useItemsMap(allItems);
+  const activeItem = itemsMap.get(activeID);
   function changeTextAlign(value) {
-    let newItem = [...allItems];
-    newItem[activeIndex].textAlign = value;
-    setAllItems(newItem);
+    if (activeID === null) return;
+
+    setAllItems((prev) =>
+      prev.map((item) =>
+        item.id === activeID ? { ...item, textAlign: value } : item
+      )
+    );
   }
   return (
     <>
-      <button
+      <IconBtn
         onClick={() => changeTextAlign("left")}
-        className={`${
-          allItems[activeIndex]?.textAlign === "left" ? "active" : ""
-        } size-7 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center border border-gray-200`}
+        className={`${activeItem?.textAlign === "left" ? "active" : ""}`}
       >
         <AlignLeft />
-      </button>
-      <button
+      </IconBtn>
+      <IconBtn
         onClick={() => changeTextAlign("center")}
-        className={`${
-          allItems[activeIndex]?.textAlign === "center" ? "active" : ""
-        }  size-7 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center border border-gray-200`}
+        className={`${activeItem?.textAlign === "center" ? "active" : ""}`}
       >
         <AlignCenter />
-      </button>
-      <button
+      </IconBtn>
+      <IconBtn
         onClick={() => changeTextAlign("right")}
-        className={`${
-          allItems[activeIndex]?.textAlign === "right" ? "active" : ""
-        }  size-7 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center border border-gray-200`}
+        className={`${activeItem?.textAlign === "right" ? "active" : ""} `}
       >
         <AlignRight />
-      </button>
+      </IconBtn>
     </>
   );
 }

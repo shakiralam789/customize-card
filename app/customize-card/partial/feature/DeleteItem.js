@@ -3,7 +3,7 @@ import { TrashIcon } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function DeleteItem() {
-  const { deleteField,allItems, setAllItems, activeIndex, setActiveIndex } =
+  const { deleteField } =
     useContext(CcContext);
 
   return (

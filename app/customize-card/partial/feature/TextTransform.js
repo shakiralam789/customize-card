@@ -1,24 +1,36 @@
+import IconBtn from "@/components/IconBtn";
 import CcContext from "@/context/ccContext";
+import useItemsMap from "@/hook/useItemMap";
 import { CaseUpper } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function TextTransform() {
-  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
-
+  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const itemsMap = useItemsMap(allItems);
+  const activeItem = itemsMap.get(activeID);
   function changeTextTransform(value) {
-    let newItem = [...allItems];
-    newItem[activeIndex].textTransform =
-      newItem[activeIndex].textTransform === "none" ? value : "none";
-    setAllItems(newItem);
+    if (activeID === null) return;
+
+    setAllItems((prev) =>
+      prev.map((item) =>
+        item.id === activeID
+          ? {
+              ...item,
+              textTransform: item.textTransform === "none" ? value : "none",
+            }
+          : item
+      )
+    );
   }
+
   return (
-    <button
+    <IconBtn
       onClick={() => changeTextTransform("uppercase")}
       className={`${
-        allItems[activeIndex]?.textTransform === "uppercase" ? "active" : ""
-      } size-7 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center border border-gray-200`}
+        activeItem?.textTransform === "uppercase" ? "active" : ""
+      } `}
     >
       <CaseUpper />
-    </button>
+    </IconBtn>
   );
 }

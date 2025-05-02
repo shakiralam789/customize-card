@@ -33,7 +33,7 @@ const CcProvider = ({ children }) => {
 
   const [shouldBeSelected, setShouldBeSelected] = useState(true);
 
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeID, setActiveID] = useState(null);
 
   const ignoreBlurRef = useRef(false);
   const itemsRefs = useRef({});
@@ -41,6 +41,7 @@ const CcProvider = ({ children }) => {
   const [allItems, setAllItems] = useState([
     {
       id: uuid4(),
+      name: "Sticker",
       itemType: "sticker",
       src: "/images/stickers/birthday-invitation.png",
       alt: "birthday-invitation",
@@ -49,6 +50,7 @@ const CcProvider = ({ children }) => {
     },
     {
       id: uuid4(),
+      name: "Invitation Letter",
       itemType: "text",
       text: `<div>Saturday, June 17, 2025</div>
             <div>at three o'clock in the afternoon</div>
@@ -58,7 +60,7 @@ const CcProvider = ({ children }) => {
       fontSize: 18,
       contentEditable: false,
       textAlign: "center",
-      color: "rgb(255, 163, 72)",
+      color: "#b18e71",
       fontWeight: "normal",
       lineHeight: "2",
       fontStyle: "normal",
@@ -68,6 +70,7 @@ const CcProvider = ({ children }) => {
     },
     {
       id: uuid4(),
+      name: "Address",
       itemType: "text",
       text: `<div>4551 East Street Wilmot, Virginia</div>`,
       isPlaceholder: false,
@@ -75,7 +78,7 @@ const CcProvider = ({ children }) => {
       fontSize: 16,
       contentEditable: false,
       textAlign: "center",
-      color: "#7faeb9",
+      color: "#7db2bd",
       fontWeight: "normal",
       lineHeight: "2",
       fontStyle: "normal",
@@ -89,11 +92,11 @@ const CcProvider = ({ children }) => {
     let newItem = [...allItems].map((item, index) => {
       return { ...item, zIndex: 10 + index, active: false };
     });
-
+    let id = uuid4();
     setAllItems([
       ...newItem,
       {
-        id: uuid4(),
+        id: id,
         text: "",
         isPlaceholder: true,
         active: true,
@@ -103,7 +106,7 @@ const CcProvider = ({ children }) => {
       },
     ]);
 
-    setActiveIndex(allItems.length);
+    setActiveID(id);
   }
 
   function addNewSticker(e, data) {
@@ -119,21 +122,25 @@ const CcProvider = ({ children }) => {
     });
 
     setAllItems(newItem);
-    setActiveIndex(null);
+    setActiveID(null);
 
     setIsStickerDrawerOpen(false);
   }
 
   function deleteField() {
-    let newItem = [...allItems];
-    newItem.splice(activeIndex, 1);
+    if (!activeID) return;
 
-    newItem = newItem.map((item, index) => {
-      return { ...item, zIndex: 10 + index };
+    setAllItems((prevItems) => {
+      const filteredItems = prevItems.filter((item) => item.id !== activeID);
+      const updatedItems = filteredItems.map((item, index) => ({
+        ...item,
+        zIndex: 10 + index,
+      }));
+
+      return updatedItems;
     });
 
-    setAllItems(newItem);
-    setActiveIndex(null);
+    setActiveID(null);
   }
 
   return (
@@ -144,8 +151,8 @@ const CcProvider = ({ children }) => {
         addNewText,
         addNewSticker,
         ignoreBlurRef,
-        activeIndex,
-        setActiveIndex,
+        activeID,
+        setActiveID,
         itemsRefs,
         isStickerDrawerOpen,
         setIsStickerDrawerOpen,

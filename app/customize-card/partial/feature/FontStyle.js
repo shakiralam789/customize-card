@@ -1,23 +1,31 @@
+import IconBtn from "@/components/IconBtn";
 import CcContext from "@/context/ccContext";
+import useItemsMap from "@/hook/useItemMap";
 import { Italic } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function FontStyle() {
-  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
+  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const itemsMap = useItemsMap(allItems);
+  const activeItem = itemsMap.get(activeID);
   function changeFontStyle() {
-    let newItem = [...allItems];
-    newItem[activeIndex].fontStyle =
-      newItem[activeIndex].fontStyle === "normal" ? "italic" : "normal";
-    setAllItems(newItem);
+    setAllItems((prev) =>
+      prev.map((item) =>
+        item.id === activeID
+          ? {
+              ...item,
+              fontStyle: item.fontStyle === "italic" ? "normal" : "italic",
+            }
+          : item
+      )
+    );
   }
   return (
-    <button
+    <IconBtn
       onClick={changeFontStyle}
-      className={`${
-        allItems[activeIndex]?.fontStyle === "italic" ? "active" : ""
-      } size-7 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center border border-gray-200`}
+      className={`${activeItem?.fontStyle === "italic" ? "active" : ""} `}
     >
       <Italic />
-    </button>
+    </IconBtn>
   );
 }

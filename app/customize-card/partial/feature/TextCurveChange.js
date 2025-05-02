@@ -1,31 +1,32 @@
+import IconBtn from "@/components/IconBtn";
 import CcContext from "@/context/ccContext";
 import { curvedText } from "@/helper/helper";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 export default function TextCurveChange() {
-  const { allItems, setAllItems, activeIndex, itemsRefs } =
+  const { allItems, setAllItems, activeID, itemsRefs } =
     useContext(CcContext);
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null);
 
   function handleChange(value) {
     let newItem = [...allItems];
-    if (!newItem[activeIndex].textCurve) {
-      newItem[activeIndex].textCurve = 0;
+    if (!newItem[activeID].textCurve) {
+      newItem[activeID].textCurve = 0;
     }
 
-    newItem[activeIndex].textCurve = parseFloat(value);
+    newItem[activeID].textCurve = parseFloat(value);
     setAllItems(newItem);
 
-    const element = itemsRefs.current[activeIndex];
+    const element = itemsRefs.current[activeID];
 
     if (parseFloat(value) != 0) {
       element.innerHTML = curvedText({
-        text: newItem[activeIndex].text,
+        text: newItem[activeID].text,
         curveValue: parseFloat(value),
       });
     } else {
-      element.innerHTML = newItem[activeIndex].text;
+      element.innerHTML = newItem[activeID].text;
     }
   }
 
@@ -47,15 +48,15 @@ export default function TextCurveChange() {
   }, []);
 
   const getCurrent = () => {
-    if (activeIndex === null) return 0;
-    return allItems[activeIndex]?.textCurve || 0;
+    if (activeID === null) return 0;
+    return allItems[activeID]?.textCurve || 0;
   };
 
   return (
     <div className="relative">
-      <button
+      <IconBtn
         onClick={togglePopup}
-        className={`size-7 flex items-center justify-center border border-gray-200 ${
+        className={`${
           showPopup ? "bg-gray-100" : ""
         }`}
       >
@@ -73,7 +74,7 @@ export default function TextCurveChange() {
             d="M11.402 12.875 7.435 5.39l-2.797 7.997m1-2.859 4.346-.328m-6.449 9.553c2.53-1.454 5.71-2.25 9.004-2.223s6.446.873 8.926 2.366m-5.75-14.744 2.485.345c1.006.14 1.803 1 1.76 2.016a1.946 1.946 0 0 1-2.213 1.85l-2.567-.356zm-.535 3.853 3.174.442c1.007.14 1.804 1 1.76 2.016a1.946 1.946 0 0 1-2.212 1.85l-3.258-.453z"
           ></path>
         </svg>
-      </button>
+      </IconBtn>
 
       {showPopup && (
         <div

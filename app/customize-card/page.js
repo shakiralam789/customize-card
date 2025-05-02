@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Head from "next/head";
 import Nav from "./partial/Nav";
 import InvitationCard from "./partial/InvitationCard";
+import EditPanelBar from "./partial/EditorPanel/EditPanelBar";
 
 export default function Home() {
   
@@ -88,7 +89,7 @@ export default function Home() {
 
       {/* Top Navigation Bar */}
       <Nav />
-          
+      <EditPanelBar />
       {/* Main Content Area */}
       <div>
         <div

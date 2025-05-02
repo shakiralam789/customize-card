@@ -1,23 +1,31 @@
+import IconBtn from "@/components/IconBtn";
 import CcContext from "@/context/ccContext";
+import useItemsMap from "@/hook/useItemMap";
 import { Bold } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function FontWeight() {
-  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
+  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const itemsMap = useItemsMap(allItems);
+  const activeItem = itemsMap.get(activeID);
   function changeFontWeight() {
-    let newItem = [...allItems];
-    newItem[activeIndex].fontWeight =
-      newItem[activeIndex].fontWeight === "normal" ? "bold" : "normal";
-    setAllItems(newItem);
+    setAllItems((prev) =>
+      prev.map((item) =>
+        item.id === activeID
+          ? {
+              ...item,
+              fontWeight: item.fontWeight === "bold" ? "normal" : "bold",
+            }
+          : item
+      )
+    );
   }
   return (
-    <button
+    <IconBtn
       onClick={changeFontWeight}
-      className={`${
-        allItems[activeIndex]?.fontWeight === "bold" ? "active" : ""
-      }  size-7 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center border border-gray-200`}
+      className={`${activeItem?.fontWeight === "bold" ? "active" : ""}`}
     >
       <Bold />
-    </button>
+    </IconBtn>
   );
 }

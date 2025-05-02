@@ -8,8 +8,8 @@ export default function InvitationCard() {
   const {
     allItems,
     setAllItems,
-    activeIndex,
-    setActiveIndex,
+    activeID,
+    setActiveID,
     itemsRefs,
     shouldBeSelected,
     defText,
@@ -32,7 +32,7 @@ export default function InvitationCard() {
 
       updatedItem.forEach((item, index) => {
         if (item.itemType === "text") {
-          const element = itemsRefs.current[index];
+          const element = itemsRefs.current[item.id];
           if (element) {
             element.innerHTML = item.isPlaceholder
               ? "Enter text..."
@@ -43,7 +43,7 @@ export default function InvitationCard() {
     }
   }, []);
 
-  const handleFocus = (e, index) => {
+  const handleFocus = (e, index, id) => {
     let plch = allItems[index].isPlaceholder;
 
     const newItem = allItems.map((s, i) => ({
@@ -52,7 +52,7 @@ export default function InvitationCard() {
       contentEditable: i === index,
     }));
 
-    setActiveIndex(index);
+    setActiveID(id);
 
     if (plch) {
       e.currentTarget.innerHTML = "";
@@ -64,25 +64,25 @@ export default function InvitationCard() {
 
   // useEffect(() => {
   //   if (
-  //     activeIndex !== null &&
-  //     itemsRefs.current[activeIndex] &&
-  //     allItems[activeIndex]?.contentEditable
+  //     activeID !== null &&
+  //     itemsRefs.current[activeID] &&
+  //     allItems[activeID]?.contentEditable
   //   ) {
-  //     itemsRefs.current[activeIndex].focus();
+  //     itemsRefs.current[activeID].focus();
 
-  //     const isPlaceholder = allItems[activeIndex].isPlaceholder;
+  //     const isPlaceholder = allItems[activeID].isPlaceholder;
   //     if (isPlaceholder) {
-  //       itemsRefs.current[activeIndex].innerHTML = "";
+  //       itemsRefs.current[activeID].innerHTML = "";
   //     }
   //   }
-  // }, [activeIndex, allItems]);
+  // }, [activeID, allItems]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
         e.target.closest(".customize-card-navbar") ||
         e.target.closest(".item-parent") ||
-        activeIndex == null
+        activeID == null
       )
         return;
 
@@ -94,23 +94,25 @@ export default function InvitationCard() {
         return updated;
       });
 
-      setActiveIndex(null);
+      setActiveID(null);
 
       if (JSON.stringify(newItems) !== JSON.stringify(allItems)) {
         setAllItems(newItems);
       }
     };
 
-    if (allItems[activeIndex]?.itemType === "text") {
-      const htmlContent = itemsRefs.current[activeIndex].innerHTML;
+    let activeItem = allItems.find((item) => item.id === activeID);
+
+    if (activeItem?.itemType === "text") {
+      const htmlContent = itemsRefs.current[activeID].innerHTML;
 
       if (htmlContent.trim() === "") {
-        allItems[activeIndex].isPlaceholder = true;
-        allItems[activeIndex].text = "";
-        itemsRefs.current[activeIndex].innerHTML = "Enter text...";
+        activeItem.isPlaceholder = true;
+        activeItem.text = "";
+        itemsRefs.current[activeID].innerHTML = "Enter text...";
       } else {
-        allItems[activeIndex].isPlaceholder = false;
-        allItems[activeIndex].text = htmlContent;
+        activeItem.isPlaceholder = false;
+        activeItem.text = htmlContent;
       }
     }
 
@@ -142,7 +144,7 @@ export default function InvitationCard() {
               key={index}
               textObj={item.itemType === "text" && item}
               stickerObj={item.itemType === "sticker" && item}
-              element={itemsRefs.current[index]}
+              element={itemsRefs.current[item.id]}
               index={index}
               zIndex={item?.zIndex || 10}
               isActive={item.active}
@@ -159,7 +161,7 @@ export default function InvitationCard() {
                         if (item.active) return;
                         startDrag({ e, type: "move" });
                       }}
-                      ref={(el) => (itemsRefs.current[index] = el)}
+                      ref={(el) => (itemsRefs.current[item.id] = el)}
                       contentEditable={item.contentEditable}
                       suppressContentEditableWarning
                       className={`${
@@ -169,7 +171,7 @@ export default function InvitationCard() {
                       } ${isDragging ? "movable-handle-hover" : ""}`}
                       onMouseUp={(e) => {
                         if (!shouldBeSelected) return;
-                        handleFocus(e, index);
+                        handleFocus(e, index, item.id);
                       }}
                       style={{
                         fontSize: `${item?.fontSize || defText.fontSize}px`,
@@ -189,9 +191,7 @@ export default function InvitationCard() {
                           item?.textTransform || defText.textTransform
                         }`,
                       }}
-                    >
-                      Enter Text...
-                    </div>
+                    ></div>
                   )}
 
                   {item.itemType === "sticker" && (
@@ -199,7 +199,7 @@ export default function InvitationCard() {
                       onMouseDown={(e) => {
                         startDrag({ e, type: "move" });
                       }}
-                      ref={(el) => (itemsRefs.current[index] = el)}
+                      ref={(el) => (itemsRefs.current[item.id] = el)}
                       className={`${
                         item.active ? "active" : ""
                       } movable-handle !cursor-move p-2 focus:outline-none ${
@@ -220,7 +220,7 @@ export default function InvitationCard() {
                         }));
 
                         setAllItems(newItem);
-                        setActiveIndex(index);
+                        setActiveID(item.id);
                       }}
                     >
                       <Image

@@ -17,22 +17,26 @@ import FlipVerticalShape from "./feature/FlipVertiacalShape";
 import RotateShape from "./feature/RotateShape";
 import RotateText from "./feature/RotateText";
 import DeleteItem from "./feature/DeleteItem";
+import useItemsMap from "@/hook/useItemMap";
 
 export default function Nav() {
   const {
     addNewText,
-    activeIndex,
+    activeID,
     allItems,
     isStickerDrawerOpen,
     setIsStickerDrawerOpen,
   } = useContext(CcContext);
+
+  const itemsMap = useItemsMap(allItems);
+  const activeItem = itemsMap.get(activeID);
 
   return (
     <nav className="customize-card-navbar h-[54px] flex items-center relative text-sm bg-white shadow-sm border-b border-gray-200 px-2 py-1.5">
       <div className="w-full">
         <div className="flex items-center justify-between">
           <div>
-            <button className="p-2 rounded-full text-gray-800 font-bold hover:bg-gray-100">
+            <button className="p-2 rounded-full text-gray-700 font-bold hover:bg-gray-100">
               LOGO
             </button>
           </div>
@@ -40,9 +44,9 @@ export default function Nav() {
           <div className="flex space-x-4">
             <button
               onClick={addNewText}
-              className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-semibold hover:bg-gray-100 rounded"
+              className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-semibold hover:bg-gray-100 rounded"
             >
-              <Languages className="mr-2" />
+              <Languages className="size-5 mr-1" />
               Text
             </button>
 
@@ -51,8 +55,8 @@ export default function Nav() {
               setIsOpen={setIsStickerDrawerOpen}
               title="Sticker"
               trigger={
-                <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">
-                  <Sticker className="mr-2" />
+                <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
+                  <Sticker className="size-5 mr-1" />
                   Sticker
                 </button>
               }
@@ -60,12 +64,12 @@ export default function Nav() {
               <DrawerContent />
             </Drawer>
 
-            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">
-              <ImageIcon className="mr-2" />
+            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
+              <ImageIcon className="size-5 mr-1" />
               Image
             </button>
 
-            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">
+            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="size-5 mr-2"
@@ -83,17 +87,17 @@ export default function Nav() {
               Theme color
             </button>
 
-            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-800 font-bold hover:bg-gray-100 rounded">
-              <MessageCircleCode className="mr-2" />
+            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
+              <MessageCircleCode className="size-5 mr-1" />
               Create RSVP
             </button>
           </div>
 
           <div className="flex space-x-2">
-            <button className="cursor-pointer border border-gray-300 text-emerald-500 font-semibold px-2 py-1 rounded hover:bg-gray-50">
+            <button className="hover:bg-gray-100 cursor-pointer text-emerald-500 font-semibold px-2 py-1 rounded">
               Save draft
             </button>
-            <button className="cursor-pointer bg-emerald-500 font-semibold text-white px-2 py-1 rounded hover:bg-emerald-600 flex items-center">
+            <button className="cursor-pointer bg-emerald-500 font-semibold text-white px-4 py-1.5 rounded hover:bg-emerald-600 flex items-center">
               Next
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -112,9 +116,9 @@ export default function Nav() {
             </button>
           </div>
         </div>
-        {activeIndex != null && allItems[activeIndex]?.itemType === "text" && (
+        {activeID != null && activeItem?.itemType === "text" && (
           <div
-            className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-800 py-2 px-4 flex items-center justify-center`}
+            className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-700 py-2 px-4 flex items-center justify-center`}
           >
             <DeleteItem />
             <FontChange />
@@ -129,17 +133,17 @@ export default function Nav() {
             <RotateText />
           </div>
         )}
-        {activeIndex != null &&
-          allItems[activeIndex]?.itemType === "sticker" && (
-            <div
-              className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-800 py-2 px-4 flex items-center justify-center`}
-            >
-              <DeleteItem />
-              <FlipShape />
-              <FlipVerticalShape />
-              <RotateShape />
-            </div>
-          )}
+        
+        {activeID != null && activeItem?.itemType === "sticker" && (
+          <div
+            className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-700 py-2 px-4 flex items-center justify-center`}
+          >
+            <DeleteItem />
+            <FlipShape />
+            <FlipVerticalShape />
+            <RotateShape />
+          </div>
+        )}
       </div>
     </nav>
   );

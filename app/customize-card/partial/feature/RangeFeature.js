@@ -1,9 +1,11 @@
+import IconBtn from "@/components/IconBtn";
+import useItemsMap from "@/hook/useItemMap";
 import React, { useEffect, useRef, useState } from "react";
 
 export default function RangeFeature({
   data,
   setData,
-  activeIndex,
+  activeID,
   title = "",
   propertyName,
   children,
@@ -16,14 +18,15 @@ export default function RangeFeature({
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null);
 
-  function handleChange(value) {
-    let newData = [...data];
-    if (!newData[activeIndex][propertyName]) {
-      newData[activeIndex][propertyName] = defValue;
-    }
-    newData[activeIndex][propertyName] = parseFloat(value);
-    setData(newData);
+  const itemsMap = useItemsMap(data);
+  const activeItem = itemsMap.get(activeID);
 
+  function handleChange(value) {
+    setData((prev) =>
+      prev.map((item) =>
+        item.id === activeID ? { ...item, [propertyName]: value } : item
+      )
+    );
     if (onHandleChange) {
       onHandleChange(value);
     }
@@ -47,21 +50,16 @@ export default function RangeFeature({
   }, []);
 
   const getCurrent = () => {
-    if (activeIndex === null || !propertyName) return defValue;
-    const value = data?.[activeIndex]?.[propertyName];
+    if (activeID === null || !propertyName) return defValue;
+    const value = activeItem?.[propertyName];
     return value !== undefined && value !== null ? value : defValue;
   };
 
   return (
     <div className="relative">
-      <button
-        onClick={togglePopup}
-        className={`size-7 flex items-center justify-center border border-gray-200 ${
-          showPopup ? "bg-gray-100" : ""
-        }`}
-      >
+      <IconBtn onClick={togglePopup} className={`${showPopup ? "active" : ""}`}>
         {children}
-      </button>
+      </IconBtn>
 
       {showPopup && (
         <div
