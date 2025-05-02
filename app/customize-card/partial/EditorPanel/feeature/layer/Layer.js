@@ -14,6 +14,7 @@ export default function Layer() {
       >
         <Layers />
       </EditorPanelIcon>
+      
       <LayerPanel show={show} onClose={() => setOpen(false)} />
     </>
   );

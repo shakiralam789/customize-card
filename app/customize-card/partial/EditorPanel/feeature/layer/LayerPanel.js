@@ -18,6 +18,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
 import CcContext from "@/context/ccContext";
+import { Eye, EyeClosed, EyeIcon, LockIcon, LockOpen } from "lucide-react";
 
 export default function LayerPanel({ show, onClose }) {
   return (
@@ -26,7 +27,7 @@ export default function LayerPanel({ show, onClose }) {
     </PanelDrawer>
   );
 }
-const SortableItem = ({ item, index }) => {
+const SortableItem = ({ item, index, activeID }) => {
   const {
     attributes,
     listeners,
@@ -35,6 +36,9 @@ const SortableItem = ({ item, index }) => {
     transition,
     isDragging,
   } = useSortable({ id: item?.id });
+
+  const [eyeOpen, setEyeOpen] = useState(true);
+  const [lockOpen, setLockOpen] = useState(false);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -45,19 +49,35 @@ const SortableItem = ({ item, index }) => {
   return (
     <motion.div
       ref={setNodeRef}
-      {...attributes}
-      {...listeners}
       layout
       style={style}
-      className="bg-gray-200 rounded p-2 mb-2 cursor-grab active:cursor-grabbing"
+      className={`relative`}
     >
-      {item?.name || index}
+      <div
+        {...attributes}
+        {...listeners}
+        className={`${item?.id === activeID ? "active" : ""} text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 mb-2 cursor-grab active:cursor-grabbing`}
+      >
+        {item?.name || index}
+      </div>
+      <div className="text-gray-500 absolute top-1/2 -translate-y-1/2 right-2 flex items-center space-x-1 *:size-4 cursor-pointer">
+        {eyeOpen ? (
+          <Eye onClick={() => setEyeOpen(false)} />
+        ) : (
+          <EyeClosed onClick={() => setEyeOpen(true)} />
+        )}
+        {lockOpen ? (
+          <LockIcon className="!size-3.5" onClick={() => setLockOpen(false)} />
+        ) : (
+          <LockOpen className="!size-3.5" onClick={() => setLockOpen(true)} />
+        )}
+      </div>
     </motion.div>
   );
 };
 
 function DraggableList() {
-  const { allItems, setAllItems } = useContext(CcContext);
+  const { allItems, setAllItems, activeID } = useContext(CcContext);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -67,21 +87,24 @@ function DraggableList() {
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
-    if (active.id !== over?.id) {
-      setAllItems((prev) => {
-        const oldIndex = prev.findIndex((item) => item.id === active.id);
-        const newIndex = prev.findIndex((item) => item.id === over.id);
+    if (!over || active.id === over.id) return;
 
-        // Defensive check
-        if (oldIndex === -1 || newIndex === -1) return prev;
+    setAllItems((prev) => {
+      const oldIndex = prev.findIndex((item) => item.id === active.id);
+      const newIndex = prev.findIndex((item) => item.id === over.id);
 
-        const newOrder = arrayMove([...prev], oldIndex, newIndex);
+      if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex)
+        return prev;
 
-        // console.log(newOrder);
-        
-        return newOrder;
-      });
-    }
+      const newOrder = arrayMove([...prev], oldIndex, newIndex).map(
+        (item, i) => ({
+          ...item,
+          zIndex: 10 + i,
+        })
+      );
+
+      return newOrder;
+    });
   };
 
   return (
@@ -95,8 +118,13 @@ function DraggableList() {
         strategy={verticalListSortingStrategy}
       >
         <motion.div layout>
-          {allItems.map((item, index) => (
-            <SortableItem key={item?.id} item={item} index={index} />
+          {[...allItems].reverse().map((item, index) => (
+            <SortableItem
+              key={item.id}
+              item={item}
+              index={index}
+              activeID={activeID}
+            />
           ))}
         </motion.div>
       </SortableContext>

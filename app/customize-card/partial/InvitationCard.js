@@ -80,8 +80,7 @@ export default function InvitationCard() {
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
-        e.target.closest(".customize-card-navbar") ||
-        e.target.closest(".item-parent") ||
+        e.target.closest(".prevent-customize-card-blur") ||
         activeID == null
       )
         return;
@@ -121,7 +120,7 @@ export default function InvitationCard() {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [allItems]);
+  }, [activeID]);
 
   return (
     <div
@@ -139,9 +138,9 @@ export default function InvitationCard() {
             <DraggableWrapper
               className={`${
                 item.active ? "active" : ""
-              } item-parent movable-handle-parent`}
+              } prevent-customize-card-blur movable-handle-parent`}
               initialPosition={item.position}
-              key={index}
+              key={item.id}
               textObj={item.itemType === "text" && item}
               stickerObj={item.itemType === "sticker" && item}
               element={itemsRefs.current[item.id]}

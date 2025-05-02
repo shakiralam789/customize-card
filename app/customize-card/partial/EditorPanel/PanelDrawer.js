@@ -9,7 +9,6 @@ export default function PanelDrawer({
   onClose,
   title,
 }) {
-  console.log(show);
 
   return (
     show && (
@@ -25,7 +24,7 @@ export default function PanelDrawer({
             <XIcon />
           </button>
         </div>
-        <div className="p-4">{children}</div>
+        <div className="p-2">{children}</div>
       </div>
     )
   );

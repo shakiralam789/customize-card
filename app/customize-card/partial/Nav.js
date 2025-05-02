@@ -32,7 +32,7 @@ export default function Nav() {
   const activeItem = itemsMap.get(activeID);
 
   return (
-    <nav className="customize-card-navbar h-[54px] flex items-center relative text-sm bg-white shadow-sm border-b border-gray-200 px-2 py-1.5">
+    <nav className="customize-card-navbar prevent-customize-card-blur h-[54px] flex items-center relative text-sm bg-white shadow-sm border-b border-gray-200 px-2 py-1.5">
       <div className="w-full">
         <div className="flex items-center justify-between">
           <div>
