@@ -47,13 +47,9 @@ export default function RangeFeature({
   }, []);
 
   const getCurrent = () => {
-    if (activeIndex === null) return defValue;
-    return (
-      (propertyName &&
-      (data[activeIndex][propertyName] || data[activeIndex][propertyName].toString() == '0')
-        ? data[activeIndex][propertyName]
-        : defValue) || defValue
-    );
+    if (activeIndex === null || !propertyName) return defValue;
+    const value = data?.[activeIndex]?.[propertyName];
+    return value !== undefined && value !== null ? value : defValue;
   };
 
   return (

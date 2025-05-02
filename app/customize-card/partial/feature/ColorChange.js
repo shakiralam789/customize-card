@@ -2,13 +2,13 @@ import CcContext from "@/context/ccContext";
 import React, { useContext } from "react";
 
 export default function ColorChange() {
-  const { allText, setAllText, ignoreBlurRef, activeEditIndex } =
+  const { allItems, setAllItems, ignoreBlurRef, activeIndex } =
     useContext(CcContext);
   const handleColorInputClick = () => {
     ignoreBlurRef.current = true;
   };
   const handleColorChange = (e) => {
-    if (activeEditIndex === null) return;
+    if (activeIndex === null) return;
 
     ignoreBlurRef.current = true;
 
@@ -16,9 +16,9 @@ export default function ColorChange() {
       ignoreBlurRef.current = false;
     }, 100);
 
-    const newText = [...allText];
-    newText[activeEditIndex].color = e.target.value;
-    setAllText(newText);
+    const newItem = [...allItems];
+    newItem[activeIndex].color = e.target.value;
+    setAllItems(newItem);
   };
   return (
     <div className="size-7 flex items-center justify-center border border-gray-200 divide-gray-200">
@@ -26,8 +26,8 @@ export default function ColorChange() {
         onChange={handleColorChange}
         onClick={handleColorInputClick}
         value={
-          activeEditIndex !== null
-            ? allText[activeEditIndex]?.color || "#ffffff"
+          activeIndex !== null
+            ? allItems[activeIndex]?.color || "#ffffff"
             : "#ffffff"
         }
         type="color"

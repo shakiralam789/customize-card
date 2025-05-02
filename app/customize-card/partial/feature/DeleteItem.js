@@ -2,16 +2,10 @@ import CcContext from "@/context/ccContext";
 import { TrashIcon } from "lucide-react";
 import React, { useContext } from "react";
 
-export default function DeleteSticker() {
-  const { stickers, setStickers, activeStickerIndex, setActiveStickerIndex } =
+export default function DeleteItem() {
+  const { deleteField,allItems, setAllItems, activeIndex, setActiveIndex } =
     useContext(CcContext);
 
-  function deleteField() {
-    let newSticker = [...stickers];
-    newSticker.splice(activeStickerIndex, 1);
-    setStickers(newSticker);
-    setActiveStickerIndex(null);
-  }
   return (
     <button
       onClick={deleteField}

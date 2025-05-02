@@ -3,29 +3,29 @@ import { curvedText } from "@/helper/helper";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 export default function TextCurveChange() {
-  const { allText, setAllText, activeEditIndex, editableRefs } =
+  const { allItems, setAllItems, activeIndex, itemsRefs } =
     useContext(CcContext);
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null);
 
   function handleChange(value) {
-    let newText = [...allText];
-    if (!newText[activeEditIndex].textCurve) {
-      newText[activeEditIndex].textCurve = 0;
+    let newItem = [...allItems];
+    if (!newItem[activeIndex].textCurve) {
+      newItem[activeIndex].textCurve = 0;
     }
 
-    newText[activeEditIndex].textCurve = parseFloat(value);
-    setAllText(newText);
+    newItem[activeIndex].textCurve = parseFloat(value);
+    setAllItems(newItem);
 
-    const element = editableRefs.current[activeEditIndex];
+    const element = itemsRefs.current[activeIndex];
 
     if (parseFloat(value) != 0) {
       element.innerHTML = curvedText({
-        text: newText[activeEditIndex].text,
+        text: newItem[activeIndex].text,
         curveValue: parseFloat(value),
       });
     } else {
-      element.innerHTML = newText[activeEditIndex].text;
+      element.innerHTML = newItem[activeIndex].text;
     }
   }
 
@@ -47,8 +47,8 @@ export default function TextCurveChange() {
   }, []);
 
   const getCurrent = () => {
-    if (activeEditIndex === null) return 0;
-    return allText[activeEditIndex]?.textCurve || 0;
+    if (activeIndex === null) return 0;
+    return allItems[activeIndex]?.textCurve || 0;
   };
 
   return (

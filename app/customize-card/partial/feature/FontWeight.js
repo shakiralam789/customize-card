@@ -3,18 +3,18 @@ import { Bold } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function FontWeight() {
-  const { allText, setAllText, activeEditIndex } = useContext(CcContext);
+  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
   function changeFontWeight() {
-    let newText = [...allText];
-    newText[activeEditIndex].fontWeight =
-      newText[activeEditIndex].fontWeight === "normal" ? "bold" : "normal";
-    setAllText(newText);
+    let newItem = [...allItems];
+    newItem[activeIndex].fontWeight =
+      newItem[activeIndex].fontWeight === "normal" ? "bold" : "normal";
+    setAllItems(newItem);
   }
   return (
     <button
       onClick={changeFontWeight}
       className={`${
-        allText[activeEditIndex]?.fontWeight === "bold" ? "active" : ""
+        allItems[activeIndex]?.fontWeight === "bold" ? "active" : ""
       }  size-7 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center border border-gray-200`}
     >
       <Bold />

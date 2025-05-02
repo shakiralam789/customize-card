@@ -6,140 +6,120 @@ import Image from "next/image";
 
 export default function InvitationCard() {
   const {
-    allText,
-    setAllText,
-    ignoreBlurRef,
-    activeEditIndex,
-    setActiveEditIndex,
-    setActiveStickerIndex,
-    editableRefs,
-    stickerRefs,
-    setStickers,
-    stickers,
-    activeStickerIndex,
+    allItems,
+    setAllItems,
+    activeIndex,
+    setActiveIndex,
+    itemsRefs,
     shouldBeSelected,
     defText,
     defSticker,
   } = useContext(CcContext);
 
   useEffect(() => {
-    if (allText && allText.length > 0) {
-      const updatedText = allText.map((item) => {
-        if (!item.position) {
-          return { ...item, position: { x: 0, y: 0 } };
+    if (allItems && allItems.length > 0) {
+      const updatedItem = allItems.map((item, index) => {
+        let newItem = { ...item, zIndex: 10 + index };
+        if (!newItem.position) {
+          return { ...newItem, position: { x: 0, y: 0 } };
         }
-        return item;
+        return newItem;
       });
 
-      if (JSON.stringify(updatedText) !== JSON.stringify(allText)) {
-        setAllText(updatedText);
+      if (JSON.stringify(updatedItem) !== JSON.stringify(allItems)) {
+        setAllItems(updatedItem);
       }
 
-      updatedText.forEach((textItem, index) => {
-        const element = editableRefs.current[index];
-        if (element) {
-          element.innerHTML = textItem.isPlaceholder
-            ? "Enter text..."
-            : textItem.text || "";
+      updatedItem.forEach((item, index) => {
+        if (item.itemType === "text") {
+          const element = itemsRefs.current[index];
+          if (element) {
+            element.innerHTML = item.isPlaceholder
+              ? "Enter text..."
+              : item.text || "";
+          }
         }
       });
     }
   }, []);
 
   const handleFocus = (e, index) => {
-    let plch = allText[index].isPlaceholder;
-    // let newText = [...allText];
+    let plch = allItems[index].isPlaceholder;
 
-    const newText = allText.map((s, i) => ({
+    const newItem = allItems.map((s, i) => ({
       ...s,
       active: i === index,
       contentEditable: i === index,
     }));
 
-    setActiveEditIndex(index);
+    setActiveIndex(index);
 
     if (plch) {
       e.currentTarget.innerHTML = "";
-      newText[index].isPlaceholder = false;
+      newItem[index].isPlaceholder = false;
     }
 
-    setAllText(newText);
+    setAllItems(newItem);
   };
 
   // useEffect(() => {
   //   if (
-  //     activeEditIndex !== null &&
-  //     editableRefs.current[activeEditIndex] &&
-  //     allText[activeEditIndex]?.contentEditable
+  //     activeIndex !== null &&
+  //     itemsRefs.current[activeIndex] &&
+  //     allItems[activeIndex]?.contentEditable
   //   ) {
-  //     editableRefs.current[activeEditIndex].focus();
+  //     itemsRefs.current[activeIndex].focus();
 
-  //     const isPlaceholder = allText[activeEditIndex].isPlaceholder;
+  //     const isPlaceholder = allItems[activeIndex].isPlaceholder;
   //     if (isPlaceholder) {
-  //       editableRefs.current[activeEditIndex].innerHTML = "";
+  //       itemsRefs.current[activeIndex].innerHTML = "";
   //     }
   //   }
-  // }, [activeEditIndex, allText]);
+  // }, [activeIndex, allItems]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
         e.target.closest(".customize-card-navbar") ||
-        e.target.closest(".sticker-parent") ||
-        activeStickerIndex == null
-      )
-        return;
-      const newStickers = stickers?.map((s) => ({ ...s, active: false }));
-      setActiveStickerIndex(null);
-      if (JSON.stringify(newStickers) !== JSON.stringify(stickers)) {
-        setStickers(newStickers);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [stickers]);
-
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (
-        e.target.closest(".customize-card-navbar") ||
-        e.target.closest(".text-parent") ||
-        activeEditIndex == null
+        e.target.closest(".item-parent") ||
+        activeIndex == null
       )
         return;
 
-      const newText = allText?.map((s) => ({
-        ...s,
-        active: false,
-        contentEditable: false,
-      }));
-      setActiveEditIndex(null);
-      if (JSON.stringify(newText) !== JSON.stringify(stickers)) {
-        setAllText(newText);
-      }
+      const newItems = allItems?.map((s) => {
+        const updated = { ...s, active: false };
+        if (s.itemType === "text") {
+          updated.contentEditable = false;
+        }
+        return updated;
+      });
 
-      const htmlContent = editableRefs.current[activeEditIndex].innerHTML;
+      setActiveIndex(null);
+
+      if (JSON.stringify(newItems) !== JSON.stringify(allItems)) {
+        setAllItems(newItems);
+      }
+    };
+
+    if (allItems[activeIndex]?.itemType === "text") {
+      const htmlContent = itemsRefs.current[activeIndex].innerHTML;
 
       if (htmlContent.trim() === "") {
-        newText[activeEditIndex].isPlaceholder = true;
-        newText[activeEditIndex].text = "";
-        editableRefs.current[activeEditIndex].innerHTML = "Enter text...";
+        allItems[activeIndex].isPlaceholder = true;
+        allItems[activeIndex].text = "";
+        itemsRefs.current[activeIndex].innerHTML = "Enter text...";
       } else {
-        newText[activeEditIndex].isPlaceholder = false;
-        newText[activeEditIndex].text = htmlContent;
+        allItems[activeIndex].isPlaceholder = false;
+        allItems[activeIndex].text = htmlContent;
       }
-    };
+    }
 
     document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [allText]);
+  }, [allItems]);
 
   return (
     <div
@@ -150,128 +130,108 @@ export default function InvitationCard() {
         backgroundImage: "url('/images/inv-card.jpg')",
       }}
     >
-      {allText &&
-        allText.length > 0 &&
-        allText.map((text, index) => {
-          return (
-            <DraggableWrapper
-              className={`${
-                text.active ? "active" : ""
-              } text-parent movable-handle-parent`}
-              initialPosition={text.position}
-              key={index}
-              textObj={text}
-              element={editableRefs.current[index]}
-              index={index}
-              isActive={text.active}
-              mode="text"
-              style={{
-                transform: `rotate(${text?.rotate || defText.rotate}deg)`,
-              }}
-            >
-              {({ isDragging, startDrag }) => (
-                <>
-                  <div
-                    onMouseDown={(e) => {
-                      if (text.active) return;
-                      startDrag({ e, type: "move" });
-                    }}
-                    ref={(el) => (editableRefs.current[index] = el)}
-                    contentEditable={text.contentEditable}
-                    suppressContentEditableWarning
-                    className={`${
-                      text.active ? "active" : "!cursor-move"
-                    } movable-handle p-2 focus:outline-none ${
-                      text.isPlaceholder ? "!text-[#20f39b]" : "text-white"
-                    } ${isDragging ? "movable-handle-hover" : ""}`}
-                    onMouseUp={(e) => {
-                      if (!shouldBeSelected) return;
-                      handleFocus(e, index);
-                    }}
-                    style={{
-                      fontSize: `${text?.fontSize || defText.fontSize}px`,
-                      textAlign: `${text?.textAlign || defText.textAlign}`,
-                      color: `${text?.color || defText.color}`,
-                      fontWeight: `${text?.fontWeight || defText.fontWeight}`,
-                      fontStyle: `${text?.fontStyle || defText.fontStyle}`,
-                      lineHeight: `${
-                        text?.lineHeight || text?.lineHeight.toString() == "0"
-                          ? text.lineHeight
-                          : defText.lineHeight
-                      }`,
-                      letterSpacing: `${
-                        text?.letterSpacing || defText.letterSpacing
-                      }px`,
-                      textTransform: `${
-                        text?.textTransform || defText.textTransform
-                      }`,
-                    }}
-                  >
-                    Enter Text...
-                  </div>
-                </>
-              )}
-            </DraggableWrapper>
-          );
-        })}
-
-      {stickers &&
-        stickers.length > 0 &&
-        stickers.map((item, index) => {
+      {allItems &&
+        allItems.length > 0 &&
+        allItems.map((item, index) => {
           return (
             <DraggableWrapper
               className={`${
                 item.active ? "active" : ""
-              } sticker-parent movable-handle-parent`}
+              } item-parent movable-handle-parent`}
               initialPosition={item.position}
               key={index}
+              textObj={item.itemType === "text" && item}
+              stickerObj={item.itemType === "sticker" && item}
+              element={itemsRefs.current[index]}
               index={index}
+              zIndex={item?.zIndex || 10}
               isActive={item.active}
-              stickerObj={item}
-              mode="sticker"
-              element={stickerRefs.current[index]}
+              mode={item.itemType}
               style={{
-                transform: `rotate(${item?.rotate || defSticker.rotate}deg)`,
+                transform: `rotate(${item?.rotate || defText?.rotate}deg)`,
               }}
             >
               {({ isDragging, startDrag }) => (
                 <>
-                  <div
-                    onMouseDown={(e) => {
-                      startDrag({ e, type: "move" });
-                    }}
-                    ref={(el) => (stickerRefs.current[index] = el)}
-                    className={`${
-                      item.active ? "active" : ""
-                    } movable-handle !cursor-move p-2 focus:outline-none ${
-                      isDragging ? "movable-handle-hover" : ""
-                    }`}
-                    style={{
-                      width: `${item?.width || defSticker.width}px`,
-                      transform: `scale(${item?.scaleX || defSticker.scaleX}, ${
-                        item?.scaleY || defSticker.scaleY
-                      })`,
-                    }}
-                    onMouseUp={(e) => {
-                      if (!shouldBeSelected) return;
+                  {item.itemType === "text" && (
+                    <div
+                      onMouseDown={(e) => {
+                        if (item.active) return;
+                        startDrag({ e, type: "move" });
+                      }}
+                      ref={(el) => (itemsRefs.current[index] = el)}
+                      contentEditable={item.contentEditable}
+                      suppressContentEditableWarning
+                      className={`${
+                        item.active ? "active" : "!cursor-move"
+                      } movable-handle p-2 focus:outline-none ${
+                        item.isPlaceholder ? "!text-[#20f39b]" : "text-white"
+                      } ${isDragging ? "movable-handle-hover" : ""}`}
+                      onMouseUp={(e) => {
+                        if (!shouldBeSelected) return;
+                        handleFocus(e, index);
+                      }}
+                      style={{
+                        fontSize: `${item?.fontSize || defText.fontSize}px`,
+                        textAlign: `${item?.textAlign || defText.textAlign}`,
+                        color: `${item?.color || defText.color}`,
+                        fontWeight: `${item?.fontWeight || defText.fontWeight}`,
+                        fontStyle: `${item?.fontStyle || defText.fontStyle}`,
+                        lineHeight: `${
+                          item?.lineHeight || item?.lineHeight.toString() == "0"
+                            ? item.lineHeight
+                            : defText.lineHeight
+                        }`,
+                        letterSpacing: `${
+                          item?.letterSpacing || defText.letterSpacing
+                        }px`,
+                        textTransform: `${
+                          item?.textTransform || defText.textTransform
+                        }`,
+                      }}
+                    >
+                      Enter Text...
+                    </div>
+                  )}
 
-                      const newSticker = stickers.map((s, i) => ({
-                        ...s,
-                        active: i === index,
-                      }));
+                  {item.itemType === "sticker" && (
+                    <div
+                      onMouseDown={(e) => {
+                        startDrag({ e, type: "move" });
+                      }}
+                      ref={(el) => (itemsRefs.current[index] = el)}
+                      className={`${
+                        item.active ? "active" : ""
+                      } movable-handle !cursor-move p-2 focus:outline-none ${
+                        isDragging ? "movable-handle-hover" : ""
+                      }`}
+                      style={{
+                        width: `${item?.width || defSticker.width}px`,
+                        transform: `scale(${
+                          item?.scaleX || defSticker.scaleX
+                        }, ${item?.scaleY || defSticker.scaleY})`,
+                      }}
+                      onMouseUp={(e) => {
+                        if (!shouldBeSelected) return;
 
-                      setStickers(newSticker);
-                      setActiveStickerIndex(index);
-                    }}
-                  >
-                    <Image
-                      className="w-full"
-                      width={400}
-                      height={400}
-                      src={item.src}
-                      alt={item?.alt || "image"}
-                    />
-                  </div>
+                        const newItem = allItems.map((s, i) => ({
+                          ...s,
+                          active: i === index,
+                        }));
+
+                        setAllItems(newItem);
+                        setActiveIndex(index);
+                      }}
+                    >
+                      <Image
+                        className="w-full"
+                        width={400}
+                        height={400}
+                        src={item.src}
+                        alt={item?.alt || "image"}
+                      />
+                    </div>
+                  )}
                 </>
               )}
             </DraggableWrapper>

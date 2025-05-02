@@ -8,22 +8,21 @@ import FontStyle from "./feature/FontStyle";
 import TextTransform from "./feature/TextTransform";
 import LineHeightChange from "./feature/LineHeightChange";
 import LetterSpacingChange from "./feature/LetterSpacingChange";
-import DeleteText from "./feature/DeleteText";
 import { ImageIcon, Languages, MessageCircleCode, Sticker } from "lucide-react";
 import TextCurveChange from "./feature/TextCurveChange";
 import Drawer from "@/components/Drawer";
 import DrawerContent from "./DrawerContent";
-import DeleteSticker from "./feature/DeleteSticker";
 import FlipShape from "./feature/FlipShape";
 import FlipVerticalShape from "./feature/FlipVertiacalShape";
 import RotateShape from "./feature/RotateShape";
 import RotateText from "./feature/RotateText";
+import DeleteItem from "./feature/DeleteItem";
 
 export default function Nav() {
   const {
     addNewText,
-    activeEditIndex,
-    activeStickerIndex,
+    activeIndex,
+    allItems,
     isStickerDrawerOpen,
     setIsStickerDrawerOpen,
   } = useContext(CcContext);
@@ -113,11 +112,11 @@ export default function Nav() {
             </button>
           </div>
         </div>
-        {activeEditIndex != null && (
+        {activeIndex != null && allItems[activeIndex]?.itemType === "text" && (
           <div
             className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-800 py-2 px-4 flex items-center justify-center`}
           >
-            <DeleteText />
+            <DeleteItem />
             <FontChange />
             <ColorChange />
             <TextTransform />
@@ -130,16 +129,17 @@ export default function Nav() {
             <RotateText />
           </div>
         )}
-        {activeStickerIndex != null && (
-          <div
-            className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-800 py-2 px-4 flex items-center justify-center`}
-          >
-            <DeleteSticker />
-            <FlipShape />
-            <FlipVerticalShape />
-            <RotateShape />
-          </div>
-        )}
+        {activeIndex != null &&
+          allItems[activeIndex]?.itemType === "sticker" && (
+            <div
+              className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-800 py-2 px-4 flex items-center justify-center`}
+            >
+              <DeleteItem />
+              <FlipShape />
+              <FlipVerticalShape />
+              <RotateShape />
+            </div>
+          )}
       </div>
     </nav>
   );

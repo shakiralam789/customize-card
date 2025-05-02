@@ -2,22 +2,22 @@ import CcContext from "@/context/ccContext";
 import React, { useContext } from "react";
 
 export default function FontChange() {
-  const { allText, setAllText, activeEditIndex } = useContext(CcContext);
+  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
   function changeFontSize(value) {
-    let newText = [...allText];
-    newText[activeEditIndex].fontSize = value;
-    setAllText(newText);
+    let newItem = [...allItems];
+    newItem[activeIndex].fontSize = value;
+    setAllItems(newItem);
   }
   function increaseFontSize() {
-    let newText = [...allText];
-    newText[activeEditIndex].fontSize += 1;
-    setAllText(newText);
+    let newItem = [...allItems];
+    newItem[activeIndex].fontSize += 1;
+    setAllItems(newItem);
   }
 
   function decreaseFontSize() {
-    let newText = [...allText];
-    newText[activeEditIndex].fontSize -= 1;
-    setAllText(newText);
+    let newItem = [...allItems];
+    newItem[activeIndex].fontSize -= 1;
+    setAllItems(newItem);
   }
   return (
     <div className="flex items-center border border-gray-200 divide-gray-200 rounded divide-x">
@@ -44,7 +44,7 @@ export default function FontChange() {
       <div className="px-3 py-1 flex items-center">
         <input
           onChange={(e) => changeFontSize(e.target.value)}
-          value={allText[activeEditIndex]?.fontSize || 16}
+          value={allItems[activeIndex]?.fontSize || 16}
           className="w-4 outline-none text-sm"
         />
       </div>

@@ -17,16 +17,17 @@ export default function DraggableWrapper({
   textObj = {},
   stickerObj = {},
   index,
+  zIndex,
   element,
   mode,
   isActive,
   ...props
 }) {
-  const { allText, setAllText, stickers, setStickers, setShouldBeSelected } =
-    useContext(CcContext);
+  const { allItems, setAllItems, setShouldBeSelected } = useContext(CcContext);
 
   const initialFontSize = textObj.fontSize;
   const initialWidth = stickerObj.width;
+
   const [dragType, setDragType] = useState(null);
 
   const [tlRotate, setTlRotate] = useState("tl");
@@ -44,20 +45,20 @@ export default function DraggableWrapper({
     onDragging: (data) => {
       setShouldBeSelected(false);
       if (mode == "text") {
-        let newText = [...allText];
+        let newItem = [...allItems];
         if (data?.type == "resize") {
-          newText[index].fontSize = initialFontSize * data?.scale;
+          newItem[index].fontSize = initialFontSize * data?.scale;
         }
 
         if (data?.type == "rotate") {
-          newText[index].rotate = data?.angle;
+          newItem[index].rotate = data?.angle;
         }
 
-        setAllText(newText);
+        setAllItems(newItem);
       }
 
       if (mode == "sticker") {
-        let sticker = [...stickers];
+        let sticker = [...allItems];
         if (data?.type == "resize") {
           sticker[index].width = initialWidth * data?.scale;
         }
@@ -65,7 +66,7 @@ export default function DraggableWrapper({
           sticker[index].rotate = data?.angle;
         }
         if (data?.type == "rotate" || data?.type == "resize") {
-          setStickers(sticker);
+          setAllItems(sticker);
         }
       }
     },
@@ -93,16 +94,18 @@ export default function DraggableWrapper({
     },
   });
 
+  // console.log(zIndex);
+  
   return (
     <div
       {...props}
-      className={`group absolute ${isDragging ? "z-50" : "z-10"} ${className}`}
+      className={`group absolute ${className}`}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
         cursor: isDragging ? "grabbing" : "grab",
-        zIndex: isDragging || isActive ? "999" : "10",
         ...style,
+        zIndex: isDragging || isActive ? 99999 : zIndex,
       }}
     >
       {mode == "text" && (

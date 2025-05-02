@@ -4,7 +4,7 @@ import React, { useContext } from "react";
 import uuid4 from "uuid4";
 
 export default function DrawerContent() {
-  const {addNewSticker} = useContext(CcContext);
+  const { addNewSticker } = useContext(CcContext);
   const stickers = [
     {
       id: uuid4(),
@@ -30,8 +30,10 @@ export default function DrawerContent() {
         stickers.map((item) => {
           return (
             <div
-              onClick={(e) => addNewSticker(e,item)}
-             key={item.id} className="w-full shadow hover:shadow-xl">
+              onClick={(e) => addNewSticker(e, item)}
+              key={item.id}
+              className="w-full shadow hover:shadow-xl"
+            >
               <Image
                 className="w-full object-contain cursor-pointer"
                 src={item.src}

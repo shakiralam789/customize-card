@@ -5,13 +5,13 @@ import RangeFeature from "./RangeFeature";
 
 export default function RotateShape() {
   
-  const { stickers, setStickers, activeStickerIndex } = useContext(CcContext);
+  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
 
   return (
     <RangeFeature
-      data={stickers}
-      setData={setStickers}
-      activeIndex={activeStickerIndex}
+      data={allItems}
+      setData={setAllItems}
+      activeIndex={activeIndex}
       propertyName="rotate"
       title="Rotate"
       min={0}

@@ -3,13 +3,13 @@ import React, { useContext } from "react";
 import RangeFeature from "./RangeFeature";
 
 export default function LetterSpacingChange() {
-  const { allText, setAllText, activeEditIndex } = useContext(CcContext);
+  const { allItems, setAllItems, activeIndex } = useContext(CcContext);
 
   return (
     <RangeFeature
-      data={allText}
-      setData={setAllText}
-      activeIndex={activeEditIndex}
+      data={allItems}
+      setData={setAllItems}
+      activeIndex={activeIndex}
       propertyName="letterSpacing"
       title="Letter Spacing"
       min={-1}
