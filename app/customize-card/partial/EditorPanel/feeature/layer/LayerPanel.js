@@ -18,7 +18,16 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
 import CcContext from "@/context/ccContext";
-import { Eye, EyeClosed, EyeIcon, LockIcon, LockOpen } from "lucide-react";
+import {
+  DotIcon,
+  Eye,
+  EyeClosed,
+  EyeIcon,
+  GripVertical,
+  LockIcon,
+  LockOpen,
+  MenuIcon,
+} from "lucide-react";
 
 export default function LayerPanel({ show, onClose }) {
   return (
@@ -36,9 +45,7 @@ const SortableItem = ({ item, index, activeID }) => {
     transition,
     isDragging,
   } = useSortable({ id: item?.id });
-
-  const [eyeOpen, setEyeOpen] = useState(true);
-  const [lockOpen, setLockOpen] = useState(false);
+  const { setAllItems, setActiveID } = useContext(CcContext);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -47,29 +54,98 @@ const SortableItem = ({ item, index, activeID }) => {
   };
 
   return (
-    <motion.div
-      ref={setNodeRef}
-      layout
-      style={style}
-      className={`relative`}
-    >
+    <motion.div ref={setNodeRef} layout style={style} className={`relative`}>
       <div
         {...attributes}
         {...listeners}
-        className={`${item?.id === activeID ? "active" : ""} text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 mb-2 cursor-grab active:cursor-grabbing`}
+        className={`${
+          item?.id === activeID ? "active" : ""
+        } flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 pl-1 mb-2 cursor-grab active:cursor-grabbing`}
       >
+        <GripVertical className="size-5" />
         {item?.name || index}
       </div>
       <div className="text-gray-500 absolute top-1/2 -translate-y-1/2 right-2 flex items-center space-x-1 *:size-4 cursor-pointer">
-        {eyeOpen ? (
-          <Eye onClick={() => setEyeOpen(false)} />
+        {item?.hidden ? (
+          <EyeClosed
+            onClick={() => {
+              setAllItems((prev) =>
+                prev.map((x) =>
+                  x.id == item.id
+                    ? {
+                        ...x,
+                        active: x.id == activeID ? false : x.active,
+                        hidden: false,
+                      }
+                    : x
+                )
+              );
+              if (item?.id == activeID) {
+                setActiveID(null);
+              }
+            }}
+          />
         ) : (
-          <EyeClosed onClick={() => setEyeOpen(true)} />
+          <Eye
+            onClick={() => {
+              setAllItems((prev) =>
+                prev.map((x) =>
+                  x.id == item.id
+                    ? {
+                        ...x,
+                        active: x.id == activeID ? false : x.active,
+                        hidden: true,
+                      }
+                    : x
+                )
+              );
+
+              if (item?.id == activeID) {
+                setActiveID(null);
+              }
+            }}
+          />
         )}
-        {lockOpen ? (
-          <LockIcon className="!size-3.5" onClick={() => setLockOpen(false)} />
+        {item?.locked ? (
+          <LockIcon
+            className="!size-3.5"
+            onClick={() => {
+              setAllItems((prev) =>
+                prev.map((x) =>
+                  x.id == item.id
+                    ? {
+                        ...x,
+                        active: x.id == activeID ? false : x.active,
+                        locked: false,
+                      }
+                    : x
+                )
+              );
+              if (item?.id == activeID) {
+                setActiveID(null);
+              }
+            }}
+          />
         ) : (
-          <LockOpen className="!size-3.5" onClick={() => setLockOpen(true)} />
+          <LockOpen
+            className="!size-3.5"
+            onClick={() => {
+              setAllItems((prev) =>
+                prev.map((x) =>
+                  x.id == item.id
+                    ? {
+                        ...x,
+                        active: x.id == activeID ? false : x.active,
+                        locked: true,
+                      }
+                    : x
+                )
+              );
+              if (item?.id == activeID) {
+                setActiveID(null);
+              }
+            }}
+          />
         )}
       </div>
     </motion.div>

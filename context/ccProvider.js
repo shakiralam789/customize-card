@@ -60,7 +60,7 @@ const CcProvider = ({ children }) => {
       fontSize: 18,
       contentEditable: false,
       textAlign: "center",
-      color: "#b18e71",
+      color: "#c6a489",
       fontWeight: "normal",
       lineHeight: "2",
       fontStyle: "normal",

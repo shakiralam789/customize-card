@@ -79,10 +79,7 @@ export default function InvitationCard() {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (
-        e.target.closest(".prevent-customize-card-blur") ||
-        activeID == null
-      )
+      if (e.target.closest(".prevent-customize-card-blur") || activeID == null)
         return;
 
       const newItems = allItems?.map((s) => {
@@ -136,7 +133,9 @@ export default function InvitationCard() {
         allItems.map((item, index) => {
           return (
             <DraggableWrapper
-              className={`${
+              className={`${item?.hidden ? "hidden" : ""} ${
+                item?.locked ? "pointer-events-none user-select-none" : ""
+              } ${
                 item.active ? "active" : ""
               } prevent-customize-card-blur movable-handle-parent`}
               initialPosition={item.position}
