@@ -90,43 +90,55 @@ const CcProvider = ({ children }) => {
   ]);
 
   function addNewText() {
-    let newItem = [...allItems].map((item, index) => {
-      return { ...item, zIndex: 10 + index, active: false };
+    const id = uuid4();
+
+    setAllItems((prevItems) => {
+      // Update zIndex and active state for all existing items
+      const updatedItems = prevItems.map((item, index) => ({
+        ...item,
+        zIndex: 10 + index,
+        active: false,
+      }));
+
+      return [
+        ...updatedItems,
+        {
+          id: id,
+          text: "",
+          active: true,
+          contentEditable: true,
+          zIndex: 10 + prevItems.length,
+          name: "Layer " + (prevItems.length + 1),
+
+          ...defText,
+        },
+      ];
     });
-    let id = uuid4();
-    setAllItems([
-      ...newItem,
-      {
-        id: id,
-        text: "",
-        active: true,
-        contentEditable: true,
-        zIndex: 10 + allItems.length,
-        ...defText,
-      },
-    ]);
 
     setActiveID(id);
   }
 
   function addNewSticker(e, data) {
-    let newItem = [...allItems];
+    setAllItems((prevItems) => {
+      const itemsWithNewSticker = [
+        ...prevItems,
+        {
+          id: uuid4(),
+          ...defSticker,
+          ...data,
+          name: "Layer " + (prevItems.length+1)
+        },
+      ];
 
-    newItem.push({
-      ...data,
-      ...defSticker,
+      return itemsWithNewSticker.map((item, index) => ({
+        ...item,
+        zIndex: 10 + index,
+      }));
     });
 
-    newItem = newItem.map((item, index) => {
-      return { ...item, zIndex: 10 + index };
-    });
-
-    setAllItems(newItem);
     setActiveID(null);
-
     setIsStickerDrawerOpen(false);
   }
-
   function deleteField() {
     if (!activeID) return;
 

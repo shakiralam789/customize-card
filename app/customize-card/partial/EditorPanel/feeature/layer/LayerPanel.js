@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import PanelDrawer from "../../PanelDrawer";
 
 import {
@@ -18,17 +18,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
 import CcContext from "@/context/ccContext";
-import {
-  Check,
-  DotIcon,
-  Eye,
-  EyeClosed,
-  EyeIcon,
-  GripVertical,
-  LockIcon,
-  LockOpen,
-  MenuIcon,
-} from "lucide-react";
+import { Eye, EyeClosed, GripVertical, LockIcon, LockOpen } from "lucide-react";
 
 export default function LayerPanel({ show, onClose }) {
   return (
@@ -47,6 +37,8 @@ const SortableItem = ({ item, index, activeID }) => {
     isDragging,
   } = useSortable({ id: item?.id });
   const { setAllItems, setActiveID } = useContext(CcContext);
+  const [selected, setSelected] = useState(false);
+  const inputRef = useRef(null);
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -54,17 +46,56 @@ const SortableItem = ({ item, index, activeID }) => {
     zIndex: isDragging ? 999 : 0,
   };
 
+  useEffect(() => {
+    if (selected && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [selected]);
+
   return (
     <motion.div ref={setNodeRef} layout style={style} className={`relative`}>
       <div
-        {...attributes}
-        {...listeners}
         className={`${
           item?.id === activeID ? "active" : ""
-        } pr-16 flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 pl-1 mb-2 cursor-grab active:cursor-grabbing`}
+        } pr-16 flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 pl-1 mb-2`}
       >
-        <GripVertical className="size-5" />
-        {item?.name || "Layer" + " " + (index + 1)}
+        <GripVertical
+          {...attributes}
+          {...listeners}
+          className="shrink-0 cursor-grab size-4 active:cursor-grabbing"
+        />
+        {selected ? (
+          <input
+            ref={inputRef}
+            onBlur={() => {
+              setSelected(false);
+            }}
+            onChange={(e) => {
+              setAllItems((prev) =>
+                prev.map((x) =>
+                  x.id == item.id
+                    ? {
+                        ...x,
+                        name: e.target.value,
+                      }
+                    : x
+                )
+              );
+            }}
+            value={item?.name || ""}
+            className="bg-gray-200 w-full outline-none"
+          />
+        ) : (
+          <span
+            onDoubleClick={() => {
+              setSelected(true);
+            }}
+            className="w-full min-h-4 whitespace-nowrap overflow-hidden overflow-ellipsis"
+          >
+            {item?.name}
+          </span>
+        )}
       </div>
       <div className="text-gray-500 absolute top-1/2 -translate-y-1/2 right-2 flex items-center space-x-1 *:size-4 cursor-pointer">
         {item?.hidden ? (

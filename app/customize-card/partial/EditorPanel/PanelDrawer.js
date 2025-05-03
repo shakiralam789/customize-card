@@ -14,7 +14,7 @@ export default function PanelDrawer({
     show && (
       <div
         className={cn(
-          "bg-white z-40 shadow-lg fixed top-[54px] left-[80px] w-[280px] h-[calc(100vh-54px)] overflow-y-auto",
+          " bg-white z-40 shadow-lg fixed top-[54px] left-[80px] w-[280px] h-[calc(100vh-54px)] overflow-hidden overflow-y-auto",
           className
         )}
       >

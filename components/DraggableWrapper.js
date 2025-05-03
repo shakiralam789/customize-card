@@ -14,8 +14,7 @@ export default function DraggableWrapper({
   initialPosition,
   className = "",
   style = {},
-  textObj = {},
-  stickerObj = {},
+  item,
   index,
   zIndex,
   element,
@@ -25,8 +24,8 @@ export default function DraggableWrapper({
 }) {
   const { allItems, setAllItems, setShouldBeSelected } = useContext(CcContext);
 
-  const initialFontSize = textObj.fontSize;
-  const initialWidth = stickerObj.width;
+  const initialFontSize = mode === "text" ? item.fontSize : null;
+  const initialWidth = mode === "sticker" ? item.width : null;
 
   const [dragType, setDragType] = useState(null);
 
@@ -91,21 +90,10 @@ export default function DraggableWrapper({
     onDragEnd: (data) => {
       setShouldBeSelected(true);
       if (data?.type == "rotate") {
-        if (mode == "sticker") {
-          setTlRotate(tlRotation(stickerObj?.rotate));
-          if (mode == "sticker") {
-            setTrRotate(trRotation(stickerObj?.rotate));
-          }
-          setBlRotate(blRotation(stickerObj?.rotate));
-          setBrRotate(brRotation(stickerObj?.rotate));
-        }
-
-        if (mode == "text") {
-          setTlRotate(tlRotation(textObj?.rotate));
-          // setTrRotate(trRotation(textObj?.rotate));
-          setBlRotate(blRotation(textObj?.rotate));
-          setBrRotate(brRotation(textObj?.rotate));
-        }
+        setTlRotate(tlRotation(item?.rotate));
+        setTrRotate(trRotation(item?.rotate));
+        setBlRotate(blRotation(item?.rotate));
+        setBrRotate(brRotation(item?.rotate));
       }
 
       setDragType(null);
@@ -126,7 +114,7 @@ export default function DraggableWrapper({
         zIndex: isDragging || isActive ? 99999 : zIndex,
       }}
     >
-      {mode == "text" && (
+      {/* {mode == "text" && (
         <div
           onMouseDown={(e) => startDrag({ e, type: "move" })}
           className={`move-icon absolute -right-2 -top-0 transform -translate-y-1/2 
@@ -135,7 +123,7 @@ export default function DraggableWrapper({
         >
           <Move size={16} className="text-white" />
         </div>
-      )}
+      )} */}
 
       {typeof children === "function"
         ? children({ startDrag, isDragging, position })
@@ -172,14 +160,12 @@ export default function DraggableWrapper({
         } size-handler size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
       ></span>
 
-      {mode == "sticker" && (
-        <span
-          onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
-          className={`${
-            isActive ? "block cursor-nesw-resize" : "hidden pointer-events-none"
-          } size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
-        ></span>
-      )}
+      <span
+        onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
+        className={`${
+          isActive ? "block cursor-nesw-resize" : "hidden pointer-events-none"
+        } size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
+      ></span>
 
       <span
         onMouseDown={(e) => startDrag({ e, type: "resize", dir: blRotate })}

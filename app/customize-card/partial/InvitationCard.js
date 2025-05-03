@@ -20,7 +20,11 @@ export default function InvitationCard() {
   useEffect(() => {
     if (allItems && allItems.length > 0) {
       const updatedItem = allItems.map((item, index) => {
-        let newItem = { ...item, zIndex: 10 + index };
+        let newItem = {
+          ...item,
+          zIndex: 10 + index,
+          name: item.name ? item.name : `Layer ${index + 1}`,
+        };
         if (!newItem.position) {
           return { ...newItem, position: { x: 0, y: 0 } };
         }
@@ -146,8 +150,7 @@ export default function InvitationCard() {
               } prevent-customize-card-blur movable-handle-parent`}
               initialPosition={item.position}
               key={item.id}
-              textObj={item.itemType === "text" && item}
-              stickerObj={item.itemType === "sticker" && item}
+              item={item}
               element={itemsRefs.current[item.id]}
               index={index}
               zIndex={item?.zIndex || 10}
