@@ -23,7 +23,6 @@ export default function DraggableWrapper({
   isActive,
   ...props
 }) {
-
   const { allItems, setAllItems, setShouldBeSelected } = useContext(CcContext);
 
   const initialFontSize = textObj.fontSize;
@@ -45,29 +44,47 @@ export default function DraggableWrapper({
     },
     onDragging: (data) => {
       setShouldBeSelected(false);
-      if (mode == "text") {
-        let newItem = [...allItems];
-        if (data?.type == "resize") {
-          newItem[index].fontSize = initialFontSize * data?.scale;
-        }
+      if (mode === "text") {
+        setAllItems((prevItems) => {
+          return prevItems.map((item, i) => {
+            if (i === index) {
+              const updatedItem = { ...item };
 
-        if (data?.type == "rotate") {
-          newItem[index].rotate = data?.angle;
-        }
+              if (data?.type === "resize") {
+                updatedItem.fontSize = initialFontSize * data?.scale;
+              }
 
-        setAllItems(newItem);
+              if (data?.type === "rotate") {
+                updatedItem.rotate = data?.angle;
+              }
+
+              return updatedItem;
+            }
+            return item;
+          });
+        });
       }
 
-      if (mode == "sticker") {
-        let sticker = [...allItems];
-        if (data?.type == "resize") {
-          sticker[index].width = initialWidth * data?.scale;
-        }
-        if (data?.type == "rotate") {
-          sticker[index].rotate = data?.angle;
-        }
-        if (data?.type == "rotate" || data?.type == "resize") {
-          setAllItems(sticker);
+      if (mode === "sticker") {
+        if (data?.type === "rotate" || data?.type === "resize") {
+          setAllItems((prevItems) => {
+            return prevItems.map((item, i) => {
+              if (i === index) {
+                const updatedItem = { ...item };
+
+                if (data?.type === "resize") {
+                  updatedItem.width = initialWidth * data?.scale;
+                }
+
+                if (data?.type === "rotate") {
+                  updatedItem.rotate = data?.angle;
+                }
+
+                return updatedItem;
+              }
+              return item;
+            });
+          });
         }
       }
     },
@@ -96,7 +113,7 @@ export default function DraggableWrapper({
   });
 
   // console.log(zIndex);
-  
+
   return (
     <div
       {...props}

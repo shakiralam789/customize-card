@@ -19,6 +19,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
 import CcContext from "@/context/ccContext";
 import {
+  Check,
   DotIcon,
   Eye,
   EyeClosed,
@@ -60,10 +61,10 @@ const SortableItem = ({ item, index, activeID }) => {
         {...listeners}
         className={`${
           item?.id === activeID ? "active" : ""
-        } flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 pl-1 mb-2 cursor-grab active:cursor-grabbing`}
+        } pr-16 flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 pl-1 mb-2 cursor-grab active:cursor-grabbing`}
       >
         <GripVertical className="size-5" />
-        {item?.name || index}
+        {item?.name || "Layer" + " " + (index + 1)}
       </div>
       <div className="text-gray-500 absolute top-1/2 -translate-y-1/2 right-2 flex items-center space-x-1 *:size-4 cursor-pointer">
         {item?.hidden ? (
@@ -147,6 +148,13 @@ const SortableItem = ({ item, index, activeID }) => {
             }}
           />
         )}
+        {/* <div
+          className={`${
+            item?.id === activeID ? "active" : ""
+          } [&.active]:bg-emerald-400 [&.active]:text-white [&.active]:border-emerald-400 size-4 flex items-center justify-center border bg-gray-100 border-gray-300 rounded`}
+        >
+          {item?.id === activeID ? <Check className="size-4" /> : null}
+        </div> */}
       </div>
     </motion.div>
   );

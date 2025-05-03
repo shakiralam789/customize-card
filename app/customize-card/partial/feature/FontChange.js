@@ -5,6 +5,9 @@ import React, { useContext } from "react";
 export default function FontChange() {
   const { allItems, setAllItems, activeID } = useContext(CcContext);
 
+  const itemsMap = useItemsMap(allItems);
+  const activeItem = itemsMap.get(activeID);
+
   function changeFontSize(value) {
     if (!activeID) return;
     setAllItems((prevItems) =>
@@ -35,7 +38,7 @@ export default function FontChange() {
       )
     );
   }
-  
+
   return (
     <div className="flex items-center border border-gray-200 divide-gray-200 rounded divide-x">
       <button
@@ -61,7 +64,7 @@ export default function FontChange() {
       <div className="px-3 py-1 flex items-center">
         <input
           onChange={(e) => changeFontSize(e.target.value)}
-          value={allItems[activeID]?.fontSize || 16}
+          value={activeItem?.fontSize || 16}
           className="w-4 outline-none text-sm"
         />
       </div>

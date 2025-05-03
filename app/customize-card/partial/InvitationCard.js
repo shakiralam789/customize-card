@@ -14,6 +14,7 @@ export default function InvitationCard() {
     shouldBeSelected,
     defText,
     defSticker,
+    deleteField,
   } = useContext(CcContext);
 
   useEffect(() => {
@@ -82,35 +83,40 @@ export default function InvitationCard() {
       if (e.target.closest(".prevent-customize-card-blur") || activeID == null)
         return;
 
-      const newItems = allItems?.map((s) => {
-        const updated = { ...s, active: false };
-        if (s.itemType === "text") {
-          updated.contentEditable = false;
-        }
-        return updated;
-      });
-
       setActiveID(null);
 
-      if (JSON.stringify(newItems) !== JSON.stringify(allItems)) {
-        setAllItems(newItems);
-      }
+      setAllItems((prevItems) => {
+        const newItems = prevItems.map((s) => {
+          const updated = { ...s, active: false };
+          if (s.itemType === "text") {
+            updated.contentEditable = false;
+          }
+          return updated;
+        });
+
+        let activeItem = prevItems.find((item) => item.id === activeID);
+
+        if (activeItem?.itemType === "text") {
+          const htmlContent = itemsRefs.current[activeID].innerHTML;
+
+          if (
+            htmlContent.trim() === "" ||
+            htmlContent === "Enter text..." ||
+            htmlContent === "<br>"
+          ) {
+            return newItems.filter((item) => item.id !== activeID);
+          } else {
+            return newItems.map((item) => ({
+              ...item,
+              text: item.id === activeID ? htmlContent : item.text,
+              isPlaceholder: item.id === activeID ? false : item.isPlaceholder,
+            }));
+          }
+        }
+
+        return newItems;
+      });
     };
-
-    let activeItem = allItems.find((item) => item.id === activeID);
-
-    if (activeItem?.itemType === "text") {
-      const htmlContent = itemsRefs.current[activeID].innerHTML;
-
-      if (htmlContent.trim() === "") {
-        activeItem.isPlaceholder = true;
-        activeItem.text = "";
-        itemsRefs.current[activeID].innerHTML = "Enter text...";
-      } else {
-        activeItem.isPlaceholder = false;
-        activeItem.text = htmlContent;
-      }
-    }
 
     document.addEventListener("mousedown", handleClickOutside);
 
@@ -189,7 +195,9 @@ export default function InvitationCard() {
                           item?.textTransform || defText.textTransform
                         }`,
                       }}
-                    ></div>
+                    >
+                      Enter text...
+                    </div>
                   )}
 
                   {item.itemType === "sticker" && (

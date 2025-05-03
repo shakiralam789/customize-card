@@ -18,6 +18,7 @@ const CcProvider = ({ children }) => {
     textTransform: "none",
     textCurve: 0,
     rotate: 0,
+    isPlaceholder: true,
   };
 
   const defSticker = {
@@ -50,7 +51,7 @@ const CcProvider = ({ children }) => {
     },
     {
       id: uuid4(),
-      name: "Invitation Letter",
+      // name: "Invitation Letter",
       itemType: "text",
       text: `<div>Saturday, June 17, 2025</div>
             <div>at three o'clock in the afternoon</div>
@@ -98,7 +99,6 @@ const CcProvider = ({ children }) => {
       {
         id: id,
         text: "",
-        isPlaceholder: true,
         active: true,
         contentEditable: true,
         zIndex: 10 + allItems.length,
