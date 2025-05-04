@@ -1,6 +1,6 @@
 // context/CcProvider.js
 "use client";
-import { useRef, useState } from "react";
+import { act, useEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 
@@ -40,53 +40,54 @@ const CcProvider = ({ children }) => {
   const itemsRefs = useRef({});
 
   const [allItems, setAllItems] = useState([
-    {
-      id: uuid4(),
-      name: "Sticker",
-      itemType: "sticker",
-      src: "/images/stickers/birthday-invitation.png",
-      alt: "birthday-invitation",
-      ...defSticker,
-      position: { x: 200, y: 368 },
-    },
-    {
-      id: uuid4(),
-      // name: "Invitation Letter",
-      itemType: "text",
-      text: `<div>Saturday, June 17, 2025</div>
-            <div>at three o'clock in the afternoon</div>
-            <div>Grace Community Church</div>`,
-      isPlaceholder: false,
-      position: { x: 67, y: 200 },
-      fontSize: 18,
-      contentEditable: false,
-      textAlign: "center",
-      color: "#c6a489",
-      fontWeight: "normal",
-      lineHeight: "2",
-      fontStyle: "normal",
-      letterSpacing: "0",
-      textTransform: "uppercase",
-      active: false,
-    },
-    {
-      id: uuid4(),
-      name: "Address",
-      itemType: "text",
-      text: `<div>4551 East Street Wilmot, Virginia</div>`,
-      isPlaceholder: false,
-      position: { x: 125, y: 310 },
-      fontSize: 16,
-      contentEditable: false,
-      textAlign: "center",
-      color: "#7db2bd",
-      fontWeight: "normal",
-      lineHeight: "2",
-      fontStyle: "normal",
-      letterSpacing: "0",
-      textTransform: "none",
-      active: false,
-    },
+    // {
+    //   id: uuid4(),
+    //   name: "Sticker",
+    //   itemType: "sticker",
+    //   src: "/images/stickers/birthday-invitation.png",
+    //   alt: "birthday-invitation",
+    //   ...defSticker,
+    //   position: { x: 200, y: 368 },
+    // },
+    // {
+    //   id: uuid4(),
+    //   // name: "Invitation Letter",
+    //   itemType: "text",
+    //   text: `<div>Saturday, June 17, 2025</div>
+    //         <div>at three o'clock in the afternoon</div>
+    //         <div>Grace Community Church</div>`,
+    //   isPlaceholder: false,
+    //   position: { x: 67, y: 200 },
+    //   fontSize: 18,
+    //   contentEditable: false,
+    //   textAlign: "center",
+    //   color: "#c6a489",
+    //   fontWeight: "normal",
+    //   lineHeight: "2",
+    //   fontStyle: "normal",
+    //   letterSpacing: "0",
+    //   textTransform: "uppercase",
+    //   active: false,
+    //   rotate: 0,
+    // },
+    // {
+    //   id: uuid4(),
+    //   name: "Address",
+    //   itemType: "text",
+    //   text: `<div>4551 East Street Wilmot, Virginia</div>`,
+    //   isPlaceholder: false,
+    //   position: { x: 125, y: 310 },
+    //   fontSize: 16,
+    //   contentEditable: false,
+    //   textAlign: "center",
+    //   color: "#7db2bd",
+    //   fontWeight: "normal",
+    //   lineHeight: "2",
+    //   fontStyle: "normal",
+    //   letterSpacing: "0",
+    //   textTransform: "none",
+    //   active: false,
+    // },
   ]);
 
   function addNewText() {
@@ -126,7 +127,7 @@ const CcProvider = ({ children }) => {
           id: uuid4(),
           ...defSticker,
           ...data,
-          name: "Layer " + (prevItems.length+1)
+          name: "Layer " + (prevItems.length + 1),
         },
       ];
 
@@ -154,6 +155,53 @@ const CcProvider = ({ children }) => {
 
     setActiveID(null);
   }
+
+  function addToLocalStorage() {
+    localStorage.setItem("customize-card-items", JSON.stringify(allItems));
+  }
+
+  useEffect(() => {
+    let items = localStorage.getItem("customize-card-items");
+
+    if (items) {
+      items = JSON.parse(items);
+
+      if (items && items.length > 0) {
+        const updatedItem = items.map((item, index) => {
+          let newItem = {
+            ...item,
+            zIndex: 10 + index,
+            name: item.name ? item.name : `Layer ${index + 1}`,
+            active: false,
+          };
+          if (!newItem.position) {
+            return { ...newItem, position: { x: 0, y: 0 } };
+          }
+          return newItem;
+        });
+
+        setAllItems(updatedItem);
+
+        setTimeout(() => {
+          updatedItem.forEach((item, index) => {
+            if (item.itemType === "text") {
+              const element = itemsRefs.current[item.id];
+
+              if (element) {
+                element.innerHTML = item.isPlaceholder
+                  ? "Enter text..."
+                  : item.text || "";
+              }
+            }
+          });
+        }, 0);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    addToLocalStorage();
+  }, [allItems]);
 
   return (
     <CcContext.Provider

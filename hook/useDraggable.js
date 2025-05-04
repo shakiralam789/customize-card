@@ -1,21 +1,21 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function useDraggable({
-  initialValue,
   onDragStart = () => {},
   onDragging = () => {},
   onDragEnd = () => {},
+  initialPosition,
+  element,
 }) {
   const [isDragging, setIsDragging] = useState(false);
-  const [position, setPosition] = useState(initialValue?.position);
+  const [position, setPosition] = useState(initialPosition);
   const [startMousePos, setStartMousePos] = useState({ x: 0, y: 0 });
   const [startElementPos, setStartElementPos] = useState({ x: 0, y: 0 });
   const [type, setType] = useState(null);
   const [dir, setDir] = useState(null);
-  const [scale, setScale] = useState(1);
   const [width, setWidth] = useState(null);
   const [height, setHeight] = useState(null);
-  const [angle, setAngle] = useState(0);
+  const positionRef = useRef(initialPosition);
 
   const startDrag = ({ e, type, dir }) => {
     e.preventDefault();
@@ -25,7 +25,7 @@ export default function useDraggable({
       setType(type);
     }
 
-    const box = initialValue?.element;
+    const box = element;
 
     if (box) {
       rect = box.getBoundingClientRect();
@@ -41,16 +41,16 @@ export default function useDraggable({
     setStartElementPos(position);
 
     if (onDragStart) {
-      onDragStart({ e, scale, position, type });
+      onDragStart({ e, position, type });
     }
   };
 
   const handleMouseMove = (e) => {
     if (!isDragging) return;
 
-    let newScale = scale;
+    let newScale = 0;
     let newPos = { ...position };
-    let newAngle = angle;
+    let newAngle = 0;
 
     if (type === "move") {
       const dx = e.clientX - startMousePos.x;
@@ -59,7 +59,6 @@ export default function useDraggable({
         x: startElementPos.x + dx,
         y: startElementPos.y + dy,
       };
-      setPosition(newPos);
     }
 
     if (type === "resize") {
@@ -68,36 +67,32 @@ export default function useDraggable({
       const dy = e.clientY - startMousePos.y;
 
       if (dir === "br") {
-        newScale = Math.max(0.5, scale + dy / width);
+        newScale = Math.max(0.5, 1 + dy / width);
         newPos.x = startElementPos.x - dy / 2;
       } else if (dir === "bl") {
-        newScale = Math.max(0.5, scale + dy / width);
+        newScale = Math.max(0.5, 1 + dy / width);
         newPos.x = startElementPos.x - dy / 2;
       } else if (dir === "tl") {
-        newScale = Math.max(0.5, scale - dy / width);
-        const scaleChange = newScale - scale;
+        newScale = Math.max(0.5, 1 - dy / width);
+        const scaleChange = newScale - 1;
 
         const pixelChange = scaleChange * height;
 
         newPos.y = startElementPos.y - pixelChange / 2;
         newPos.x = startElementPos.x + dy / 2;
       } else if (dir === "tr") {
-        newScale = Math.max(0.5, scale - dy / width);
-        const scaleChange = newScale - scale;
+        newScale = Math.max(0.5, 1 - dy / width);
+        const scaleChange = newScale - 1;
 
         const pixelChange = scaleChange * height;
 
         newPos.y = startElementPos.y - pixelChange / 2;
         newPos.x = startElementPos.x + dy / 2;
       }
-
-      setPosition(newPos);
-      setScale(newScale);
     }
 
     if (type == "rotate") {
-      
-      const box = initialValue?.element;
+      const box = element;
 
       if (box) {
         const rect = box.getBoundingClientRect();
@@ -110,10 +105,12 @@ export default function useDraggable({
         newAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
 
         newAngle = Math.round((newAngle + 360) % 360);
-
-        setAngle(newAngle);
       }
     }
+
+    setPosition(newPos);
+
+    positionRef.current = newPos;
 
     if (onDragging) {
       onDragging({
@@ -128,12 +125,13 @@ export default function useDraggable({
 
   const stopDrag = () => {
     setIsDragging(false);
-    setScale(1);
     setType(null);
-    setAngle(0);
 
     if (onDragEnd) {
-      onDragEnd({ type });
+      onDragEnd({
+        type,
+        position: positionRef.current,
+      });
     }
   };
 
@@ -148,5 +146,5 @@ export default function useDraggable({
     };
   }, [isDragging, startMousePos, startElementPos]);
 
-  return { position, isDragging, startDrag, setPosition, scale };
+  return { position, isDragging, startDrag };
 }

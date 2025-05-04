@@ -17,37 +17,6 @@ export default function InvitationCard() {
     deleteField,
   } = useContext(CcContext);
 
-  useEffect(() => {
-    if (allItems && allItems.length > 0) {
-      const updatedItem = allItems.map((item, index) => {
-        let newItem = {
-          ...item,
-          zIndex: 10 + index,
-          name: item.name ? item.name : `Layer ${index + 1}`,
-        };
-        if (!newItem.position) {
-          return { ...newItem, position: { x: 0, y: 0 } };
-        }
-        return newItem;
-      });
-
-      if (JSON.stringify(updatedItem) !== JSON.stringify(allItems)) {
-        setAllItems(updatedItem);
-      }
-
-      updatedItem.forEach((item, index) => {
-        if (item.itemType === "text") {
-          const element = itemsRefs.current[item.id];
-          if (element) {
-            element.innerHTML = item.isPlaceholder
-              ? "Enter text..."
-              : item.text || "";
-          }
-        }
-      });
-    }
-  }, []);
-
   const handleFocus = (e, index, id) => {
     let plch = allItems[index].isPlaceholder;
 
@@ -157,7 +126,7 @@ export default function InvitationCard() {
               isActive={item.active}
               mode={item.itemType}
               style={{
-                transform: `rotate(${item?.rotate || defText?.rotate}deg)`,
+                transform: `rotate(${item.rotate || 0}deg)`,
               }}
             >
               {({ isDragging, startDrag }) => (

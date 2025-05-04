@@ -35,7 +35,8 @@ export default function DraggableWrapper({
   const [brRotate, setBrRotate] = useState("br");
 
   const { position, isDragging, startDrag } = useDraggable({
-    initialValue: { position: initialPosition, element },
+    initialPosition,
+    element,
     onDragStart: (data) => {
       if (data?.type == "rotate") {
         setDragType(data?.type);
@@ -43,51 +44,41 @@ export default function DraggableWrapper({
     },
     onDragging: (data) => {
       setShouldBeSelected(false);
-      if (mode === "text") {
-        setAllItems((prevItems) => {
-          return prevItems.map((item, i) => {
-            if (i === index) {
-              const updatedItem = { ...item };
+      setAllItems((prevItems) => {
+        return prevItems.map((item, i) => {
+          if (i === index) {
+            const updatedItem = { ...item };
 
-              if (data?.type === "resize") {
+            if (data?.type === "resize") {
+              if (mode === "text") {
                 updatedItem.fontSize = initialFontSize * data?.scale;
+              } else if (data?.type === "resize") {
+                updatedItem.width = initialWidth * data?.scale;
               }
-
-              if (data?.type === "rotate") {
-                updatedItem.rotate = data?.angle;
-              }
-
-              return updatedItem;
             }
-            return item;
-          });
+
+            if (data?.type === "rotate") {
+              updatedItem.rotate = data?.angle;
+            }
+
+            return updatedItem;
+          }
+          return item;
         });
-      }
-
-      if (mode === "sticker") {
-        if (data?.type === "rotate" || data?.type === "resize") {
-          setAllItems((prevItems) => {
-            return prevItems.map((item, i) => {
-              if (i === index) {
-                const updatedItem = { ...item };
-
-                if (data?.type === "resize") {
-                  updatedItem.width = initialWidth * data?.scale;
-                }
-
-                if (data?.type === "rotate") {
-                  updatedItem.rotate = data?.angle;
-                }
-
-                return updatedItem;
-              }
-              return item;
-            });
-          });
-        }
-      }
+      });
     },
     onDragEnd: (data) => {
+      setAllItems((prevItems) => {
+        return prevItems.map((item, i) => {
+          if (i === index) {
+            const updatedItem = { ...item };
+            updatedItem.position = data?.position;
+            return updatedItem;
+          }
+          return item;
+        });
+      });
+
       setShouldBeSelected(true);
       if (data?.type == "rotate") {
         setTlRotate(tlRotation(item?.rotate));
@@ -99,8 +90,6 @@ export default function DraggableWrapper({
       setDragType(null);
     },
   });
-
-  // console.log(zIndex);
 
   return (
     <div
