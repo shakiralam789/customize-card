@@ -3,6 +3,7 @@ import CcContext from "@/context/ccContext";
 import React, { act, useContext, useEffect } from "react";
 import DraggableWrapper from "@/components/DraggableWrapper";
 import Image from "next/image";
+import { getFontFamily } from "@/helper/helper";
 
 export default function InvitationCard() {
   const {
@@ -166,6 +167,9 @@ export default function InvitationCard() {
                         textTransform: `${
                           item?.textTransform || defText.textTransform
                         }`,
+                        fontFamily: getFontFamily(
+                          item?.fontFamily || defText.fontFamily
+                        ),
                       }}
                     >
                       Enter text...

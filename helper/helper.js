@@ -179,3 +179,19 @@ export function brRotation(rotate) {
   }
   return dir;
 }
+
+export function getFontFamily(font) {
+  const fallbackMap = {
+    "Dancing Script": ['"Brush Script MT"', '"Comic Sans MS"', "cursive"],
+    "Pacifico": ["cursive"],
+    "Playfair Display": ['"Georgia"', '"Times New Roman"', "serif"],
+    Roboto: ['"Helvetica Neue"', "Arial", "sans-serif"],
+    "Open Sans": ['"Helvetica Neue"', "Arial", "sans-serif"],
+    Montserrat: ["Arial", "sans-serif"],
+    "Courier New": ['"Lucida Console"', "monospace"],
+    // Add more mappings as needed
+  };
+
+  const fallbacks = fallbackMap[font] || ["sans-serif"];
+  return [`"${font}"`, ...fallbacks].join(", ");
+}

@@ -8,7 +8,7 @@ const CcProvider = ({ children }) => {
   const defText = {
     itemType: "text",
     position: { x: 200, y: 100 },
-    fontSize: 20,
+    fontSize: 16,
     textAlign: "center",
     color: "white",
     fontWeight: "normal",
@@ -19,6 +19,7 @@ const CcProvider = ({ children }) => {
     textCurve: 0,
     rotate: 0,
     isPlaceholder: true,
+    fontFamily: "Arial",
   };
 
   const defSticker = {
