@@ -82,7 +82,9 @@ export default function DraggableWrapper({
       setShouldBeSelected(true);
       if (data?.type == "rotate") {
         setTlRotate(tlRotation(item?.rotate));
-        setTrRotate(trRotation(item?.rotate));
+        if (mode == "sticker") {
+          setTrRotate(trRotation(item?.rotate));
+        }
         setBlRotate(blRotation(item?.rotate));
         setBrRotate(brRotation(item?.rotate));
       }
@@ -103,7 +105,7 @@ export default function DraggableWrapper({
         zIndex: isDragging || isActive ? 99999 : zIndex,
       }}
     >
-      {/* {mode == "text" && (
+      {mode == "text" && (
         <div
           onMouseDown={(e) => startDrag({ e, type: "move" })}
           className={`move-icon absolute -right-2 -top-0 transform -translate-y-1/2 
@@ -112,7 +114,7 @@ export default function DraggableWrapper({
         >
           <Move size={16} className="text-white" />
         </div>
-      )} */}
+      )}
 
       {typeof children === "function"
         ? children({ startDrag, isDragging, position })
@@ -149,13 +151,14 @@ export default function DraggableWrapper({
         } size-handler size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
       ></span>
 
-      <span
-        onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
-        className={`${
-          isActive ? "block cursor-nesw-resize" : "hidden pointer-events-none"
-        } size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
-      ></span>
-
+      {mode == "sticker" && (
+        <span
+          onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
+          className={`${
+            isActive ? "block cursor-nesw-resize" : "hidden pointer-events-none"
+          } size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
+        ></span>
+      )}
       <span
         onMouseDown={(e) => startDrag({ e, type: "resize", dir: blRotate })}
         className={`${

@@ -18,7 +18,14 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
 import CcContext from "@/context/ccContext";
-import { Eye, EyeClosed, GripVertical, LockIcon, LockOpen } from "lucide-react";
+import {
+  Check,
+  Eye,
+  EyeClosed,
+  GripVertical,
+  LockIcon,
+  LockOpen,
+} from "lucide-react";
 
 export default function LayerPanel({ show, onClose }) {
   return (
@@ -179,13 +186,40 @@ const SortableItem = ({ item, index, activeID }) => {
             }}
           />
         )}
-        {/* <div
+        <div
+          onClick={() => {
+            if (item?.id == activeID) {
+              setActiveID(null);
+              setAllItems((prev) =>
+                prev.map((x) =>
+                  x.id == item.id
+                    ? {
+                        ...x,
+                        active: false,
+                      }
+                    : x
+                )
+              );
+            } else {
+              setAllItems((prev) =>
+                prev.map((x) =>
+                  x.id == item.id
+                    ? {
+                        ...x,
+                        active: true,
+                      }
+                    : { ...x, active: false }
+                )
+              );
+              setActiveID(item?.id);
+            }
+          }}
           className={`${
             item?.id === activeID ? "active" : ""
           } [&.active]:bg-emerald-400 [&.active]:text-white [&.active]:border-emerald-400 size-4 flex items-center justify-center border bg-gray-100 border-gray-300 rounded`}
         >
           {item?.id === activeID ? <Check className="size-4" /> : null}
-        </div> */}
+        </div>
       </div>
     </motion.div>
   );
