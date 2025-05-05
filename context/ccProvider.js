@@ -110,7 +110,7 @@ const CcProvider = ({ children }) => {
           active: true,
           contentEditable: true,
           zIndex: 10 + prevItems.length,
-          name: "Layer " + (prevItems.length + 1),
+          name: "Text",
 
           ...defText,
         },
@@ -128,7 +128,7 @@ const CcProvider = ({ children }) => {
           id: uuid4(),
           ...defSticker,
           ...data,
-          name: "Layer " + (prevItems.length + 1),
+          name: "Sticker",
         },
       ];
 

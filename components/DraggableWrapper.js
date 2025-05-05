@@ -105,7 +105,7 @@ export default function DraggableWrapper({
         zIndex: isDragging || isActive ? 99999 : zIndex,
       }}
     >
-      {mode == "text" && (
+      {mode == "text" && !item?.locked && (
         <div
           onMouseDown={(e) => startDrag({ e, type: "move" })}
           className={`move-icon absolute -right-2 -top-0 transform -translate-y-1/2 
@@ -120,58 +120,54 @@ export default function DraggableWrapper({
         ? children({ startDrag, isDragging, position })
         : children}
 
-      {isActive && (
-        <div
-          onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-          className={`${
-            isDragging && dragType == "rotate" ? "active" : ""
-          } absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 text-black bg-white hover:bg-emerald-500 hover:text-white [&.active]:bg-emerald-500 [&.active]:text-white rounded-full size-9 flex items-center justify-center`}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
+      {isActive && !item?.locked && (
+        <>
+          <div
+            onMouseDown={(e) => startDrag({ e, type: "rotate" })}
+            className={`${
+              isDragging && dragType == "rotate" ? "active" : ""
+            } absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 text-black bg-white hover:bg-emerald-500 hover:text-white [&.active]:bg-emerald-500 [&.active]:text-white rounded-full size-9 flex items-center justify-center`}
           >
-            <path
-              stroke="currentColor"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="1.5"
-              d="m21 17.325-2.963.685-.681-2.947M3 6.673l2.963-.685.681 2.947m3.928-5.185a8.373 8.373 0 0 1 7.515 13.999m-4.66 2.502a8.373 8.373 0 0 1-7.47-14.048"
-            ></path>
-          </svg>
-        </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              fill="none"
+            >
+              <path
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="1.5"
+                d="m21 17.325-2.963.685-.681-2.947M3 6.673l2.963-.685.681 2.947m3.928-5.185a8.373 8.373 0 0 1 7.515 13.999m-4.66 2.502a8.373 8.373 0 0 1-7.47-14.048"
+              ></path>
+            </svg>
+          </div>
+
+          <span
+            onMouseDown={(e) => startDrag({ e, type: "resize", dir: tlRotate })}
+            className={`cursor-nwse-resize size-handler size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
+          ></span>
+
+          {mode == "sticker" && (
+            <span
+              onMouseDown={(e) =>
+                startDrag({ e, type: "resize", dir: trRotate })
+              }
+              className={`cursor-nesw-resize size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
+            ></span>
+          )}
+          <span
+            onMouseDown={(e) => startDrag({ e, type: "resize", dir: blRotate })}
+            className={`cursor-nesw-resize size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 left-0.5 -translate-x-1/2 translate-y-1/2`}
+          ></span>
+
+          <span
+            onMouseDown={(e) => startDrag({ e, type: "resize", dir: brRotate })}
+            className={`cursor-nwse-resize size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2`}
+          ></span>
+        </>
       )}
-
-      <span
-        onMouseDown={(e) => startDrag({ e, type: "resize", dir: tlRotate })}
-        className={`${
-          isActive ? "block cursor-nwse-resize" : "hidden pointer-events-none"
-        } size-handler size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
-      ></span>
-
-      {mode == "sticker" && (
-        <span
-          onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
-          className={`${
-            isActive ? "block cursor-nesw-resize" : "hidden pointer-events-none"
-          } size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
-        ></span>
-      )}
-      <span
-        onMouseDown={(e) => startDrag({ e, type: "resize", dir: blRotate })}
-        className={`${
-          isActive ? "block cursor-nesw-resize" : "hidden pointer-events-none"
-        } size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 left-0.5 -translate-x-1/2 translate-y-1/2`}
-      ></span>
-
-      <span
-        onMouseDown={(e) => startDrag({ e, type: "resize", dir: brRotate })}
-        className={`${
-          isActive ? "block cursor-nwse-resize" : "hidden pointer-events-none"
-        } size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2`}
-      ></span>
     </div>
   );
 }

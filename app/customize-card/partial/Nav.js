@@ -117,34 +117,37 @@ export default function Nav() {
             </button>
           </div>
         </div>
-        {activeID != null && activeItem?.itemType === "text" && (
-          <div
-            className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-700 py-2 px-4 flex items-center justify-center`}
-          >
-            <DeleteItem />
-            <FontFamilyChange />
-            <FontChange />
-            <ColorChange />
-            <TextTransform />
-            <TextAlign />
-            <FontWeight />
-            <FontStyle />
-            <LineHeightChange />
-            <LetterSpacingChange />
-            <TextCurveChange />
-            <RotateText />
-          </div>
-        )}
-        
-        {activeID != null && activeItem?.itemType === "sticker" && (
-          <div
-            className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-700 py-2 px-4 flex items-center justify-center`}
-          >
-            <DeleteItem />
-            <FlipShape />
-            <FlipVerticalShape />
-            <RotateShape />
-          </div>
+        {activeID != null && !activeItem?.locked && (
+          <>
+            {activeItem?.itemType === "text" && (
+              <div
+                className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-700 py-2 px-4 flex items-center justify-center`}
+              >
+                <DeleteItem />
+                <FontFamilyChange />
+                <FontChange />
+                <ColorChange />
+                <TextTransform />
+                <TextAlign />
+                <FontWeight />
+                <FontStyle />
+                <LineHeightChange />
+                <LetterSpacingChange />
+                <TextCurveChange />
+                <RotateText />
+              </div>
+            )}
+            {activeItem?.itemType === "sticker" && (
+              <div
+                className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-700 py-2 px-4 flex items-center justify-center`}
+              >
+                <DeleteItem />
+                <FlipShape />
+                <FlipVerticalShape />
+                <RotateShape />
+              </div>
+            )}
+          </>
         )}
       </div>
     </nav>

@@ -60,12 +60,62 @@ const SortableItem = ({ item, index, activeID }) => {
     }
   }, [selected]);
 
+  function handleCheck() {
+    setAllItems((prev) =>
+      prev.map((x) =>
+        x.id == item.id
+          ? {
+              ...x,
+              active: true,
+            }
+          : { ...x, active: false }
+      )
+    );
+    setActiveID(item?.id);
+  }
+
+  function lockHandler(value) {
+    setAllItems((prev) =>
+      prev.map((x) =>
+        x.id == item.id
+          ? {
+              ...x,
+              locked: value != "lock",
+            }
+          : x
+      )
+    );
+  }
+
+  function eyeHandler(value) {
+    setAllItems((prev) =>
+      prev.map((x) =>
+        x.id == item.id
+          ? {
+              ...x,
+              active: x.id == activeID ? false : x.active,
+              hidden: value == "open",
+            }
+          : x
+      )
+    );
+
+    if (item?.id == activeID) {
+      setActiveID(null);
+    }
+  }
   return (
-    <motion.div ref={setNodeRef} layout style={style} className={`relative`}>
+    <motion.div
+      ref={setNodeRef}
+      layout
+      style={style}
+      className={`flex gap-2 items-center mb-2`}
+    >
       <div
+        onClick={handleCheck}
         className={`${
           item?.id === activeID ? "active" : ""
-        } pr-16 flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 pl-1 mb-2`}
+        } cursor-pointer flex-1 flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 pl-1`}
       >
         <GripVertical
           {...attributes}
@@ -104,122 +154,20 @@ const SortableItem = ({ item, index, activeID }) => {
           </span>
         )}
       </div>
-      <div className="text-gray-500 absolute top-1/2 -translate-y-1/2 right-2 flex items-center space-x-1 *:size-4 cursor-pointer">
-        {item?.hidden ? (
-          <EyeClosed
-            onClick={() => {
-              setAllItems((prev) =>
-                prev.map((x) =>
-                  x.id == item.id
-                    ? {
-                        ...x,
-                        active: x.id == activeID ? false : x.active,
-                        hidden: false,
-                      }
-                    : x
-                )
-              );
-              if (item?.id == activeID) {
-                setActiveID(null);
-              }
-            }}
-          />
-        ) : (
-          <Eye
-            onClick={() => {
-              setAllItems((prev) =>
-                prev.map((x) =>
-                  x.id == item.id
-                    ? {
-                        ...x,
-                        active: x.id == activeID ? false : x.active,
-                        hidden: true,
-                      }
-                    : x
-                )
-              );
-
-              if (item?.id == activeID) {
-                setActiveID(null);
-              }
-            }}
-          />
-        )}
+      <div className="text-gray-500 flex items-center space-x-1 *:size-4 cursor-pointer">
         {item?.locked ? (
-          <LockIcon
-            className="!size-3.5"
-            onClick={() => {
-              setAllItems((prev) =>
-                prev.map((x) =>
-                  x.id == item.id
-                    ? {
-                        ...x,
-                        active: x.id == activeID ? false : x.active,
-                        locked: false,
-                      }
-                    : x
-                )
-              );
-              if (item?.id == activeID) {
-                setActiveID(null);
-              }
-            }}
-          />
+          <LockIcon className="!size-3.5" onClick={() => lockHandler("lock")} />
         ) : (
           <LockOpen
             className="!size-3.5"
-            onClick={() => {
-              setAllItems((prev) =>
-                prev.map((x) =>
-                  x.id == item.id
-                    ? {
-                        ...x,
-                        active: x.id == activeID ? false : x.active,
-                        locked: true,
-                      }
-                    : x
-                )
-              );
-              if (item?.id == activeID) {
-                setActiveID(null);
-              }
-            }}
+            onClick={() => lockHandler("unlock")}
           />
         )}
-        <div
-          onClick={() => {
-            if (item?.id == activeID) {
-              setActiveID(null);
-              setAllItems((prev) =>
-                prev.map((x) =>
-                  x.id == item.id
-                    ? {
-                        ...x,
-                        active: false,
-                      }
-                    : x
-                )
-              );
-            } else {
-              setAllItems((prev) =>
-                prev.map((x) =>
-                  x.id == item.id
-                    ? {
-                        ...x,
-                        active: true,
-                      }
-                    : { ...x, active: false }
-                )
-              );
-              setActiveID(item?.id);
-            }
-          }}
-          className={`${
-            item?.id === activeID ? "active" : ""
-          } [&.active]:bg-emerald-400 [&.active]:text-white [&.active]:border-emerald-400 size-4 flex items-center justify-center border bg-gray-100 border-gray-300 rounded`}
-        >
-          {item?.id === activeID ? <Check className="size-4" /> : null}
-        </div>
+        {item?.hidden ? (
+          <EyeClosed onClick={() => eyeHandler("close")} />
+        ) : (
+          <Eye onClick={() => eyeHandler("open")} />
+        )}
       </div>
     </motion.div>
   );
@@ -255,7 +203,7 @@ function DraggableList() {
       return newOrder;
     });
   };
-
+  
   return (
     <DndContext
       sensors={sensors}

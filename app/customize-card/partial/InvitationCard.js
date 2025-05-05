@@ -141,11 +141,11 @@ export default function InvitationCard() {
                       ref={(el) => (itemsRefs.current[item.id] = el)}
                       contentEditable={item.contentEditable}
                       suppressContentEditableWarning
-                      className={`${
-                        item.active ? "active" : "!cursor-move"
-                      } movable-handle p-2 focus:outline-none ${
+                      className={`${item.active ? "active" : "!cursor-move"} ${
                         item.isPlaceholder ? "!text-[#20f39b]" : "text-white"
-                      } ${isDragging ? "movable-handle-hover" : ""}`}
+                      } ${
+                        isDragging ? "movable-handle-hover" : ""
+                      } movable-handle p-2 focus:outline-none whitespace-nowrap`}
                       onMouseUp={(e) => {
                         if (!shouldBeSelected) return;
                         handleFocus(e, index, item.id);
