@@ -5,7 +5,7 @@ import DraggableWrapper from "@/components/DraggableWrapper";
 import Image from "next/image";
 import { getFontFamily } from "@/helper/helper";
 
-export default function InvitationCard() {
+export default function InvitationCard({zoomLevel}) {
   const {
     allItems,
     activeID,
@@ -106,10 +106,10 @@ export default function InvitationCard() {
   return (
     <div
       ref={parentRef}
-      className="overflow-hidden p-4 bg-gray-800 bg-no-repeat bg-cover relative"
+      className="p-4 bg-gray-800 bg-no-repeat bg-cover relative"
       style={{
-        width: "500px",
-        height: "700px",
+        width: "400px",
+        height: "550px",
         backgroundImage: "url('/images/inv-card.jpg')",
       }}
     >
@@ -127,7 +127,6 @@ export default function InvitationCard() {
                 initialPosition={item.position}
                 key={item.id}
                 item={item}
-                element={itemsRefs.current[item.id]}
                 index={index}
                 zIndex={item?.zIndex || 10}
                 isActive={item.active}
@@ -137,6 +136,7 @@ export default function InvitationCard() {
                 setAllItems={setAllItems}
                 shouldBeSelected={shouldBeSelected}
                 setHorizontalCentralLine={setHorizontalCentralLine}
+                zoomLevel={zoomLevel}
               >
                 {({ isDragging, startDrag }) => (
                   <>

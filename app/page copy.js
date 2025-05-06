@@ -1,7 +1,5 @@
 "use client";
-
 import React, { useRef, useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 
 export default function Home() {
   return (
@@ -28,14 +26,9 @@ function EditableTextBox() {
   const [startMouse, setStartMouse] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({});
   const [handlePos, setHandlePos] = useState({ top: 0, left: 0 });
-  const [hasMounted, setHasMounted] = useState(false);
 
   const baseFontSize = 16;
   const baseWidth = 200;
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
 
   const updateHandlePosition = () => {
     if (boxRef.current) {
@@ -99,13 +92,14 @@ function EditableTextBox() {
     };
   });
 
+  // Update handle position on box move or resize
   useEffect(() => {
     updateHandlePosition();
   }, [position, size]);
 
   return (
     <>
-      {/* Text box inside canvas */}
+      {/* Text box INSIDE canvas (gets clipped) */}
       <div
         ref={boxRef}
         onMouseDown={onMouseDownDrag}
@@ -150,26 +144,22 @@ function EditableTextBox() {
         </div>
       </div>
 
-      {/* Resize handle via portal (hydration-safe) */}
-      {hasMounted &&
-        createPortal(
-          <div
-            className="resize-handle"
-            onMouseDown={onMouseDownResize}
-            style={{
-              position: "fixed",
-              top: handlePos.top,
-              left: handlePos.left,
-              width: 12,
-              height: 12,
-              background: "#007aff",
-              borderRadius: "50%",
-              cursor: "nwse-resize",
-              zIndex: 9999,
-            }}
-          />,
-          document.body
-        )}
+      {/* Resize handle OUTSIDE canvas (always visible) */}
+      <div
+        className="resize-handle"
+        onMouseDown={onMouseDownResize}
+        style={{
+          position: "fixed",
+          top: handlePos.top,
+          left: handlePos.left,
+          width: 12,
+          height: 12,
+          background: "#007aff",
+          borderRadius: "50%",
+          cursor: "nwse-resize",
+          zIndex: 9999,
+        }}
+      />
     </>
   );
 }

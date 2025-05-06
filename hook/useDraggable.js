@@ -8,6 +8,7 @@ export default function useDraggable({
   setShowCenterLine,
   setHorizontalCentralLine,
   parentRef,
+  zoomLevel,
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState(initialPosition);
@@ -22,7 +23,6 @@ export default function useDraggable({
 
   const startDrag = useCallback(
     ({ e, type, dir }) => {
-      
       e.preventDefault();
       e.stopPropagation();
 
@@ -35,6 +35,7 @@ export default function useDraggable({
       setDir(dir || null);
       setIsClicked(true);
       setStartMousePos({ x: e.clientX, y: e.clientY });
+
       setStartElementPos(positionRef.current);
 
       onDragStart?.({ e, position: positionRef.current, type, element });
@@ -59,9 +60,10 @@ export default function useDraggable({
     if (type === "move") {
       const dx = e.clientX - startMousePos.x;
       const dy = e.clientY - startMousePos.y;
+      
       newPos = {
-        x: startElementPos.x + dx,
-        y: startElementPos.y + dy,
+        x: startElementPos.x + dx / zoomLevel,
+        y: startElementPos.y + dy / zoomLevel,
       };
     }
 
@@ -71,13 +73,13 @@ export default function useDraggable({
       const dy = e.clientY - startMousePos.y;
 
       if (["br", "bl"].includes(dir)) {
-        newScale = Math.max(0.5, 1 + dy / width);
-        newPos.x = startElementPos.x - dy / 2;
+        newScale = Math.max(0.5, 1 + dy / width / zoomLevel);
+        newPos.x = startElementPos.x - dy / 2 / zoomLevel;
       } else if (["tl", "tr"].includes(dir)) {
         newScale = Math.max(0.5, 1 - dy / width);
         const pixelChange = (newScale - 1) * height;
-        newPos.y = startElementPos.y - pixelChange / 2;
-        newPos.x = startElementPos.x + dy / 2;
+        newPos.y = startElementPos.y - pixelChange / 2 / zoomLevel;
+        newPos.x = startElementPos.x + dy / 2 / zoomLevel;
       }
     }
 
@@ -172,6 +174,6 @@ export default function useDraggable({
   return {
     position,
     isDragging,
-    startDrag
+    startDrag,
   };
 }

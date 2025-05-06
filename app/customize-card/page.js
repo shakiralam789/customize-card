@@ -1,19 +1,18 @@
 // pages/index.js
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import Head from "next/head";
 import Nav from "./partial/Nav";
 import InvitationCard from "./partial/InvitationCard";
 import EditPanelBar from "./partial/EditorPanel/EditPanelBar";
+import CcContext from "@/context/ccContext";
 
 export default function Home() {
-  
-  const [zoom, setZoom] = useState(80);
+  const { zoom, setZoom, addZoomToLocalStorage } = useContext(CcContext);
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
-  // Disable browser zoom on Ctrl+/Ctrl-
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.ctrlKey && (e.key === "+" || e.key === "-" || e.key === "=")) {
@@ -43,6 +42,7 @@ export default function Home() {
 
   const handleZoomChange = (e) => {
     setZoom(parseInt(e.target.value));
+    addZoomToLocalStorage(e.target.value);
   };
 
   const handleMouseDown = (e) => {
@@ -68,7 +68,8 @@ export default function Home() {
   };
 
   const resetZoom = () => {
-    setZoom(80);
+    setZoom(100);
+    addZoomToLocalStorage(100);
     setPosition({ x: 0, y: 0 });
   };
 
@@ -111,7 +112,7 @@ export default function Home() {
               transition: isDragging ? "none" : "transform 0.2s ease",
             }}
           >
-            <InvitationCard />
+            <InvitationCard zoomLevel={zoom / 100} />
           </div>
         </div>
 

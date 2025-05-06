@@ -38,7 +38,7 @@ const staticData = [
     src: "/images/stickers/birthday-invitation.png",
     alt: "birthday-invitation",
     ...defSticker,
-    position: { x: 200, y: 400 },
+    position: { x: 135, y: 284 },
   },
   {
     id: uuid4(),
@@ -48,8 +48,8 @@ const staticData = [
           <div>at three o'clock in the afternoon</div>
           <div>Grace Community Church</div>`,
     isPlaceholder: false,
-    position: { x: 67, y: 200 },
-    fontSize: 18,
+    position: { x: 38, y: 148 },
+    fontSize: 14,
     contentEditable: false,
     textAlign: "center",
     color: "#c6a489",
@@ -67,8 +67,8 @@ const staticData = [
     itemType: "text",
     text: `<div>4551 East Street Wilmot, Virginia</div>`,
     isPlaceholder: false,
-    position: { x: 125, y: 310 },
-    fontSize: 16,
+    position: { x: 77, y: 242 },
+    fontSize: 12,
     contentEditable: false,
     textAlign: "center",
     color: "#7db2bd",
@@ -82,6 +82,7 @@ const staticData = [
 ];
 
 const CcProvider = ({ children }) => {
+  const [zoom, setZoom] = useState(100);
   const [showCenterLine, setShowCenterLine] = useState(false);
   const [horizontalCentralLine, setHorizontalCentralLine] = useState(false);
 
@@ -167,8 +168,18 @@ const CcProvider = ({ children }) => {
     localStorage.setItem("customize-card-items", JSON.stringify(allItems));
   }
 
+  function addZoomToLocalStorage(value) {
+    localStorage.setItem("customize-card-zoom", value);
+  }
+
   useEffect(() => {
     let items = localStorage.getItem("customize-card-items");
+    let zoom = localStorage.getItem("customize-card-zoom");
+
+    if (zoom) {
+      setZoom(zoom);
+    }
+
     if (items) {
       items = JSON.parse(items);
     } else {
@@ -181,6 +192,7 @@ const CcProvider = ({ children }) => {
           ...item,
           zIndex: 10 + index,
           name: item.name ? item.name : `Layer ${index + 1}`,
+          // here calculation for zoom
           active: false,
         };
         if (!newItem.position) {
@@ -208,7 +220,7 @@ const CcProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    addToLocalStorage();
+    // addToLocalStorage();
   }, [allItems]);
 
   return (
@@ -233,6 +245,9 @@ const CcProvider = ({ children }) => {
         parentRef,
         horizontalCentralLine,
         setHorizontalCentralLine,
+        zoom,
+        setZoom,
+        addZoomToLocalStorage,
       }}
     >
       {children}

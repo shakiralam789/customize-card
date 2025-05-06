@@ -1,12 +1,13 @@
 import React, { useRef, useState } from "react";
 import useDraggable from "@/hook/useDraggable";
-import { Move } from "lucide-react";
+import { Move, RotateCcw } from "lucide-react";
 import {
   blRotation,
   brRotation,
   tlRotation,
   trRotation,
 } from "@/helper/helper";
+import HandleBtn from "./HandleBtn";
 
 function DraggableWrapper({
   children,
@@ -23,6 +24,7 @@ function DraggableWrapper({
   setShowCenterLine,
   setHorizontalCentralLine,
   setAllItems,
+  zoomLevel,
   ...props
 }) {
   const animationFrame = useRef(null);
@@ -38,6 +40,7 @@ function DraggableWrapper({
   const [brRotate, setBrRotate] = useState("br");
 
   const { position, isDragging, startDrag } = useDraggable({
+    zoomLevel,
     setHorizontalCentralLine,
     setShowCenterLine,
     initialPosition,
@@ -126,35 +129,18 @@ function DraggableWrapper({
       {isActive && !item?.locked && (
         <>
           <div className="absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 flex gap-1.5 items-center justify-center">
-            <div
+            <HandleBtn
               onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-              className={`${
-                isDragging && dragType == "rotate" ? "active" : ""
-              } text-black bg-white hover:bg-emerald-500 hover:text-white [&.active]:bg-emerald-500 [&.active]:text-white rounded-full size-8 flex items-center justify-center`}
+              className={isDragging && dragType == "rotate" ? "active" : ""}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="none"
-              >
-                <path
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="1.5"
-                  d="m21 17.325-2.963.685-.681-2.947M3 6.673l2.963-.685.681 2.947m3.928-5.185a8.373 8.373 0 0 1 7.515 13.999m-4.66 2.502a8.373 8.373 0 0 1-7.47-14.048"
-                ></path>
-              </svg>
-            </div>
-            <div
+              <RotateCcw />
+            </HandleBtn>
+            <HandleBtn
               onMouseDown={(e) => startDrag({ e, type: "move" })}
-              className={`${
-                isDragging && dragType == "move" ? "active" : ""
-              } text-black bg-white hover:bg-emerald-500 hover:text-white [&.active]:bg-emerald-500 [&.active]:text-white rounded-full size-8 flex items-center justify-center`}
+              className={isDragging && dragType == "move" ? "active" : ""}
             >
-              <Move size={16} />
-            </div>
+              <Move className="w-full"/>
+            </HandleBtn>
           </div>
 
           <span
@@ -202,6 +188,7 @@ export default React.memo(DraggableWrapper, (prev, next) => {
     prev.item.letterSpacing === next.item.letterSpacing &&
     prev.item.textTransform === next.item.textTransform &&
     prev.item.textCurve === next.item.textCurve &&
-    prev.item.isPlaceholder === next.item.isPlaceholder
+    prev.item.isPlaceholder === next.item.isPlaceholder &&
+    prev.zoomLevel === next.zoomLevel
   );
 });
