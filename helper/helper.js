@@ -113,7 +113,7 @@ export function getWidthAndAspectRatio(element) {
 }
 
 export function tlRotation(rotate) {
-  let dir;
+  let dir= "tl";
 
   if (!rotate) return;
 
@@ -130,7 +130,7 @@ export function tlRotation(rotate) {
 }
 
 export function trRotation(rotate) {
-  let dir;
+  let dir = "tr";
 
   if (!rotate) return;
 
@@ -143,11 +143,12 @@ export function trRotation(rotate) {
   } else if (rotate > 225 && rotate < 315) {
     dir = "tl";
   }
+  
   return dir;
 }
 
 export function blRotation(rotate) {
-  let dir;
+  let dir="bl";
 
   if (!rotate) return;
 
@@ -164,7 +165,7 @@ export function blRotation(rotate) {
 }
 
 export function brRotation(rotate) {
-  let dir;
+  let dir= "br";
 
   if (!rotate) return;
 

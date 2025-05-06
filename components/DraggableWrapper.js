@@ -45,6 +45,7 @@ function DraggableWrapper({
     setShowCenterLine,
     initialPosition,
     parentRef: parentRef?.current,
+    rotate: item?.rotate,
     onDragStart: (data) => {
       shouldBeSelected.current = true;
       if (data?.type == "rotate" || data?.type == "move") {
@@ -98,10 +99,10 @@ function DraggableWrapper({
       });
 
       if (data?.type == "rotate") {
-        setTlRotate(tlRotation(item?.rotate));
-        setTrRotate(trRotation(item?.rotate));
-        setBlRotate(blRotation(item?.rotate));
-        setBrRotate(brRotation(item?.rotate));
+        setTlRotate(tlRotation(data?.rotate));
+        setTrRotate(trRotation(data?.rotate));
+        setBlRotate(blRotation(data?.rotate));
+        setBrRotate(brRotation(data?.rotate));
       }
 
       setDragType(null);

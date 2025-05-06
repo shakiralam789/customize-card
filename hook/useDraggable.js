@@ -9,6 +9,7 @@ export default function useDraggable({
   setHorizontalCentralLine,
   parentRef,
   zoomLevel,
+  rotate,
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState(initialPosition);
@@ -20,6 +21,7 @@ export default function useDraggable({
   const draggingRef = useRef(null);
   const [isClicked, setIsClicked] = useState(false);
   const hasMovedRef = useRef(false);
+  const angleRef = useRef(rotate || 0);
 
   const startDrag = useCallback(
     ({ e, type, dir }) => {
@@ -28,7 +30,9 @@ export default function useDraggable({
 
       const element = e.currentTarget.closest("[data-draggable]");
       if (!element) return;
-
+      
+      console.log(dir);
+      
       draggingRef.current = element;
 
       setType(type || null);
@@ -60,7 +64,7 @@ export default function useDraggable({
     if (type === "move") {
       const dx = e.clientX - startMousePos.x;
       const dy = e.clientY - startMousePos.y;
-      
+
       newPos = {
         x: startElementPos.x + dx / zoomLevel,
         y: startElementPos.y + dy / zoomLevel,
@@ -90,6 +94,7 @@ export default function useDraggable({
       const dy = e.clientY - centerY;
       newAngle =
         Math.round((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
+      angleRef.current = newAngle;
     }
 
     const parentRect = parentRef.getBoundingClientRect();
@@ -151,10 +156,13 @@ export default function useDraggable({
     draggingRef.current = null;
     setIsClicked(false);
 
+    console.log(angleRef.current);
+    
     onDragEnd?.({
       hasMoved: hasMovedRef.current,
       type,
       position: positionRef.current,
+      rotate: angleRef.current,
     });
 
     hasMovedRef.current = false;
