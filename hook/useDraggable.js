@@ -1,11 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function useDraggable({
   onDragStart = () => {},
   onDragging = () => {},
   onDragEnd = () => {},
   initialPosition,
-  element,
+  setShowCenterLine,
+  parentRef,
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState(initialPosition);
@@ -13,43 +14,44 @@ export default function useDraggable({
   const [startElementPos, setStartElementPos] = useState({ x: 0, y: 0 });
   const [type, setType] = useState(null);
   const [dir, setDir] = useState(null);
-  const [width, setWidth] = useState(null);
-  const [height, setHeight] = useState(null);
   const positionRef = useRef(initialPosition);
+  const draggingRef = useRef(null);
+  const [isClicked, setIsClicked] = useState(false);
+  const hasMovedRef = useRef(false);
 
-  const startDrag = ({ e, type, dir }) => {
-    e.preventDefault();
-    e.stopPropagation();
-    let rect;
-    if (type) {
-      setType(type);
-    }
+  const startDrag = useCallback(
+    ({ e, type, dir }) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-    const box = element;
+      const element = e.currentTarget.closest("[data-draggable]");
+      if (!element) return;
 
-    if (box) {
-      rect = box.getBoundingClientRect();
-      setWidth(rect.width);
-      setHeight(rect.height);
-    }
+      draggingRef.current = element;
 
-    if (dir) {
-      setDir(dir);
-    }
-    setIsDragging(true);
-    setStartMousePos({ x: e.clientX, y: e.clientY });
-    setStartElementPos(position);
+      setType(type || null);
+      setDir(dir || null);
+      setIsClicked(true);
+      setStartMousePos({ x: e.clientX, y: e.clientY });
+      setStartElementPos(positionRef.current);
 
-    if (onDragStart) {
-      onDragStart({ e, position, type });
-    }
-  };
+      onDragStart?.({ e, position: positionRef.current, type, element });
+    },
+    [onDragStart]
+  );
 
   const handleMouseMove = (e) => {
-    if (!isDragging) return;
+    if (!isClicked || !draggingRef.current) return;
 
-    let newScale = 0;
-    let newPos = { ...position };
+    setIsDragging(true);
+    const element = draggingRef.current;
+    const rect = element.getBoundingClientRect();
+
+    const width = rect.width;
+    const height = rect.height;
+
+    let newPos = { ...positionRef.current };
+    let newScale = 1;
     let newAngle = 0;
 
     if (type === "move") {
@@ -66,77 +68,74 @@ export default function useDraggable({
 
       const dy = e.clientY - startMousePos.y;
 
-      if (dir === "br") {
+      if (["br", "bl"].includes(dir)) {
         newScale = Math.max(0.5, 1 + dy / width);
         newPos.x = startElementPos.x - dy / 2;
-      } else if (dir === "bl") {
-        newScale = Math.max(0.5, 1 + dy / width);
-        newPos.x = startElementPos.x - dy / 2;
-      } else if (dir === "tl") {
+      } else if (["tl", "tr"].includes(dir)) {
         newScale = Math.max(0.5, 1 - dy / width);
-        const scaleChange = newScale - 1;
-
-        const pixelChange = scaleChange * height;
-
-        newPos.y = startElementPos.y - pixelChange / 2;
-        newPos.x = startElementPos.x + dy / 2;
-      } else if (dir === "tr") {
-        newScale = Math.max(0.5, 1 - dy / width);
-        const scaleChange = newScale - 1;
-
-        const pixelChange = scaleChange * height;
-
+        const pixelChange = (newScale - 1) * height;
         newPos.y = startElementPos.y - pixelChange / 2;
         newPos.x = startElementPos.x + dy / 2;
       }
     }
 
-    if (type == "rotate") {
-      const box = element;
-
-      if (box) {
-        const rect = box.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-
-        const dx = e.clientX - centerX;
-        const dy = e.clientY - centerY;
-
-        newAngle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-
-        newAngle = Math.round((newAngle + 360) % 360);
-      }
+    if (type === "rotate") {
+      const centerX = rect.left + width / 2;
+      const centerY = rect.top + height / 2;
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+      newAngle =
+        Math.round((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
     }
 
-    setPosition(newPos);
+    const parentRect = parentRef.getBoundingClientRect();
+    const dragCenter = rect.left + width / 2;
+    const parentCenter = parentRect.left + parentRect.width / 2;
+    const threshold = 2;
 
-    positionRef.current = newPos;
+    setShowCenterLine((prev) => {
+      const shouldShow = Math.abs(dragCenter - parentCenter) < threshold;
+      return prev !== shouldShow ? shouldShow : prev;
+    });
 
-    if (onDragging) {
-      onDragging({
-        e,
-        scale: newScale,
-        position: newPos,
-        angle: newAngle,
-        type,
-      });
+    const hasMoved =
+      newPos.x !== positionRef.current.x || newPos.y !== positionRef.current.y;
+
+    if (hasMoved) {
+      positionRef.current = newPos;
+      hasMovedRef.current = true;
+      setPosition(newPos);
     }
+
+    if (newScale <= 0.5) return;
+
+    onDragging?.({
+      e,
+      scale: newScale,
+      position: newPos,
+      angle: newAngle,
+      type,
+    });
   };
 
   const stopDrag = () => {
     setIsDragging(false);
     setType(null);
+    setShowCenterLine(false);
+    draggingRef.current = null;
+    setIsClicked(false);
 
-    if (onDragEnd) {
-      onDragEnd({
-        type,
-        position: positionRef.current,
-      });
-    }
+    onDragEnd?.({
+      hasMoved: hasMovedRef.current,
+      type,
+      position: positionRef.current,
+    });
+
+    hasMovedRef.current = false;
   };
 
   useEffect(() => {
-    if (isDragging) {
+    if (isClicked) {
       window.addEventListener("mousemove", handleMouseMove);
       window.addEventListener("mouseup", stopDrag);
     }
@@ -144,7 +143,11 @@ export default function useDraggable({
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("mouseup", stopDrag);
     };
-  }, [isDragging, startMousePos, startElementPos]);
+  }, [isClicked]);
 
-  return { position, isDragging, startDrag };
+  return {
+    position,
+    isDragging,
+    startDrag,
+  };
 }

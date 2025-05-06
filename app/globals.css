@@ -73,3 +73,8 @@ button {
 .list-with-icon.active {
   @apply bg-gray-100;
 }
+
+[data-draggable] {
+  will-change: transform;
+  cursor: move;
+}

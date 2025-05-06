@@ -8,14 +8,16 @@ import { getFontFamily } from "@/helper/helper";
 export default function InvitationCard() {
   const {
     allItems,
-    setAllItems,
     activeID,
     setActiveID,
     itemsRefs,
     shouldBeSelected,
     defText,
     defSticker,
-    deleteField,
+    showCenterLine,
+    parentRef,
+    setShowCenterLine,
+    setAllItems,
   } = useContext(CcContext);
 
   const handleFocus = (e, index, id) => {
@@ -101,6 +103,7 @@ export default function InvitationCard() {
 
   return (
     <div
+      ref={parentRef}
       className="overflow-hidden p-4 bg-gray-800 bg-no-repeat bg-cover relative"
       style={{
         width: "500px",
@@ -108,117 +111,137 @@ export default function InvitationCard() {
         backgroundImage: "url('/images/inv-card.jpg')",
       }}
     >
-      {allItems &&
-        allItems.length > 0 &&
-        allItems.map((item, index) => {
-          return (
-            <DraggableWrapper
-              className={`${item?.hidden ? "hidden" : ""} ${
-                item?.locked ? "pointer-events-none user-select-none" : ""
-              } ${
-                item.active ? "active" : ""
-              } prevent-customize-card-blur movable-handle-parent`}
-              initialPosition={item.position}
-              key={item.id}
-              item={item}
-              element={itemsRefs.current[item.id]}
-              index={index}
-              zIndex={item?.zIndex || 10}
-              isActive={item.active}
-              mode={item.itemType}
-              style={{
-                transform: `rotate(${item.rotate || 0}deg)`,
-              }}
-            >
-              {({ isDragging, startDrag }) => (
-                <>
-                  {item.itemType === "text" && (
-                    <div
-                      onMouseDown={(e) => {
-                        if (item.active) return;
-                        startDrag({ e, type: "move" });
-                      }}
-                      ref={(el) => (itemsRefs.current[item.id] = el)}
-                      contentEditable={item.contentEditable}
-                      suppressContentEditableWarning
-                      className={`${item.active ? "active" : "!cursor-move"} ${
-                        item.isPlaceholder ? "!text-[#20f39b]" : "text-white"
-                      } ${
-                        isDragging ? "movable-handle-hover" : ""
-                      } movable-handle p-2 focus:outline-none whitespace-nowrap`}
-                      onMouseUp={(e) => {
-                        if (!shouldBeSelected) return;
-                        handleFocus(e, index, item.id);
-                      }}
-                      style={{
-                        fontSize: `${item?.fontSize || defText.fontSize}px`,
-                        textAlign: `${item?.textAlign || defText.textAlign}`,
-                        color: `${item?.color || defText.color}`,
-                        fontWeight: `${item?.fontWeight || defText.fontWeight}`,
-                        fontStyle: `${item?.fontStyle || defText.fontStyle}`,
-                        lineHeight: `${
-                          item?.lineHeight || item?.lineHeight.toString() == "0"
-                            ? item.lineHeight
-                            : defText.lineHeight
-                        }`,
-                        letterSpacing: `${
-                          item?.letterSpacing || defText.letterSpacing
-                        }px`,
-                        textTransform: `${
-                          item?.textTransform || defText.textTransform
-                        }`,
-                        fontFamily: getFontFamily(
-                          item?.fontFamily || defText.fontFamily
-                        ),
-                      }}
-                    >
-                      Enter text...
-                    </div>
-                  )}
+      <div className="relative z-10">
+        {allItems &&
+          allItems.length > 0 &&
+          allItems.map((item, index) => {
+            return (
+              <DraggableWrapper
+                className={`${item?.hidden ? "hidden" : ""} ${
+                  item?.locked ? "pointer-events-none user-select-none" : ""
+                } ${
+                  item.active ? "active" : ""
+                } prevent-customize-card-blur movable-handle-parent`}
+                initialPosition={item.position}
+                key={item.id}
+                item={item}
+                element={itemsRefs.current[item.id]}
+                index={index}
+                zIndex={item?.zIndex || 10}
+                isActive={item.active}
+                mode={item.itemType}
+                parentRef={parentRef}
+                setShowCenterLine={setShowCenterLine}
+                setAllItems={setAllItems}
+                shouldBeSelected={shouldBeSelected}
+              >
+                {({ isDragging, startDrag }) => (
+                  <>
+                    {item.itemType === "text" && (
+                      <div
+                        onMouseDown={(e) => {
+                          if (item.active) return;
+                          startDrag({ e, type: "move" });
+                        }}
+                        ref={(el) => {
+                          if (el) {
+                            itemsRefs.current[item.id] = el;
+                          }
+                        }}
+                        contentEditable={item.contentEditable}
+                        suppressContentEditableWarning
+                        className={`${
+                          item.active ? "active" : "!cursor-move"
+                        } ${
+                          item.isPlaceholder ? "!text-[#20f39b]" : "text-white"
+                        } ${
+                          isDragging ? "movable-handle-hover" : ""
+                        } movable-handle p-2 focus:outline-none whitespace-nowrap`}
+                        onMouseUp={(e) => {
+                          setTimeout(() => {
+                            console.log("child");
+                            if (!shouldBeSelected.current) return;
+                            handleFocus(e, index, item.id);
+                          }, 0);
+                        }}
+                        style={{
+                          fontSize: `${item?.fontSize || defText.fontSize}px`,
+                          textAlign: `${item?.textAlign || defText.textAlign}`,
+                          color: `${item?.color || defText.color}`,
+                          fontWeight: `${
+                            item?.fontWeight || defText.fontWeight
+                          }`,
+                          fontStyle: `${item?.fontStyle || defText.fontStyle}`,
+                          lineHeight: `${
+                            item?.lineHeight ||
+                            item?.lineHeight.toString() == "0"
+                              ? item.lineHeight
+                              : defText.lineHeight
+                          }`,
+                          letterSpacing: `${
+                            item?.letterSpacing || defText.letterSpacing
+                          }px`,
+                          textTransform: `${
+                            item?.textTransform || defText.textTransform
+                          }`,
+                          fontFamily: getFontFamily(
+                            item?.fontFamily || defText.fontFamily
+                          ),
+                        }}
+                      >
+                        Enter text...
+                      </div>
+                    )}
 
-                  {item.itemType === "sticker" && (
-                    <div
-                      onMouseDown={(e) => {
-                        startDrag({ e, type: "move" });
-                      }}
-                      ref={(el) => (itemsRefs.current[item.id] = el)}
-                      className={`${
-                        item.active ? "active" : ""
-                      } movable-handle !cursor-move p-2 focus:outline-none ${
-                        isDragging ? "movable-handle-hover" : ""
-                      }`}
-                      style={{
-                        width: `${item?.width || defSticker.width}px`,
-                        transform: `scale(${
-                          item?.scaleX || defSticker.scaleX
-                        }, ${item?.scaleY || defSticker.scaleY})`,
-                      }}
-                      onMouseUp={(e) => {
-                        if (!shouldBeSelected) return;
+                    {item.itemType === "sticker" && (
+                      <div
+                        onMouseDown={(e) => {
+                          startDrag({ e, type: "move" });
+                        }}
+                        ref={(el) => (itemsRefs.current[item.id] = el)}
+                        className={`${
+                          item.active ? "active" : ""
+                        } movable-handle !cursor-move p-2 focus:outline-none ${
+                          isDragging ? "movable-handle-hover" : ""
+                        }`}
+                        style={{
+                          width: `${item?.width || defSticker?.width}px`,
+                          transform: `scale(${
+                            item?.scaleX || defSticker.scaleX
+                          }, ${item?.scaleY || defSticker.scaleY})`,
+                        }}
+                        onMouseUp={(e) => {
+                          setTimeout(() => {
+                            if (!shouldBeSelected.current) return;
 
-                        const newItem = allItems.map((s, i) => ({
-                          ...s,
-                          active: i === index,
-                        }));
+                            const newItem = allItems.map((s, i) => ({
+                              ...s,
+                              active: i === index,
+                            }));
 
-                        setAllItems(newItem);
-                        setActiveID(item.id);
-                      }}
-                    >
-                      <Image
-                        className="w-full"
-                        width={400}
-                        height={400}
-                        src={item.src}
-                        alt={item?.alt || "image"}
-                      />
-                    </div>
-                  )}
-                </>
-              )}
-            </DraggableWrapper>
-          );
-        })}
+                            setAllItems(newItem);
+                            setActiveID(item.id);
+                          }, 0);
+                        }}
+                      >
+                        <Image
+                          className="w-full"
+                          width={400}
+                          height={400}
+                          src={item.src}
+                          alt={item?.alt || "image"}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+              </DraggableWrapper>
+            );
+          })}
+      </div>
+      {showCenterLine && (
+        <div className="pointer-events-none z-0 absolute top-0 bottom-0 left-1/2 w-px border-l border-dashed border-white"></div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import useDraggable from "@/hook/useDraggable";
 import { Move } from "lucide-react";
 import CcContext from "@/context/ccContext";
@@ -9,7 +9,7 @@ import {
   trRotation,
 } from "@/helper/helper";
 
-export default function DraggableWrapper({
+function DraggableWrapper({
   children,
   initialPosition,
   className = "",
@@ -17,12 +17,15 @@ export default function DraggableWrapper({
   item,
   index,
   zIndex,
-  element,
   mode,
+  shouldBeSelected,
   isActive,
+  parentRef,
+  setShowCenterLine,
+  setAllItems,
   ...props
 }) {
-  const { allItems, setAllItems, setShouldBeSelected } = useContext(CcContext);
+  const animationFrame = useRef(null);
 
   const initialFontSize = mode === "text" ? item.fontSize : null;
   const initialWidth = mode === "sticker" ? item.width : null;
@@ -35,39 +38,50 @@ export default function DraggableWrapper({
   const [brRotate, setBrRotate] = useState("br");
 
   const { position, isDragging, startDrag } = useDraggable({
+    setShowCenterLine,
     initialPosition,
-    element,
+    parentRef: parentRef?.current,
     onDragStart: (data) => {
+      shouldBeSelected.current = true;
       if (data?.type == "rotate") {
         setDragType(data?.type);
       }
     },
+
     onDragging: (data) => {
-      setShouldBeSelected(false);
-      setAllItems((prevItems) => {
-        return prevItems.map((item, i) => {
-          if (i === index) {
-            const updatedItem = { ...item };
+      if (data?.type !== "move") {
+        if (!animationFrame.current) {
+          animationFrame.current = requestAnimationFrame(() => {
+            setAllItems((prevItems) => {
+              return prevItems.map((item, i) => {
+                if (i === index) {
+                  const updatedItem = { ...item };
 
-            if (data?.type === "resize") {
-              if (mode === "text") {
-                updatedItem.fontSize = initialFontSize * data?.scale;
-              } else if (data?.type === "resize") {
-                updatedItem.width = initialWidth * data?.scale;
-              }
-            }
+                  if (data?.type === "resize") {
+                    if (mode === "text") {
+                      updatedItem.fontSize = initialFontSize * data?.scale;
+                    } else if (data?.type === "resize") {
+                      updatedItem.width = initialWidth * data?.scale;
+                    }
+                  }
 
-            if (data?.type === "rotate") {
-              updatedItem.rotate = data?.angle;
-            }
+                  if (data?.type === "rotate") {
+                    updatedItem.rotate = data?.angle;
+                  }
 
-            return updatedItem;
-          }
-          return item;
-        });
-      });
+                  return updatedItem;
+                }
+                return item;
+              });
+            });
+            animationFrame.current = null;
+          });
+        }
+      }
     },
     onDragEnd: (data) => {
+      shouldBeSelected.current = !data?.hasMoved;
+
       setAllItems((prevItems) => {
         return prevItems.map((item, i) => {
           if (i === index) {
@@ -79,7 +93,6 @@ export default function DraggableWrapper({
         });
       });
 
-      setShouldBeSelected(true);
       if (data?.type == "rotate") {
         setTlRotate(tlRotation(item?.rotate));
         if (mode == "sticker") {
@@ -96,11 +109,13 @@ export default function DraggableWrapper({
   return (
     <div
       {...props}
+      data-draggable
       className={`group absolute ${className}`}
       style={{
-        left: `${position.x}px`,
-        top: `${position.y}px`,
         cursor: isDragging ? "grabbing" : "grab",
+        transform: `translate(${position?.x}px, ${position?.y}px) rotate(${
+          item.rotate || 0
+        }deg)`,
         ...style,
         zIndex: isDragging || isActive ? 99999 : zIndex,
       }}
@@ -171,3 +186,14 @@ export default function DraggableWrapper({
     </div>
   );
 }
+
+export default React.memo(DraggableWrapper, (prev, next) => {
+  return (
+    prev.item.position.x === next.item.position.x &&
+    prev.item.position.y === next.item.position.y &&
+    prev.item.rotate === next.item.rotate &&
+    prev.item.width === next.item.width &&
+    prev.item.fontSize === next.item.fontSize &&
+    prev.isActive === next.isActive
+  );
+});
