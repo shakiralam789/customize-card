@@ -18,6 +18,8 @@ export default function InvitationCard() {
     parentRef,
     setShowCenterLine,
     setAllItems,
+    horizontalCentralLine,
+    setHorizontalCentralLine,
   } = useContext(CcContext);
 
   const handleFocus = (e, index, id) => {
@@ -134,6 +136,7 @@ export default function InvitationCard() {
                 setShowCenterLine={setShowCenterLine}
                 setAllItems={setAllItems}
                 shouldBeSelected={shouldBeSelected}
+                setHorizontalCentralLine={setHorizontalCentralLine}
               >
                 {({ isDragging, startDrag }) => (
                   <>
@@ -159,7 +162,6 @@ export default function InvitationCard() {
                         } movable-handle p-2 focus:outline-none whitespace-nowrap`}
                         onMouseUp={(e) => {
                           setTimeout(() => {
-                            console.log("child");
                             if (!shouldBeSelected.current) return;
                             handleFocus(e, index, item.id);
                           }, 0);
@@ -241,6 +243,9 @@ export default function InvitationCard() {
       </div>
       {showCenterLine && (
         <div className="pointer-events-none z-0 absolute top-0 bottom-0 left-1/2 w-px border-l border-dashed border-white"></div>
+      )}
+      {horizontalCentralLine && (
+        <div className="pointer-events-none z-0 absolute top-1/2 left-0 right-0 h-px border-t border-dashed border-white"></div>
       )}
     </div>
   );

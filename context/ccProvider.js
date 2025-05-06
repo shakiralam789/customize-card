@@ -83,6 +83,8 @@ const staticData = [
 
 const CcProvider = ({ children }) => {
   const [showCenterLine, setShowCenterLine] = useState(false);
+  const [horizontalCentralLine, setHorizontalCentralLine] = useState(false);
+
   const parentRef = useRef(null);
   const [isStickerDrawerOpen, setIsStickerDrawerOpen] = useState(false);
 
@@ -229,6 +231,8 @@ const CcProvider = ({ children }) => {
         showCenterLine,
         setShowCenterLine,
         parentRef,
+        horizontalCentralLine,
+        setHorizontalCentralLine,
       }}
     >
       {children}

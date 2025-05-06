@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import useDraggable from "@/hook/useDraggable";
 import { Move } from "lucide-react";
-import CcContext from "@/context/ccContext";
 import {
   blRotation,
   brRotation,
@@ -22,6 +21,7 @@ function DraggableWrapper({
   isActive,
   parentRef,
   setShowCenterLine,
+  setHorizontalCentralLine,
   setAllItems,
   ...props
 }) {
@@ -38,12 +38,13 @@ function DraggableWrapper({
   const [brRotate, setBrRotate] = useState("br");
 
   const { position, isDragging, startDrag } = useDraggable({
+    setHorizontalCentralLine,
     setShowCenterLine,
     initialPosition,
     parentRef: parentRef?.current,
     onDragStart: (data) => {
       shouldBeSelected.current = true;
-      if (data?.type == "rotate") {
+      if (data?.type == "rotate" || data?.type == "move") {
         setDragType(data?.type);
       }
     },
@@ -95,9 +96,7 @@ function DraggableWrapper({
 
       if (data?.type == "rotate") {
         setTlRotate(tlRotation(item?.rotate));
-        if (mode == "sticker") {
-          setTrRotate(trRotation(item?.rotate));
-        }
+        setTrRotate(trRotation(item?.rotate));
         setBlRotate(blRotation(item?.rotate));
         setBrRotate(brRotation(item?.rotate));
       }
@@ -120,43 +119,42 @@ function DraggableWrapper({
         zIndex: isDragging || isActive ? 99999 : zIndex,
       }}
     >
-      {mode == "text" && !item?.locked && (
-        <div
-          onMouseDown={(e) => startDrag({ e, type: "move" })}
-          className={`move-icon absolute -right-2 -top-0 transform -translate-y-1/2 
-                          bg-gray-800 p-1 rounded hover:bg-gray-700 z-10
-                          ${isActive ? "block" : "hidden"}`}
-        >
-          <Move size={16} className="text-white" />
-        </div>
-      )}
-
       {typeof children === "function"
         ? children({ startDrag, isDragging, position })
         : children}
 
       {isActive && !item?.locked && (
         <>
-          <div
-            onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-            className={`${
-              isDragging && dragType == "rotate" ? "active" : ""
-            } absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 text-black bg-white hover:bg-emerald-500 hover:text-white [&.active]:bg-emerald-500 [&.active]:text-white rounded-full size-9 flex items-center justify-center`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="none"
+          <div className="absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 flex gap-1.5 items-center justify-center">
+            <div
+              onMouseDown={(e) => startDrag({ e, type: "rotate" })}
+              className={`${
+                isDragging && dragType == "rotate" ? "active" : ""
+              } text-black bg-white hover:bg-emerald-500 hover:text-white [&.active]:bg-emerald-500 [&.active]:text-white rounded-full size-8 flex items-center justify-center`}
             >
-              <path
-                stroke="currentColor"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.5"
-                d="m21 17.325-2.963.685-.681-2.947M3 6.673l2.963-.685.681 2.947m3.928-5.185a8.373 8.373 0 0 1 7.515 13.999m-4.66 2.502a8.373 8.373 0 0 1-7.47-14.048"
-              ></path>
-            </svg>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="none"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="1.5"
+                  d="m21 17.325-2.963.685-.681-2.947M3 6.673l2.963-.685.681 2.947m3.928-5.185a8.373 8.373 0 0 1 7.515 13.999m-4.66 2.502a8.373 8.373 0 0 1-7.47-14.048"
+                ></path>
+              </svg>
+            </div>
+            <div
+              onMouseDown={(e) => startDrag({ e, type: "move" })}
+              className={`${
+                isDragging && dragType == "move" ? "active" : ""
+              } text-black bg-white hover:bg-emerald-500 hover:text-white [&.active]:bg-emerald-500 [&.active]:text-white rounded-full size-8 flex items-center justify-center`}
+            >
+              <Move size={16} />
+            </div>
           </div>
 
           <span
@@ -164,14 +162,10 @@ function DraggableWrapper({
             className={`cursor-nwse-resize size-handler size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
           ></span>
 
-          {mode == "sticker" && (
-            <span
-              onMouseDown={(e) =>
-                startDrag({ e, type: "resize", dir: trRotate })
-              }
-              className={`cursor-nesw-resize size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
-            ></span>
-          )}
+          <span
+            onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
+            className={`cursor-nesw-resize size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
+          ></span>
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: blRotate })}
             className={`cursor-nesw-resize size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 left-0.5 -translate-x-1/2 translate-y-1/2`}
@@ -194,6 +188,20 @@ export default React.memo(DraggableWrapper, (prev, next) => {
     prev.item.rotate === next.item.rotate &&
     prev.item.width === next.item.width &&
     prev.item.fontSize === next.item.fontSize &&
-    prev.isActive === next.isActive
+    prev.isActive === next.isActive &&
+    prev.item.locked === next.item.locked &&
+    prev.item.hidden === next.item.hidden &&
+    prev.mode === next.mode &&
+    prev.item.zIndex === next.item.zIndex &&
+    prev.item.textCurve === next.item.textCurve &&
+    prev.item.textAlign === next.item.textAlign &&
+    prev.item.color === next.item.color &&
+    prev.item.fontWeight === next.item.fontWeight &&
+    prev.item.lineHeight === next.item.lineHeight &&
+    prev.item.fontStyle === next.item.fontStyle &&
+    prev.item.letterSpacing === next.item.letterSpacing &&
+    prev.item.textTransform === next.item.textTransform &&
+    prev.item.textCurve === next.item.textCurve &&
+    prev.item.isPlaceholder === next.item.isPlaceholder
   );
 });

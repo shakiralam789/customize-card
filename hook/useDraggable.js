@@ -6,6 +6,7 @@ export default function useDraggable({
   onDragEnd = () => {},
   initialPosition,
   setShowCenterLine,
+  setHorizontalCentralLine,
   parentRef,
 }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -21,6 +22,7 @@ export default function useDraggable({
 
   const startDrag = useCallback(
     ({ e, type, dir }) => {
+      
       e.preventDefault();
       e.stopPropagation();
 
@@ -90,11 +92,32 @@ export default function useDraggable({
 
     const parentRect = parentRef.getBoundingClientRect();
     const dragCenter = rect.left + width / 2;
+
+    const dragLeft = rect.left;
+    const dragRight = rect.left + width;
+
+    const dragTop = rect.top;
+    const dragBottom = rect.top + height;
+
     const parentCenter = parentRect.left + parentRect.width / 2;
     const threshold = 2;
 
     setShowCenterLine((prev) => {
-      const shouldShow = Math.abs(dragCenter - parentCenter) < threshold;
+      const shouldShow =
+        Math.abs(dragCenter - parentCenter) < threshold ||
+        Math.abs(dragLeft - parentCenter) < threshold ||
+        Math.abs(dragRight - parentCenter) < threshold;
+      return prev !== shouldShow ? shouldShow : prev;
+    });
+
+    const dragTopCenter = rect.top + height / 2;
+    const parentTopCenter = parentRect.top + parentRect.height / 2;
+
+    setHorizontalCentralLine((prev) => {
+      const shouldShow =
+        Math.abs(dragTopCenter - parentTopCenter) < threshold ||
+        Math.abs(dragBottom - parentTopCenter) < threshold ||
+        Math.abs(dragTop - parentTopCenter) < threshold;
       return prev !== shouldShow ? shouldShow : prev;
     });
 
@@ -122,6 +145,7 @@ export default function useDraggable({
     setIsDragging(false);
     setType(null);
     setShowCenterLine(false);
+    setHorizontalCentralLine(false);
     draggingRef.current = null;
     setIsClicked(false);
 
@@ -148,6 +172,6 @@ export default function useDraggable({
   return {
     position,
     isDragging,
-    startDrag,
+    startDrag
   };
 }
