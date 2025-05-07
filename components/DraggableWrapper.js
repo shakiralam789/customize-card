@@ -97,7 +97,7 @@ export default function DraggableWrapper({
             updatedItem.position = data?.position;
             updatedItem.rotate = currentAngle.current;
             updatedItem.width = currentWidth.current;
-            updatedItem.fontSize = currentFontSize.current;
+            updatedItem.fontSize = Math.round(currentFontSize.current);
             return updatedItem;
           }
           return item;
@@ -126,8 +126,8 @@ export default function DraggableWrapper({
   }, [item?.width]);
 
   useEffect(() => {
-    currentFontSize.current = item?.fontSize;
-    setFontSize(item?.fontSize);
+    currentFontSize.current = Math.round(item?.fontSize);
+    setFontSize(Math.round(item?.fontSize));
   }, [item?.fontSize]);
 
   return (
