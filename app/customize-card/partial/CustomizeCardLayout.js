@@ -4,12 +4,10 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Nav from "./Nav";
 import EditPanelBar from "./EditorPanel/EditPanelBar";
-import CcProvider from "@/context/ccProvider";
 
 export default function CustomizeCardLayout({
   zoom,
   setZoom,
-  addZoomToLocalStorage,
   children,
 }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -45,7 +43,6 @@ export default function CustomizeCardLayout({
 
   const handleZoomChange = (e) => {
     setZoom(parseInt(e.target.value));
-    addZoomToLocalStorage(e.target.value);
   };
 
   const handleMouseDown = (e) => {
@@ -72,7 +69,6 @@ export default function CustomizeCardLayout({
 
   const resetZoom = () => {
     setZoom(100);
-    addZoomToLocalStorage(100);
     setPosition({ x: 0, y: 0 });
   };
 

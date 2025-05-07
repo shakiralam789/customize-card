@@ -246,19 +246,19 @@ const CcProvider = ({ children }) => {
   function getDataOnLoad(id) {
     let items = [];
     let frameData = {};
-    let zoom = 100;
+    // let zoom = 100;
 
     let storageName = `customize-card-data${id || ""}`;
-    let zoomName = `customize-card-zoom${id || ""}`;
+    // let zoomName = `customize-card-zoom${id || ""}`;
 
     let localTItems = localStorage.getItem(storageName);
-    let localTZoom = localStorage.getItem(zoomName);
+    // let localTZoom = localStorage.getItem(zoomName);
 
-    if (zoom) {
-      let parseZoom = JSON.parse(localTZoom);
-      zoom = parseZoom || 100;
-      setZoom(zoom);
-    }
+    // if (zoom) {
+    //   let parseZoom = JSON.parse(localTZoom);
+    //   zoom = parseZoom || 100;
+    //   setZoom(zoom);
+    // }
 
     if (localTItems) {
       let parseItems = JSON.parse(localTItems);

@@ -10,7 +10,6 @@ export default function Page() {
   const {
     zoom,
     setZoom,
-    addZoomToLocalStorage,
     getDataOnLoad,
     allItems,
     activeID,
@@ -54,11 +53,9 @@ export default function Page() {
     <CustomizeCardLayout
       zoom={zoom}
       setZoom={setZoom}
-      addZoomToLocalStorage={addZoomToLocalStorage}
     >
       <InvitationCard
         setZoom={setZoom}
-        addZoomToLocalStorage={addZoomToLocalStorage}
         getDataOnLoad={getDataOnLoad}
         allItems={allItems}
         activeID={activeID}

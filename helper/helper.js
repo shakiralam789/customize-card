@@ -214,11 +214,6 @@ export function addToLocalStorage({ id, allItems, frame }) {
   );
 }
 
-export function addZoomToLocalStorage(value, id) {
-  localStorage.setItem(`customize-card-zoom${id || ""}`, value);
-}
-
 export function removeLocalStorage(id) {
   localStorage.removeItem(`customize-card-data${id || ""}`);
-  localStorage.removeItem(`customize-card-zoom${id || ""}`);
 }
