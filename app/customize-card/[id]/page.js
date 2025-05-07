@@ -1,8 +1,9 @@
 "use client";
 import React, { useContext, useEffect } from "react";
-import InvitationCard from "./partial/InvitationCard";
-import CustomizeCardLayout from "./partial/CustomizeCardLayout";
+import InvitationCard from "../partial/InvitationCard";
+import CustomizeCardLayout from "../partial/CustomizeCardLayout";
 import CcContext from "@/context/ccContext";
+import { useParams } from "next/navigation";
 import { addToLocalStorage } from "@/helper/helper";
 
 export default function Page() {
@@ -28,18 +29,26 @@ export default function Page() {
     setFrame,
   } = useContext(CcContext);
 
+  const { id } = useParams();
   const hasMounted = React.useRef(false);
 
   useEffect(() => {
-    getDataOnLoad();
-  }, []);
+    if (id) {
+      getDataOnLoad(id);
+    }
+  }, [id]);
 
   useEffect(() => {
+    if (!id) return;
+
     if (hasMounted.current) {
-      addToLocalStorage(allItems);
+      addToLocalStorage({ id, allItems, frame });
+    }
+
+    if (!hasMounted.current && allItems.length > 0) {
       hasMounted.current = true;
     }
-  }, [allItems]);
+  }, [allItems, frame]);
 
   return (
     <CustomizeCardLayout

@@ -3,6 +3,7 @@
 import { act, useEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
+import { frame } from "framer-motion";
 
 const defText = {
   itemType: "text",
@@ -30,56 +31,65 @@ const defSticker = {
   rotate: 0,
 };
 
-const staticData = [
-  {
-    id: uuid4(),
-    name: "Sticker",
-    itemType: "sticker",
-    src: "/images/stickers/birthday-invitation.png",
-    alt: "birthday-invitation",
-    ...defSticker,
-    position: { x: 135, y: 284 },
+const staticData = {
+  id: "geometric-floral",
+  data: {
+    frame: {
+      backgroundImage: "/images/invitations/geometric-flowers.jpg",
+      backgroundColor: "#fff",
+    },
+    items: [
+      {
+        id: uuid4(),
+        name: "Sticker",
+        itemType: "sticker",
+        src: "/images/stickers/birthday-invitation.png",
+        alt: "birthday-invitation",
+        ...defSticker,
+        position: { x: 135, y: 284 },
+      },
+      {
+        id: uuid4(),
+        name: "Invitation Letter",
+        itemType: "text",
+        text: `<div>Saturday, June 17, 2025</div>
+              <div>at three o'clock in the afternoon</div>
+              <div>Grace Community Church</div>`,
+        isPlaceholder: false,
+        position: { x: 38, y: 148 },
+        fontSize: 14,
+        contentEditable: false,
+        textAlign: "center",
+        color: "#c6a489",
+        fontWeight: "normal",
+        lineHeight: "2",
+        fontStyle: "normal",
+        letterSpacing: "0",
+        textTransform: "uppercase",
+        active: false,
+        rotate: 0,
+      },
+      {
+        id: uuid4(),
+        name: "Address",
+        itemType: "text",
+        text: `<div>4551 East Street Wilmot, Virginia</div>`,
+        isPlaceholder: false,
+        position: { x: 77, y: 242 },
+        fontSize: 12,
+        contentEditable: false,
+        textAlign: "center",
+        color: "#7db2bd",
+        fontWeight: "normal",
+        lineHeight: "2",
+        fontStyle: "normal",
+        letterSpacing: "0",
+        textTransform: "none",
+        active: false,
+      },
+    ],
   },
-  {
-    id: uuid4(),
-    name: "Invitation Letter",
-    itemType: "text",
-    text: `<div>Saturday, June 17, 2025</div>
-          <div>at three o'clock in the afternoon</div>
-          <div>Grace Community Church</div>`,
-    isPlaceholder: false,
-    position: { x: 38, y: 148 },
-    fontSize: 14,
-    contentEditable: false,
-    textAlign: "center",
-    color: "#c6a489",
-    fontWeight: "normal",
-    lineHeight: "2",
-    fontStyle: "normal",
-    letterSpacing: "0",
-    textTransform: "uppercase",
-    active: false,
-    rotate: 0,
-  },
-  {
-    id: uuid4(),
-    name: "Address",
-    itemType: "text",
-    text: `<div>4551 East Street Wilmot, Virginia</div>`,
-    isPlaceholder: false,
-    position: { x: 77, y: 242 },
-    fontSize: 12,
-    contentEditable: false,
-    textAlign: "center",
-    color: "#7db2bd",
-    fontWeight: "normal",
-    lineHeight: "2",
-    fontStyle: "normal",
-    letterSpacing: "0",
-    textTransform: "none",
-    active: false,
-  },
-];
+};
 
 const CcProvider = ({ children }) => {
   const [zoom, setZoom] = useState(100);
@@ -97,6 +107,7 @@ const CcProvider = ({ children }) => {
   const itemsRefs = useRef({});
 
   const [allItems, setAllItems] = useState([]);
+  const [frame, setFrame] = useState({});
 
   function addNewText() {
     const id = uuid4();
@@ -164,26 +175,33 @@ const CcProvider = ({ children }) => {
     setActiveID(null);
   }
 
-  function addToLocalStorage() {
-    localStorage.setItem("customize-card-items", JSON.stringify(allItems));
-  }
+  function getDataOnLoad(id) {
+    let items = [];
+    let frameData = {};
+    let zoom = 100;
 
-  function addZoomToLocalStorage(value) {
-    localStorage.setItem("customize-card-zoom", value);
-  }
+    let storageName = `customize-card-data${id || ""}`;
+    let zoomName = `customize-card-zoom${id || ""}`;
 
-  useEffect(() => {
-    let items = localStorage.getItem("customize-card-items");
-    let zoom = localStorage.getItem("customize-card-zoom");
+    let localTItems = localStorage.getItem(storageName);
+    let localTZoom = localStorage.getItem(zoomName);
 
+    
     if (zoom) {
+      let parseZoom = JSON.parse(localTZoom);
+      zoom = parseZoom || 100;
       setZoom(zoom);
     }
-
-    if (items) {
-      items = JSON.parse(items);
-    } else {
-      items = staticData || [];
+    
+    if (localTItems) {
+      let parseItems = JSON.parse(localTItems);
+      if (parseItems) {
+        items = parseItems?.data?.items || [];
+        frameData = parseItems?.data?.frame || {};
+      }
+    } else if (id) {
+      items = staticData?.data?.items || [];
+      frameData = staticData?.data?.frame || {};
     }
 
     if (items && items.length > 0) {
@@ -192,7 +210,6 @@ const CcProvider = ({ children }) => {
           ...item,
           zIndex: 10 + index,
           name: item.name ? item.name : `Layer ${index + 1}`,
-          // here calculation for zoom
           active: false,
         };
         if (!newItem.position) {
@@ -217,11 +234,9 @@ const CcProvider = ({ children }) => {
         });
       }, 0);
     }
-  }, []);
 
-  useEffect(() => {
-    // addToLocalStorage();
-  }, [allItems]);
+    setFrame(frameData);
+  }
 
   return (
     <CcContext.Provider
@@ -247,7 +262,9 @@ const CcProvider = ({ children }) => {
         setHorizontalCentralLine,
         zoom,
         setZoom,
-        addZoomToLocalStorage,
+        getDataOnLoad,
+        frame,
+        setFrame
       }}
     >
       {children}

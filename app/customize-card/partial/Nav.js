@@ -19,6 +19,7 @@ import RotateText from "./feature/RotateText";
 import DeleteItem from "./feature/DeleteItem";
 import useItemsMap from "@/hook/useItemMap";
 import FontFamilyChange from "./feature/FontFamilyChange";
+import Link from "next/link";
 
 export default function Nav() {
   const {
@@ -37,9 +38,12 @@ export default function Nav() {
       <div className="w-full">
         <div className="flex items-center justify-between">
           <div>
-            <button className="p-2 rounded-full text-gray-700 font-bold hover:bg-gray-100">
+            <Link
+              href="/invitations"
+              className="p-2 rounded-full text-gray-700 font-bold hover:bg-gray-100"
+            >
               LOGO
-            </button>
+            </Link>
           </div>
 
           <div className="flex space-x-4">

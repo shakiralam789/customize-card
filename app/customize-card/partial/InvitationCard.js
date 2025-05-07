@@ -5,23 +5,24 @@ import DraggableWrapper from "@/components/DraggableWrapper";
 import Image from "next/image";
 import { getFontFamily } from "@/helper/helper";
 
-export default function InvitationCard({zoomLevel}) {
-  const {
-    allItems,
-    activeID,
-    setActiveID,
-    itemsRefs,
-    shouldBeSelected,
-    defText,
-    defSticker,
-    showCenterLine,
-    parentRef,
-    setShowCenterLine,
-    setAllItems,
-    horizontalCentralLine,
-    setHorizontalCentralLine,
-  } = useContext(CcContext);
-
+export default function InvitationCard({
+  zoomLevel,
+  allItems,
+  activeID,
+  setActiveID,
+  itemsRefs,
+  shouldBeSelected,
+  defText,
+  defSticker,
+  showCenterLine,
+  parentRef,
+  setShowCenterLine,
+  setAllItems,
+  horizontalCentralLine,
+  setHorizontalCentralLine,
+  frame,
+  setFrame,
+}) {
   const handleFocus = (e, index, id) => {
     let plch = allItems[index].isPlaceholder;
 
@@ -102,17 +103,22 @@ export default function InvitationCard({zoomLevel}) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [activeID]);
-
   return (
     <div
       ref={parentRef}
-      className="p-4 bg-gray-800 bg-no-repeat bg-cover relative"
+      className="p-4 bg-no-repeat bg-cover relative shadow"
       style={{
         width: "400px",
         height: "550px",
-        backgroundImage: "url('/images/inv-card.jpg')",
+        backgroundColor: `${
+          frame?.backgroundColor ? frame.backgroundColor : "#fff"
+        }`,
+        backgroundImage: `${
+          frame?.backgroundImage ? `url(${frame.backgroundImage})` : "none"
+        }`,
       }}
     >
+      {frame.background}
       <div className="relative z-10">
         {allItems &&
           allItems.length > 0 &&

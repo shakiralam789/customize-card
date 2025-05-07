@@ -113,7 +113,7 @@ export function getWidthAndAspectRatio(element) {
 }
 
 export function tlRotation(rotate) {
-  let dir= "tl";
+  let dir = "tl";
 
   if (!rotate) return;
 
@@ -143,12 +143,12 @@ export function trRotation(rotate) {
   } else if (rotate > 225 && rotate < 315) {
     dir = "tl";
   }
-  
+
   return dir;
 }
 
 export function blRotation(rotate) {
-  let dir="bl";
+  let dir = "bl";
 
   if (!rotate) return;
 
@@ -165,7 +165,7 @@ export function blRotation(rotate) {
 }
 
 export function brRotation(rotate) {
-  let dir= "br";
+  let dir = "br";
 
   if (!rotate) return;
 
@@ -184,7 +184,7 @@ export function brRotation(rotate) {
 export function getFontFamily(font) {
   const fallbackMap = {
     "Dancing Script": ['"Brush Script MT"', '"Comic Sans MS"', "cursive"],
-    "Pacifico": ["cursive"],
+    Pacifico: ["cursive"],
     "Playfair Display": ['"Georgia"', '"Times New Roman"', "serif"],
     Roboto: ['"Helvetica Neue"', "Arial", "sans-serif"],
     "Open Sans": ['"Helvetica Neue"', "Arial", "sans-serif"],
@@ -195,4 +195,30 @@ export function getFontFamily(font) {
 
   const fallbacks = fallbackMap[font] || ["sans-serif"];
   return [`"${font}"`, ...fallbacks].join(", ");
+}
+
+export function addToLocalStorage({ id, allItems, frame }) {
+  if (!allItems || !frame) {
+    return;
+  }
+  let formatData = {
+    id: id,
+    data: {
+      items: allItems || [],
+      frame: frame || {},
+    },
+  };
+  localStorage.setItem(
+    `customize-card-data${id || ""}`,
+    JSON.stringify(formatData)
+  );
+}
+
+export function addZoomToLocalStorage(value, id) {
+  localStorage.setItem(`customize-card-zoom${id || ""}`, value);
+}
+
+export function removeLocalStorage(id) {
+  localStorage.removeItem(`customize-card-data${id || ""}`);
+  localStorage.removeItem(`customize-card-zoom${id || ""}`);
 }

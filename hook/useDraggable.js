@@ -31,8 +31,6 @@ export default function useDraggable({
       const element = e.currentTarget.closest("[data-draggable]");
       if (!element) return;
       
-      console.log(dir);
-      
       draggingRef.current = element;
 
       setType(type || null);
@@ -156,8 +154,6 @@ export default function useDraggable({
     draggingRef.current = null;
     setIsClicked(false);
 
-    console.log(angleRef.current);
-    
     onDragEnd?.({
       hasMoved: hasMovedRef.current,
       type,
