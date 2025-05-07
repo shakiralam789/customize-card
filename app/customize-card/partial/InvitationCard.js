@@ -133,11 +133,6 @@ export default function InvitationCard({
                 className={`${item?.hidden ? "hidden" : ""} ${
                   item?.locked ? "pointer-events-none user-select-none" : ""
                 } ${item.active ? "active" : ""}
-                ${
-                  isAnyItemDragging && !item?.active
-                    ? "pointer-events-none"
-                    : ""
-                }
                  prevent-customize-card-blur movable-handle-parent`}
                 initialPosition={item.position}
                 key={item.id}
@@ -169,9 +164,13 @@ export default function InvitationCard({
                         }}
                         contentEditable={item.contentEditable}
                         suppressContentEditableWarning
-                        className={`${
-                          item.active ? "active" : "!cursor-move"
-                        } ${
+                        className={`
+                        ${
+                          isAnyItemDragging && !isDragging
+                            ? "pointer-events-none"
+                            : ""
+                        }
+                        ${item.active ? "active" : "!cursor-move"} ${
                           item.isPlaceholder ? "!text-green-600" : "text-black"
                         } ${
                           isDragging ? "movable-handle-hover" : ""
@@ -217,7 +216,13 @@ export default function InvitationCard({
                           startDrag({ e, type: "move" });
                         }}
                         ref={(el) => (itemsRefs.current[item.id] = el)}
-                        className={`${
+                        className={`
+                        ${
+                          isAnyItemDragging && !isDragging
+                            ? "pointer-events-none"
+                            : ""
+                        }
+                        ${
                           item.active ? "active" : ""
                         } movable-handle !cursor-move p-2 focus:outline-none ${
                           isDragging ? "movable-handle-hover" : ""
