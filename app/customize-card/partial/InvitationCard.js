@@ -33,13 +33,14 @@ export default function InvitationCard({
     }));
 
     setActiveID(id);
-
+    
     if (plch) {
       let target = e.target.closest(".movable-handle");
-
+      
       if (target) {
         target.innerHTML = "";
       }
+      
       newItem[index].isPlaceholder = false;
     }
 

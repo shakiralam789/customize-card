@@ -204,6 +204,7 @@ const CcProvider = ({ children }) => {
     });
 
     setActiveID(id);
+    shouldBeSelected.current = true;
   }
 
   function addNewSticker(e, data) {
