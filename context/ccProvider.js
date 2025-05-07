@@ -1,6 +1,6 @@
 // context/CcProvider.js
 "use client";
-import { act, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import { frame } from "framer-motion";
@@ -34,60 +34,129 @@ const defSticker = {
 const staticData = {
   id: "geometric-floral",
   data: {
+    items: [
+      {
+        id: "aa43be97-a5ad-4eda-af60-8de829453b88",
+        name: "Invitation Letter",
+        itemType: "text",
+        text: '<p data-pm-slice="1 1 []">YOU ARE CORDIALLY</p><p>INVITED TO THE WEDDING OF </p>',
+        isPlaceholder: false,
+        position: {
+          x: 95,
+          y: 118,
+        },
+        fontSize: 9,
+        contentEditable: false,
+        textAlign: "center",
+        color: "#241f31",
+        fontWeight: "normal",
+        lineHeight: "2",
+        fontStyle: "normal",
+        letterSpacing: "1.1",
+        textTransform: "uppercase",
+        active: false,
+        rotate: "0",
+        zIndex: 10,
+        fontFamily: "Times New Roman",
+      },
+      {
+        id: "e71ed857-1ae6-4b27-b12e-42e8edd37519",
+        text: '<p data-pm-slice="1 1 []">LORALEIGH</p><p>JAMESON</p>',
+        active: false,
+        contentEditable: false,
+        zIndex: 11,
+        name: "Text",
+        itemType: "text",
+        position: {
+          x: 88,
+          y: 180,
+        },
+        fontSize: 18,
+        textAlign: "center",
+        color: "#241f31",
+        fontWeight: "bold",
+        lineHeight: "1.5",
+        fontStyle: "normal",
+        letterSpacing: "6.6",
+        textTransform: "none",
+        textCurve: 0,
+        rotate: 0,
+        isPlaceholder: false,
+        fontFamily: "Times New Roman",
+      },
+      {
+        id: "cc0b9c71-2d81-4e1a-ae17-b6b69f74f0fb",
+        text: '<p data-pm-slice="1 1 []">CHRISTOPHER</p><p>WASHINGTON</p>',
+        active: false,
+        contentEditable: false,
+        zIndex: 12,
+        name: "Text",
+        itemType: "text",
+        position: {
+          x: 71,
+          y: 275,
+        },
+        fontSize: 18,
+        textAlign: "center",
+        color: "#241f31",
+        fontWeight: "bold",
+        lineHeight: "1.5",
+        fontStyle: "normal",
+        letterSpacing: "6.6",
+        textTransform: "none",
+        textCurve: 0,
+        rotate: 0,
+        isPlaceholder: false,
+        fontFamily: "Times New Roman",
+      },
+      {
+        id: "77973ef2-a0c8-49fc-bfbc-24c23ed384d3",
+        text: '<p data-pm-slice="1 1 []">SATURDAY, SEPTEMBER 16TH, 2025</p><p>7 O’CLOCK IN THE EVENING</p><p>MAJESTIC BALLROOM</p><p>SAN DIEGO</p>',
+        active: false,
+        contentEditable: false,
+        zIndex: 13,
+        name: "Text",
+        itemType: "text",
+        position: {
+          x: 84,
+          y: 335,
+        },
+        fontSize: 9,
+        textAlign: "center",
+        color: "#241f31",
+        fontWeight: "normal",
+        lineHeight: "2",
+        fontStyle: "normal",
+        letterSpacing: "1.1",
+        textTransform: "none",
+        textCurve: 0,
+        rotate: 0,
+        isPlaceholder: false,
+        fontFamily: "Times New Roman",
+      },
+      {
+        id: "4db09e3e-bff3-4f02-9714-d39885374466",
+        itemType: "sticker",
+        position: {
+          x: 132,
+          y: 232,
+        },
+        width: 100,
+        scaleX: 1,
+        scaleY: 1,
+        rotate: 0,
+        src: "/images/stickers/and.png",
+        alt: "and",
+        name: "and sticker",
+        zIndex: 14,
+        active: false,
+        contentEditable: false,
+      },
+    ],
     frame: {
       backgroundImage: "/images/invitations/geometric-flowers.jpg",
       backgroundColor: "#fff",
     },
-    items: [
-      {
-        id: uuid4(),
-        name: "Sticker",
-        itemType: "sticker",
-        src: "/images/stickers/birthday-invitation.png",
-        alt: "birthday-invitation",
-        ...defSticker,
-        position: { x: 135, y: 284 },
-      },
-      {
-        id: uuid4(),
-        name: "Invitation Letter",
-        itemType: "text",
-        text: `<div>Saturday, June 17, 2025</div>
-              <div>at three o'clock in the afternoon</div>
-              <div>Grace Community Church</div>`,
-        isPlaceholder: false,
-        position: { x: 38, y: 148 },
-        fontSize: 14,
-        contentEditable: false,
-        textAlign: "center",
-        color: "#c6a489",
-        fontWeight: "normal",
-        lineHeight: "2",
-        fontStyle: "normal",
-        letterSpacing: "0",
-        textTransform: "uppercase",
-        active: false,
-        rotate: 0,
-      },
-      {
-        id: uuid4(),
-        name: "Address",
-        itemType: "text",
-        text: `<div>4551 East Street Wilmot, Virginia</div>`,
-        isPlaceholder: false,
-        position: { x: 77, y: 242 },
-        fontSize: 12,
-        contentEditable: false,
-        textAlign: "center",
-        color: "#7db2bd",
-        fontWeight: "normal",
-        lineHeight: "2",
-        fontStyle: "normal",
-        letterSpacing: "0",
-        textTransform: "none",
-        active: false,
-      },
-    ],
   },
 };
 
@@ -113,7 +182,6 @@ const CcProvider = ({ children }) => {
     const id = uuid4();
 
     setAllItems((prevItems) => {
-      // Update zIndex and active state for all existing items
       const updatedItems = prevItems.map((item, index) => ({
         ...item,
         zIndex: 10 + index,
@@ -186,13 +254,12 @@ const CcProvider = ({ children }) => {
     let localTItems = localStorage.getItem(storageName);
     let localTZoom = localStorage.getItem(zoomName);
 
-    
     if (zoom) {
       let parseZoom = JSON.parse(localTZoom);
       zoom = parseZoom || 100;
       setZoom(zoom);
     }
-    
+
     if (localTItems) {
       let parseItems = JSON.parse(localTItems);
       if (parseItems) {
@@ -264,7 +331,7 @@ const CcProvider = ({ children }) => {
         setZoom,
         getDataOnLoad,
         frame,
-        setFrame
+        setFrame,
       }}
     >
       {children}

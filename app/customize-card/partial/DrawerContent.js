@@ -21,6 +21,11 @@ export default function DrawerContent() {
       src: "/images/stickers/birthday-card.png",
       alt: "birthday-card",
     },
+    {
+      id: uuid4(),
+      src: "/images/stickers/and.png",
+      alt: "and",
+    }
   ];
 
   return (
@@ -35,7 +40,7 @@ export default function DrawerContent() {
               className="w-full shadow hover:shadow-xl"
             >
               <Image
-                className="w-full object-contain cursor-pointer"
+                className="w-full aspect-square object-contain cursor-pointer"
                 src={item.src}
                 alt={item.alt}
                 width={100}

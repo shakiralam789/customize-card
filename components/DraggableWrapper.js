@@ -9,7 +9,7 @@ import {
 } from "@/helper/helper";
 import HandleBtn from "./HandleBtn";
 
-function DraggableWrapper({
+export default function DraggableWrapper({
   children,
   initialPosition,
   className = "",
@@ -140,27 +140,27 @@ function DraggableWrapper({
               onMouseDown={(e) => startDrag({ e, type: "move" })}
               className={isDragging && dragType == "move" ? "active" : ""}
             >
-              <Move className="w-full"/>
+              <Move className="w-full" />
             </HandleBtn>
           </div>
 
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: tlRotate })}
-            className={`cursor-nwse-resize size-handler size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
+            className={`cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
           ></span>
 
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
-            className={`cursor-nesw-resize size-handler size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
+            className={`cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
           ></span>
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: blRotate })}
-            className={`cursor-nesw-resize size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 left-0.5 -translate-x-1/2 translate-y-1/2`}
+            className={`cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0.5 left-0.5 -translate-x-1/2 translate-y-1/2`}
           ></span>
 
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: brRotate })}
-            className={`cursor-nwse-resize size-handler size-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2`}
+            className={`cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2`}
           ></span>
         </>
       )}
@@ -168,28 +168,30 @@ function DraggableWrapper({
   );
 }
 
-export default React.memo(DraggableWrapper, (prev, next) => {
-  return (
-    prev.item.position.x === next.item.position.x &&
-    prev.item.position.y === next.item.position.y &&
-    prev.item.rotate === next.item.rotate &&
-    prev.item.width === next.item.width &&
-    prev.item.fontSize === next.item.fontSize &&
-    prev.isActive === next.isActive &&
-    prev.item.locked === next.item.locked &&
-    prev.item.hidden === next.item.hidden &&
-    prev.mode === next.mode &&
-    prev.item.zIndex === next.item.zIndex &&
-    prev.item.textCurve === next.item.textCurve &&
-    prev.item.textAlign === next.item.textAlign &&
-    prev.item.color === next.item.color &&
-    prev.item.fontWeight === next.item.fontWeight &&
-    prev.item.lineHeight === next.item.lineHeight &&
-    prev.item.fontStyle === next.item.fontStyle &&
-    prev.item.letterSpacing === next.item.letterSpacing &&
-    prev.item.textTransform === next.item.textTransform &&
-    prev.item.textCurve === next.item.textCurve &&
-    prev.item.isPlaceholder === next.item.isPlaceholder &&
-    prev.zoomLevel === next.zoomLevel
-  );
-});
+// export default React.memo(DraggableWrapper, (prev, next) => {
+//   return (
+//     prev.item.position.x === next.item.position.x &&
+//     prev.item.position.y === next.item.position.y &&
+//     prev.item.rotate === next.item.rotate &&
+//     prev.item.width === next.item.width &&
+//     prev.item.fontSize === next.item.fontSize &&
+//     prev.item.active === next.item.active &&
+//     prev.isActive === next.isActive &&
+//     prev.item.locked === next.item.locked &&
+//     prev.item.hidden === next.item.hidden &&
+//     prev.mode === next.mode &&
+//     prev.item.zIndex === next.item.zIndex &&
+//     prev.item.textCurve === next.item.textCurve &&
+//     prev.item.textAlign === next.item.textAlign &&
+//     prev.item.color === next.item.color &&
+//     prev.item.fontWeight === next.item.fontWeight &&
+//     prev.item.lineHeight === next.item.lineHeight &&
+//     prev.item.fontStyle === next.item.fontStyle &&
+//     prev.item.fontFamily === next.item.fontFamily &&
+//     prev.item.letterSpacing === next.item.letterSpacing &&
+//     prev.item.textTransform === next.item.textTransform &&
+//     prev.item.textCurve === next.item.textCurve &&
+//     prev.item.isPlaceholder === next.item.isPlaceholder &&
+//     prev.zoomLevel === next.zoomLevel
+//   );
+// });

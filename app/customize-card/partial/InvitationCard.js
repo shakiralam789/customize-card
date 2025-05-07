@@ -1,6 +1,5 @@
 "use client";
-import CcContext from "@/context/ccContext";
-import React, { act, useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import DraggableWrapper from "@/components/DraggableWrapper";
 import Image from "next/image";
 import { getFontFamily } from "@/helper/helper";
@@ -23,6 +22,7 @@ export default function InvitationCard({
   frame,
   setFrame,
 }) {
+  
   const handleFocus = (e, index, id) => {
     let plch = allItems[index].isPlaceholder;
 
@@ -33,9 +33,13 @@ export default function InvitationCard({
     }));
 
     setActiveID(id);
-
+    
     if (plch) {
-      e.currentTarget.innerHTML = "";
+      let target = e.target.closest(".movable-handle");
+      
+      if(target) {
+        target.innerHTML = "";
+      }
       newItem[index].isPlaceholder = false;
     }
 
@@ -103,6 +107,7 @@ export default function InvitationCard({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [activeID]);
+
   return (
     <div
       ref={parentRef}
@@ -248,10 +253,10 @@ export default function InvitationCard({
           })}
       </div>
       {showCenterLine && (
-        <div className="pointer-events-none z-0 absolute top-0 bottom-0 left-1/2 w-px border-l border-dashed border-white"></div>
+        <div className="pointer-events-none z-0 absolute top-0 bottom-0 left-1/2 w-px border-l border-dashed border-black"></div>
       )}
       {horizontalCentralLine && (
-        <div className="pointer-events-none z-0 absolute top-1/2 left-0 right-0 h-px border-t border-dashed border-white"></div>
+        <div className="pointer-events-none z-0 absolute top-1/2 left-0 right-0 h-px border-t border-dashed border-black"></div>
       )}
     </div>
   );

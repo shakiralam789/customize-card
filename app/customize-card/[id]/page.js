@@ -48,7 +48,7 @@ export default function Page() {
     if (!hasMounted.current && allItems.length > 0) {
       hasMounted.current = true;
     }
-  }, [allItems, frame]);
+  }, [allItems]);
 
   return (
     <CustomizeCardLayout
