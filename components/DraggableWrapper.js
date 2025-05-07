@@ -26,6 +26,7 @@ export default function DraggableWrapper({
   setAllItems,
   allItems,
   zoomLevel,
+  setIsAnyItemDragging,
   ...props
 }) {
   
@@ -56,6 +57,7 @@ export default function DraggableWrapper({
     },
 
     onDragging: (data) => {
+      setIsAnyItemDragging(true);
       if (data?.type !== "move") {
         if (!animationFrame.current) {
           animationFrame.current = requestAnimationFrame(() => {
@@ -88,7 +90,7 @@ export default function DraggableWrapper({
     },
     onDragEnd: (data) => {
       shouldBeSelected.current = !data?.hasMoved;
-
+      setIsAnyItemDragging(false);
       setAllItems((prevItems) => {
         return prevItems.map((item, i) => {
           if (i === index) {

@@ -26,6 +26,8 @@ export default function Page() {
     setHorizontalCentralLine,
     frame,
     setFrame,
+    isAnyItemDragging,
+    setIsAnyItemDragging,
   } = useContext(CcContext);
 
   const { id } = useParams();
@@ -47,14 +49,10 @@ export default function Page() {
     if (!hasMounted.current && allItems.length > 0) {
       hasMounted.current = true;
     }
-
   }, [allItems]);
 
   return (
-    <CustomizeCardLayout
-      zoom={zoom}
-      setZoom={setZoom}
-    >
+    <CustomizeCardLayout zoom={zoom} setZoom={setZoom}>
       <InvitationCard
         setZoom={setZoom}
         getDataOnLoad={getDataOnLoad}
@@ -74,6 +72,8 @@ export default function Page() {
         zoomLevel={zoom / 100}
         frame={frame}
         setFrame={setFrame}
+        isAnyItemDragging={isAnyItemDragging}
+        setIsAnyItemDragging={setIsAnyItemDragging}
       />
     </CustomizeCardLayout>
   );

@@ -25,6 +25,8 @@ export default function Page() {
     setHorizontalCentralLine,
     frame,
     setFrame,
+    isAnyItemDragging,
+    setIsAnyItemDragging,
   } = useContext(CcContext);
 
   const hasMounted = React.useRef(false);
@@ -64,6 +66,8 @@ export default function Page() {
         zoomLevel={zoom / 100}
         frame={frame}
         setFrame={setFrame}
+        isAnyItemDragging={isAnyItemDragging}
+        setIsAnyItemDragging={setIsAnyItemDragging}
       />
     </CustomizeCardLayout>
   );

@@ -20,11 +20,11 @@ export default function InvitationCard({
   horizontalCentralLine,
   setHorizontalCentralLine,
   frame,
+  setIsAnyItemDragging,
+  isAnyItemDragging,
   setFrame,
 }) {
-  
   const handleFocus = (e, index, id) => {
-    
     let plch = allItems[index].isPlaceholder;
     const newItem = allItems.map((s, i) => ({
       ...s,
@@ -33,16 +33,16 @@ export default function InvitationCard({
     }));
 
     setActiveID(id);
-    
+
     if (plch) {
       let target = e.target.closest(".movable-handle");
-      
-      if(target) {
+
+      if (target) {
         target.innerHTML = "";
       }
       newItem[index].isPlaceholder = false;
     }
-    
+
     setAllItems(newItem);
   };
 
@@ -132,9 +132,13 @@ export default function InvitationCard({
               <DraggableWrapper
                 className={`${item?.hidden ? "hidden" : ""} ${
                   item?.locked ? "pointer-events-none user-select-none" : ""
-                } ${
-                  item.active ? "active" : ""
-                } prevent-customize-card-blur movable-handle-parent`}
+                } ${item.active ? "active" : ""}
+                ${
+                  isAnyItemDragging && !item?.active
+                    ? "pointer-events-none"
+                    : ""
+                }
+                 prevent-customize-card-blur movable-handle-parent`}
                 initialPosition={item.position}
                 key={item.id}
                 item={item}
@@ -148,6 +152,7 @@ export default function InvitationCard({
                 shouldBeSelected={shouldBeSelected}
                 setHorizontalCentralLine={setHorizontalCentralLine}
                 zoomLevel={zoomLevel}
+                setIsAnyItemDragging={setIsAnyItemDragging}
               >
                 {({ isDragging, startDrag }) => (
                   <>

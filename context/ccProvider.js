@@ -163,6 +163,7 @@ const CcProvider = ({ children }) => {
   const [zoom, setZoom] = useState(100);
   const [showCenterLine, setShowCenterLine] = useState(false);
   const [horizontalCentralLine, setHorizontalCentralLine] = useState(false);
+  const [isAnyItemDragging, setIsAnyItemDragging] = useState(false);
 
   const parentRef = useRef(null);
   const [isStickerDrawerOpen, setIsStickerDrawerOpen] = useState(false);
@@ -243,7 +244,6 @@ const CcProvider = ({ children }) => {
   }
 
   function getDataOnLoad(id) {
-    
     let items = [];
     let frameData = {};
     // let zoom = 100;
@@ -324,6 +324,8 @@ const CcProvider = ({ children }) => {
         getDataOnLoad,
         frame,
         setFrame,
+        isAnyItemDragging,
+        setIsAnyItemDragging,
       }}
     >
       {children}
