@@ -24,8 +24,8 @@ export default function InvitationCard({
 }) {
   
   const handleFocus = (e, index, id) => {
+    
     let plch = allItems[index].isPlaceholder;
-
     const newItem = allItems.map((s, i) => ({
       ...s,
       active: i === index,
@@ -42,7 +42,7 @@ export default function InvitationCard({
       }
       newItem[index].isPlaceholder = false;
     }
-
+    
     setAllItems(newItem);
   };
 
@@ -124,7 +124,7 @@ export default function InvitationCard({
       }}
     >
       {frame.background}
-      <div className="relative z-10">
+      <div className="relative z-0">
         {allItems &&
           allItems.length > 0 &&
           allItems.map((item, index) => {
@@ -167,7 +167,7 @@ export default function InvitationCard({
                         className={`${
                           item.active ? "active" : "!cursor-move"
                         } ${
-                          item.isPlaceholder ? "!text-[#20f39b]" : "text-white"
+                          item.isPlaceholder ? "!text-green-600" : "text-black"
                         } ${
                           isDragging ? "movable-handle-hover" : ""
                         } movable-handle p-2 focus:outline-none whitespace-nowrap`}
@@ -253,10 +253,10 @@ export default function InvitationCard({
           })}
       </div>
       {showCenterLine && (
-        <div className="pointer-events-none z-0 absolute top-0 bottom-0 left-1/2 w-px border-l border-dashed border-black"></div>
+        <div className="pointer-events-none z-10 absolute top-0 bottom-0 left-1/2 w-px border-l border-guide-line-color"></div>
       )}
       {horizontalCentralLine && (
-        <div className="pointer-events-none z-0 absolute top-1/2 left-0 right-0 h-px border-t border-dashed border-black"></div>
+        <div className="pointer-events-none z-10 absolute top-1/2 left-0 right-0 h-px border-t border-guide-line-color"></div>
       )}
     </div>
   );

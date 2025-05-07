@@ -20,6 +20,7 @@ import DeleteItem from "./feature/DeleteItem";
 import useItemsMap from "@/hook/useItemMap";
 import FontFamilyChange from "./feature/FontFamilyChange";
 import Link from "next/link";
+import Duplicate from "./feature/Duplicate";
 
 export default function Nav() {
   const {
@@ -139,6 +140,7 @@ export default function Nav() {
                 <LetterSpacingChange />
                 <TextCurveChange />
                 <RotateText />
+                <Duplicate />
               </div>
             )}
             {activeItem?.itemType === "sticker" && (
@@ -149,6 +151,7 @@ export default function Nav() {
                 <FlipShape />
                 <FlipVerticalShape />
                 <RotateShape />
+                <Duplicate />
               </div>
             )}
           </>

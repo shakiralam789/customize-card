@@ -35,16 +35,16 @@ export default function Page() {
 
   useEffect(() => {
     if (hasMounted.current) {
-      addToLocalStorage(allItems);
+      addToLocalStorage({ allItems, frame });
+    }
+
+    if (!hasMounted.current && allItems.length > 0) {
       hasMounted.current = true;
     }
   }, [allItems]);
 
   return (
-    <CustomizeCardLayout
-      zoom={zoom}
-      setZoom={setZoom}
-    >
+    <CustomizeCardLayout zoom={zoom} setZoom={setZoom}>
       <InvitationCard
         setZoom={setZoom}
         getDataOnLoad={getDataOnLoad}

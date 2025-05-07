@@ -3,14 +3,13 @@
 import { useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
-import { frame } from "framer-motion";
 
 const defText = {
   itemType: "text",
   position: { x: 200, y: 100 },
   fontSize: 16,
   textAlign: "center",
-  color: "white",
+  color: "black",
   fontWeight: "normal",
   lineHeight: "1.2",
   fontStyle: "normal",
@@ -37,7 +36,7 @@ const staticData = {
     items: [
       {
         id: "aa43be97-a5ad-4eda-af60-8de829453b88",
-        name: "Invitation Letter",
+        name: "Your are",
         itemType: "text",
         text: '<p data-pm-slice="1 1 []">YOU ARE CORDIALLY</p><p>INVITED TO THE WEDDING OF </p>',
         isPlaceholder: false,
@@ -65,7 +64,7 @@ const staticData = {
         active: false,
         contentEditable: false,
         zIndex: 11,
-        name: "Text",
+        name: "LORALEIGH",
         itemType: "text",
         position: {
           x: 88,
@@ -90,7 +89,7 @@ const staticData = {
         active: false,
         contentEditable: false,
         zIndex: 12,
-        name: "Text",
+        name: "CHRISTOPHER",
         itemType: "text",
         position: {
           x: 71,
@@ -115,7 +114,7 @@ const staticData = {
         active: false,
         contentEditable: false,
         zIndex: 13,
-        name: "Text",
+        name: "SATURDAY",
         itemType: "text",
         position: {
           x: 84,
@@ -244,21 +243,14 @@ const CcProvider = ({ children }) => {
   }
 
   function getDataOnLoad(id) {
+    
     let items = [];
     let frameData = {};
     // let zoom = 100;
 
     let storageName = `customize-card-data${id || ""}`;
-    // let zoomName = `customize-card-zoom${id || ""}`;
 
     let localTItems = localStorage.getItem(storageName);
-    // let localTZoom = localStorage.getItem(zoomName);
-
-    // if (zoom) {
-    //   let parseZoom = JSON.parse(localTZoom);
-    //   zoom = parseZoom || 100;
-    //   setZoom(zoom);
-    // }
 
     if (localTItems) {
       let parseItems = JSON.parse(localTItems);

@@ -14,6 +14,7 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --header-height: 54px;
+  --color-guide-line-color: #ff8c00;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -66,7 +67,9 @@ button {
   border-color: #1BC47D;
   background: rgba(255, 255, 255, 0.281);
 }
-
+.movable-handle:not(.active):hover {
+  border-color: #e7e7e7;
+}
 .menu {
   @apply overflow-y-auto py-1 z-[999] border border-gray-300 whitespace-nowrap bg-white shadow rounded-md min-w-[140px] 2xl:min-w-[180px]
 }
