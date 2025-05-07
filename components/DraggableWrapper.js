@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useDraggable from "@/hook/useDraggable";
 import { Move, RotateCcw } from "lucide-react";
 import {
@@ -29,7 +29,14 @@ export default function DraggableWrapper({
   setIsAnyItemDragging,
   ...props
 }) {
-  
+  const [rotate, setRotate] = useState(item?.rotate || 0);
+  const [width, setWidth] = useState(item?.width || null);
+  const [fontSize, setFontSize] = useState(item?.fontSize || null);
+
+  const currentAngle = useRef(item?.rotate);
+  const currentWidth = useRef(item?.width || null);
+  const currentFontSize = useRef(item?.fontSize || null);
+
   const animationFrame = useRef(null);
 
   const initialFontSize = mode === "text" ? item.fontSize : null;
@@ -61,28 +68,19 @@ export default function DraggableWrapper({
       if (data?.type !== "move") {
         if (!animationFrame.current) {
           animationFrame.current = requestAnimationFrame(() => {
-            setAllItems((prevItems) => {
-              return prevItems.map((item, i) => {
-                if (i === index) {
-                  const updatedItem = { ...item };
+            if (data?.type === "resize") {
+              if (mode === "text") {
+                currentFontSize.current = initialFontSize * data?.scale;
+              } else {
+                currentWidth.current = initialWidth * data?.scale;
+              }
+            }
 
-                  if (data?.type === "resize") {
-                    if (mode === "text") {
-                      updatedItem.fontSize = initialFontSize * data?.scale;
-                    } else if (data?.type === "resize") {
-                      updatedItem.width = initialWidth * data?.scale;
-                    }
-                  }
+            if (data?.type == "rotate") {
+              currentAngle.current = data?.angle;
+              setRotate(data?.angle);
+            }
 
-                  if (data?.type === "rotate") {
-                    updatedItem.rotate = data?.angle;
-                  }
-
-                  return updatedItem;
-                }
-                return item;
-              });
-            });
             animationFrame.current = null;
           });
         }
@@ -91,11 +89,15 @@ export default function DraggableWrapper({
     onDragEnd: (data) => {
       shouldBeSelected.current = !data?.hasMoved;
       setIsAnyItemDragging(false);
+      setRotate(currentAngle.current);
       setAllItems((prevItems) => {
         return prevItems.map((item, i) => {
           if (i === index) {
             const updatedItem = { ...item };
             updatedItem.position = data?.position;
+            updatedItem.rotate = currentAngle.current;
+            updatedItem.width = currentWidth.current;
+            updatedItem.fontSize = currentFontSize.current;
             return updatedItem;
           }
           return item;
@@ -113,6 +115,21 @@ export default function DraggableWrapper({
     },
   });
 
+  useEffect(() => {
+    currentAngle.current = item?.rotate;
+    setRotate(item?.rotate);
+  }, [item?.rotate]);
+
+  useEffect(() => {
+    currentWidth.current = item?.width;
+    setWidth(item?.width);
+  }, [item?.width]);
+
+  useEffect(() => {
+    currentFontSize.current = item?.fontSize;
+    setFontSize(item?.fontSize);
+  }, [item?.fontSize]);
+
   return (
     <div
       {...props}
@@ -121,14 +138,20 @@ export default function DraggableWrapper({
       style={{
         cursor: isDragging ? "grabbing" : "grab",
         transform: `translate(${position?.x}px, ${position?.y}px) rotate(${
-          item.rotate || 0
+          rotate || 0
         }deg)`,
         ...style,
         zIndex: isDragging || isActive ? 99999 : zIndex,
       }}
     >
       {typeof children === "function"
-        ? children({ startDrag, isDragging, position })
+        ? children({
+            startDrag,
+            isDragging,
+            position,
+            width: currentWidth.current,
+            fontSize: currentFontSize.current,
+          })
         : children}
 
       {isActive && !item?.locked && (

@@ -149,7 +149,7 @@ export default function InvitationCard({
                 zoomLevel={zoomLevel}
                 setIsAnyItemDragging={setIsAnyItemDragging}
               >
-                {({ isDragging, startDrag }) => (
+                {({ isDragging, startDrag, width, fontSize }) => (
                   <>
                     {item.itemType === "text" && (
                       <div
@@ -182,7 +182,7 @@ export default function InvitationCard({
                           }, 0);
                         }}
                         style={{
-                          fontSize: `${item?.fontSize || defText.fontSize}px`,
+                          fontSize: `${fontSize || defText.fontSize}px`,
                           textAlign: `${item?.textAlign || defText.textAlign}`,
                           color: `${item?.color || defText.color}`,
                           fontWeight: `${
@@ -228,7 +228,7 @@ export default function InvitationCard({
                           isDragging ? "movable-handle-hover" : ""
                         }`}
                         style={{
-                          width: `${item?.width || defSticker?.width}px`,
+                          width: `${width || defSticker?.width}px`,
                           transform: `scale(${
                             item?.scaleX || defSticker.scaleX
                           }, ${item?.scaleY || defSticker.scaleY})`,
