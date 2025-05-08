@@ -73,7 +73,7 @@ export default function CustomizeCardLayout({
   };
 
   return (
-    <div className="overflow-hidden h-screen bg-gray-100">
+    <div className="overflow-hidden h-screen">
       <Head>
         <title>Invitation Card Customizer</title>
         <meta

@@ -135,7 +135,7 @@ const cardData = [
           id: "aa43be97-a5ad-4eda-af60-8de829453b88",
           name: "Your are",
           itemType: "text",
-          text: '<p data-pm-slice="1 1 []">YOU ARE CORDIALLY</p><p>INVITED TO THE WEDDING OF </p>',
+          text: "YOU ARE CORDIALLY INVITED",
           isPlaceholder: false,
           position: {
             x: 95,
@@ -154,6 +154,7 @@ const cardData = [
           rotate: "0",
           zIndex: 10,
           fontFamily: "Times New Roman",
+          textCurve: 120
         },
         {
           id: "e71ed857-1ae6-4b27-b12e-42e8edd37519",

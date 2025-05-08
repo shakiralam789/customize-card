@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
+import { getCurvedTextHTML } from "@/helper/helper";
 
 const defText = {
   itemType: "text",
@@ -155,14 +156,16 @@ const CcProvider = ({ children }) => {
       setAllItems(updatedItem);
 
       setTimeout(() => {
-        updatedItem.forEach((item, index) => {
+        updatedItem.forEach((item) => {
           if (item.itemType === "text") {
             const element = itemsRefs.current[item.id];
 
             if (element) {
               element.innerHTML = item.isPlaceholder
                 ? "Enter text..."
-                : item.text || "";
+                : !item?.textCurve
+                ? item.text
+                : getCurvedTextHTML(item?.text) || "";
             }
           }
         });

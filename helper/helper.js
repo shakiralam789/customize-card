@@ -217,3 +217,29 @@ export function addToLocalStorage({ id, allItems, frame }) {
 export function removeLocalStorage(id) {
   localStorage.removeItem(`customize-card-data${id || ""}`);
 }
+
+export function getCurvedTextHTML(text = "", radius = 120) {
+  if (!text) return false;
+
+  const characters = text.split("");
+  const degree = 180 / characters.length;
+
+  const html = characters
+    .map((char, i) => {
+      const rotate = i * degree - (degree * characters.length) / 2;
+      return `<span style="
+        position: absolute;
+        height: ${radius}px;
+        transform: rotate(${rotate}deg);
+        transform-origin: bottom center;
+        left: 50%;
+        bottom: 0;
+        white-space: pre;
+      ">${char}</span>`;
+    })
+    .join("");
+
+  return `<div style="position: relative; height: ${radius}px; width: ${
+    radius * 2
+  }px;">${html}</div>`;
+}

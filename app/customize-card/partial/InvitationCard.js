@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import DraggableWrapper from "@/components/DraggableWrapper";
 import Image from "next/image";
-import { getFontFamily } from "@/helper/helper";
+import { getCurvedTextHTML, getFontFamily } from "@/helper/helper";
+import CurvedText from "./CurvedText";
 
 export default function InvitationCard({
   zoomLevel,
@@ -24,27 +25,84 @@ export default function InvitationCard({
   isAnyItemDragging,
   setFrame,
 }) {
-  const handleFocus = (e, item) => {
-    let plch = item?.isPlaceholder;
 
-    setAllItems((prev) => {
-      return prev.map((s) => ({
-        ...s,
-        active: s.id === item.id,
-        contentEditable: s.id === item.id && item.active,
-      }));
+
+  function handlePrevItem(crrItem){
+    setAllItems((prevItems) => {
+      const newItems = prevItems.map((s) => {
+        const updated = { ...s, active: s.id === crrItem?.id };
+        if (s.itemType === "text") {
+          updated.contentEditable = s.id === crrItem?.id && crrItem?.active;
+        }
+        return updated;
+      });
+
+      let prevActiveItem = prevItems.find((s) => s.id === activeID);
+
+      if (prevActiveItem?.itemType === "text") {
+        const refEl = itemsRefs.current[activeID];
+
+        if (
+          !refEl ||
+          refEl.innerHTML.trim() === "" ||
+          refEl.innerHTML === "Enter text..." ||
+          refEl.innerHTML === "<br>"
+        ) {
+          return newItems.filter((item) => item.id !== activeID);
+        } else {
+          let refInitText = refEl.innerHTML;
+
+          if (
+            prevActiveItem?.itemType == "text" &&
+            prevActiveItem?.textCurve &&
+            prevActiveItem?.contentEditable
+          ) {
+            requestAnimationFrame(() => {
+              refEl.innerHTML = getCurvedTextHTML(refEl.innerText || "");
+            });
+          }
+
+          return newItems.map((item) => ({
+            ...item,
+            text:
+              item.id === activeID &&
+              !(prevActiveItem?.textCurve && !prevActiveItem?.contentEditable)
+                ? refInitText
+                : item.text,
+            isPlaceholder: item.id === activeID ? false : item.isPlaceholder,
+          }));
+        }
+      }
+
+      return newItems;
     });
 
-    setActiveID(item.id);
+    setActiveID(crrItem?.id || null);
+
+  }
+
+  const handleFocus = (e, item) => {
+
+    handlePrevItem(item);
+    
+    let plch = item?.isPlaceholder;
+
+    let target = e.target.closest(".movable-handle");
 
     if (plch) {
-      let target = e.target.closest(".movable-handle");
-
       if (target) {
         target.innerHTML = "";
       }
-
-      newItem[index].isPlaceholder = false;
+      item.isPlaceholder = false;
+    } else if (
+      item?.textCurve &&
+      item.itemType === "text" &&
+      item.active &&
+      !item.contentEditable
+    ) {
+      if (target) {
+        target.innerHTML = item.text;
+      }
     }
   };
 
@@ -63,44 +121,14 @@ export default function InvitationCard({
   //   }
   // }, [activeID, allItems]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const handleClickOutside = (e) => {
       if (e.target.closest(".prevent-customize-card-blur") || activeID == null)
         return;
 
-      setActiveID(null);
+    handlePrevItem();
 
-      setAllItems((prevItems) => {
-        const newItems = prevItems.map((s) => {
-          const updated = { ...s, active: false };
-          if (s.itemType === "text") {
-            updated.contentEditable = false;
-          }
-          return updated;
-        });
-
-        let activeItem = prevItems.find((item) => item.id === activeID);
-
-        if (activeItem?.itemType === "text") {
-          const htmlContent = itemsRefs.current[activeID].innerHTML;
-
-          if (
-            htmlContent.trim() === "" ||
-            htmlContent === "Enter text..." ||
-            htmlContent === "<br>"
-          ) {
-            return newItems.filter((item) => item.id !== activeID);
-          } else {
-            return newItems.map((item) => ({
-              ...item,
-              text: item.id === activeID ? htmlContent : item.text,
-              isPlaceholder: item.id === activeID ? false : item.isPlaceholder,
-            }));
-          }
-        }
-
-        return newItems;
-      });
+     
     };
 
     document.addEventListener("mousedown", handleClickOutside);
@@ -164,6 +192,8 @@ export default function InvitationCard({
                         ref={(el) => {
                           if (el) {
                             itemsRefs.current[item.id] = el;
+                          } else {
+                            delete itemsRefs.current[item.id];
                           }
                         }}
                         contentEditable={item.contentEditable}
@@ -212,6 +242,14 @@ export default function InvitationCard({
                           ),
                         }}
                       >
+                        {/* {!item?.textCurve && !item.contentEditable ? (
+                          <CurvedText
+                            radius={item.textCurve}
+                            text={item.text}
+                          />
+                        ) : (
+                          "Enter text..."
+                        )} */}
                         Enter text...
                       </div>
                     )}
@@ -221,7 +259,13 @@ export default function InvitationCard({
                         onMouseDown={(e) => {
                           startDrag({ e, type: "move" });
                         }}
-                        ref={(el) => (itemsRefs.current[item.id] = el)}
+                        ref={(el) => {
+                          if (el) {
+                            itemsRefs.current[item.id] = el;
+                          } else {
+                            delete itemsRefs.current[item.id]; // Clean up
+                          }
+                        }}
                         className={`
                         ${
                           isAnyItemDragging && !isDragging

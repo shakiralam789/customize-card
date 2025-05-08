@@ -140,6 +140,7 @@ export default function DraggableWrapper({
       const sel = window.getSelection();
       sel.removeAllRanges();
       sel.addRange(range);
+      item.isPlaceholder = false;
     }
   }, [item.contentEditable]);
 
