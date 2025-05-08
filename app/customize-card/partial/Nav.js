@@ -59,7 +59,7 @@ export default function Nav() {
               setIsOpen={setIsStickerDrawerOpen}
               title="Sticker"
               trigger={
-                <NavMenuBtn onClick={addNewText} label={"Sticker"}>
+                <NavMenuBtn label={"Sticker"}>
                   <Sticker className="size-5" />
                 </NavMenuBtn>
               }
