@@ -21,6 +21,8 @@ import useItemsMap from "@/hook/useItemMap";
 import FontFamilyChange from "./feature/FontFamilyChange";
 import Link from "next/link";
 import Duplicate from "./feature/Duplicate";
+import NavMenuBtn from "@/components/NavMenuBtn";
+import UploadImage from "./feature/UploadImage";
 
 export default function Nav() {
   const {
@@ -41,41 +43,33 @@ export default function Nav() {
           <div>
             <Link
               href="/invitations"
-              className="p-2 rounded-full text-gray-700 font-bold hover:bg-gray-100"
+              className="p-2 rounded-full text-gray-700 font-bold"
             >
               LOGO
             </Link>
           </div>
 
           <div className="flex space-x-4">
-            <button
-              onClick={addNewText}
-              className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-semibold hover:bg-gray-100 rounded"
-            >
-              <Languages className="size-5 mr-1" />
-              Text
-            </button>
+            <NavMenuBtn onClick={addNewText} label={"Text"}>
+              <Languages className="size-5" />
+            </NavMenuBtn>
 
             <Drawer
               isOpen={isStickerDrawerOpen}
               setIsOpen={setIsStickerDrawerOpen}
               title="Sticker"
               trigger={
-                <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
-                  <Sticker className="size-5 mr-1" />
-                  Sticker
-                </button>
+                <NavMenuBtn onClick={addNewText} label={"Sticker"}>
+                  <Sticker className="size-5" />
+                </NavMenuBtn>
               }
             >
               <DrawerContent />
             </Drawer>
 
-            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
-              <ImageIcon className="size-5 mr-1" />
-              Image
-            </button>
+            <UploadImage />
 
-            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
+            {/* <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="size-5 mr-2"
@@ -91,12 +85,12 @@ export default function Nav() {
                 />
               </svg>
               Theme color
-            </button>
+            </button> */}
 
-            <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
+            {/* <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
               <MessageCircleCode className="size-5 mr-1" />
               Create RSVP
-            </button>
+            </button> */}
           </div>
 
           <div className="flex space-x-2">

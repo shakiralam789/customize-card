@@ -8,9 +8,14 @@ import React from "react";
 
 const weddingCardList = [
   {
-    id: "geometric-floral",
+    id: "1",
     title: "Geometric Floral",
     image: "/images/invitations/geometric-flowers-design.jpeg",
+  },
+  {
+    id: "2",
+    title: "Geometric Floral",
+    image: "/images/invitations/inv-card-design.png",
   },
 ];
 
@@ -41,11 +46,6 @@ export default function Page() {
                 alt={card.title}
                 className="w-full object-cover aspect-[1/1.4]"
               />
-              <div className="p-4 text-center">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  {card.title}
-                </h3>
-              </div>
             </div>
           ))}
         <Link

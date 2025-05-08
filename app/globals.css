@@ -59,7 +59,6 @@ button {
 .editable {
   background: rgba(255, 255, 255, 0.281);
   border: 2px solid #1BC47D;
-
 }
 
 .movable-handle.active {
@@ -68,7 +67,7 @@ button {
   background: rgba(255, 255, 255, 0.281);
 }
 .movable-handle:not(.active):hover {
-  border-color: #e7e7e7;
+  border-color: #d6d6d6;
 }
 .menu {
   @apply overflow-y-auto py-1 z-[999] border border-gray-300 whitespace-nowrap bg-white shadow rounded-md min-w-[140px] 2xl:min-w-[180px]

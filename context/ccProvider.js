@@ -1,8 +1,8 @@
-// context/CcProvider.js
 "use client";
 import { useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
+import cardData from "../data/cardData";
 
 const defText = {
   itemType: "text",
@@ -28,135 +28,6 @@ const defSticker = {
   scaleX: 1,
   scaleY: 1,
   rotate: 0,
-};
-
-const staticData = {
-  id: "geometric-floral",
-  data: {
-    items: [
-      {
-        id: "aa43be97-a5ad-4eda-af60-8de829453b88",
-        name: "Your are",
-        itemType: "text",
-        text: '<p data-pm-slice="1 1 []">YOU ARE CORDIALLY</p><p>INVITED TO THE WEDDING OF </p>',
-        isPlaceholder: false,
-        position: {
-          x: 95,
-          y: 118,
-        },
-        fontSize: 9,
-        contentEditable: false,
-        textAlign: "center",
-        color: "#241f31",
-        fontWeight: "normal",
-        lineHeight: "2",
-        fontStyle: "normal",
-        letterSpacing: "1.1",
-        textTransform: "uppercase",
-        active: false,
-        rotate: "0",
-        zIndex: 10,
-        fontFamily: "Times New Roman",
-      },
-      {
-        id: "e71ed857-1ae6-4b27-b12e-42e8edd37519",
-        text: '<p data-pm-slice="1 1 []">LORALEIGH</p><p>JAMESON</p>',
-        active: false,
-        contentEditable: false,
-        zIndex: 11,
-        name: "LORALEIGH",
-        itemType: "text",
-        position: {
-          x: 88,
-          y: 180,
-        },
-        fontSize: 18,
-        textAlign: "center",
-        color: "#241f31",
-        fontWeight: "bold",
-        lineHeight: "1.5",
-        fontStyle: "normal",
-        letterSpacing: "6.6",
-        textTransform: "none",
-        textCurve: 0,
-        rotate: 0,
-        isPlaceholder: false,
-        fontFamily: "Times New Roman",
-      },
-      {
-        id: "cc0b9c71-2d81-4e1a-ae17-b6b69f74f0fb",
-        text: '<p data-pm-slice="1 1 []">CHRISTOPHER</p><p>WASHINGTON</p>',
-        active: false,
-        contentEditable: false,
-        zIndex: 12,
-        name: "CHRISTOPHER",
-        itemType: "text",
-        position: {
-          x: 71,
-          y: 275,
-        },
-        fontSize: 18,
-        textAlign: "center",
-        color: "#241f31",
-        fontWeight: "bold",
-        lineHeight: "1.5",
-        fontStyle: "normal",
-        letterSpacing: "6.6",
-        textTransform: "none",
-        textCurve: 0,
-        rotate: 0,
-        isPlaceholder: false,
-        fontFamily: "Times New Roman",
-      },
-      {
-        id: "77973ef2-a0c8-49fc-bfbc-24c23ed384d3",
-        text: '<p data-pm-slice="1 1 []">SATURDAY, SEPTEMBER 16TH, 2025</p><p>7 O’CLOCK IN THE EVENING</p><p>MAJESTIC BALLROOM</p><p>SAN DIEGO</p>',
-        active: false,
-        contentEditable: false,
-        zIndex: 13,
-        name: "SATURDAY",
-        itemType: "text",
-        position: {
-          x: 84,
-          y: 335,
-        },
-        fontSize: 9,
-        textAlign: "center",
-        color: "#241f31",
-        fontWeight: "normal",
-        lineHeight: "2",
-        fontStyle: "normal",
-        letterSpacing: "1.1",
-        textTransform: "none",
-        textCurve: 0,
-        rotate: 0,
-        isPlaceholder: false,
-        fontFamily: "Times New Roman",
-      },
-      {
-        id: "4db09e3e-bff3-4f02-9714-d39885374466",
-        itemType: "sticker",
-        position: {
-          x: 132,
-          y: 232,
-        },
-        width: 100,
-        scaleX: 1,
-        scaleY: 1,
-        rotate: 0,
-        src: "/images/stickers/and.png",
-        alt: "and",
-        name: "and sticker",
-        zIndex: 14,
-        active: false,
-        contentEditable: false,
-      },
-    ],
-    frame: {
-      backgroundImage: "/images/invitations/geometric-flowers.jpg",
-      backgroundColor: "#fff",
-    },
-  },
 };
 
 const CcProvider = ({ children }) => {
@@ -207,7 +78,7 @@ const CcProvider = ({ children }) => {
     shouldBeSelected.current = true;
   }
 
-  function addNewSticker(e, data) {
+  function addNewSticker(data) {
     setAllItems((prevItems) => {
       const itemsWithNewSticker = [
         ...prevItems,
@@ -260,8 +131,11 @@ const CcProvider = ({ children }) => {
         frameData = parseItems?.data?.frame || {};
       }
     } else if (id) {
-      items = staticData?.data?.items || [];
-      frameData = staticData?.data?.frame || {};
+      let findData = cardData.find((d) => d.id === id);
+      if (findData) {
+        items = findData.data.items || [];
+        frameData = findData.data.frame || {};
+      }
     }
 
     if (items && items.length > 0) {

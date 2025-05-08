@@ -35,7 +35,7 @@ export default function DrawerContent() {
         stickers.map((item) => {
           return (
             <div
-              onClick={(e) => addNewSticker(e, item)}
+              onClick={(e) => addNewSticker(item)}
               key={item.id}
               className="w-full shadow hover:shadow-xl"
             >
