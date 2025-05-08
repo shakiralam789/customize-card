@@ -24,27 +24,28 @@ export default function InvitationCard({
   isAnyItemDragging,
   setFrame,
 }) {
-  const handleFocus = (e, index, id) => {
-    let plch = allItems[index].isPlaceholder;
-    const newItem = allItems.map((s, i) => ({
-      ...s,
-      active: i === index,
-      contentEditable: i === index,
-    }));
+  const handleFocus = (e, item) => {
+    let plch = item?.isPlaceholder;
 
-    setActiveID(id);
-    
+    setAllItems((prev) => {
+      return prev.map((s) => ({
+        ...s,
+        active: s.id === item.id,
+        contentEditable: s.id === item.id && item.active,
+      }));
+    });
+
+    setActiveID(item.id);
+
     if (plch) {
       let target = e.target.closest(".movable-handle");
-      
+
       if (target) {
         target.innerHTML = "";
       }
-      
+
       newItem[index].isPlaceholder = false;
     }
-
-    setAllItems(newItem);
   };
 
   // useEffect(() => {
@@ -149,13 +150,15 @@ export default function InvitationCard({
                 setHorizontalCentralLine={setHorizontalCentralLine}
                 zoomLevel={zoomLevel}
                 setIsAnyItemDragging={setIsAnyItemDragging}
+                itemsRefs={itemsRefs}
+                activeID={activeID}
               >
                 {({ isDragging, startDrag, width, fontSize }) => (
                   <>
                     {item.itemType === "text" && (
                       <div
                         onMouseDown={(e) => {
-                          if (item.active) return;
+                          if (item.active && item?.contentEditable) return;
                           startDrag({ e, type: "move" });
                         }}
                         ref={(el) => {
@@ -171,15 +174,17 @@ export default function InvitationCard({
                             ? "pointer-events-none"
                             : ""
                         }
-                        ${item.active ? "active" : "!cursor-move"} ${
+                        ${item.active ? "active" : ""} ${
                           item.isPlaceholder ? "!text-green-600" : "text-black"
-                        } ${
-                          isDragging ? "movable-handle-hover" : ""
-                        } movable-handle p-2 focus:outline-none whitespace-nowrap`}
+                        }
+                        ${!item?.contentEditable ? "!cursor-move" : ""}
+                         ${
+                           isDragging ? "movable-handle-hover" : ""
+                         } movable-handle p-2 focus:outline-none whitespace-nowrap`}
                         onMouseUp={(e) => {
                           setTimeout(() => {
                             if (!shouldBeSelected.current) return;
-                            handleFocus(e, index, item.id);
+                            handleFocus(e, item);
                           }, 0);
                         }}
                         style={{
@@ -237,13 +242,14 @@ export default function InvitationCard({
                         onMouseUp={(e) => {
                           setTimeout(() => {
                             if (!shouldBeSelected.current) return;
+                            setAllItems((prev) => {
+                              return prev.map((s) => ({
+                                ...s,
+                                active: s.id === item.id,
+                                contentEditable: s.id === item.id,
+                              }));
+                            });
 
-                            const newItem = allItems.map((s, i) => ({
-                              ...s,
-                              active: i === index,
-                            }));
-
-                            setAllItems(newItem);
                             setActiveID(item.id);
                           }, 0);
                         }}

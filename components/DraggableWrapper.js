@@ -27,6 +27,8 @@ export default function DraggableWrapper({
   allItems,
   zoomLevel,
   setIsAnyItemDragging,
+  itemsRefs,
+  activeID,
   ...props
 }) {
   const [rotate, setRotate] = useState(item?.rotate || 0);
@@ -129,6 +131,17 @@ export default function DraggableWrapper({
     currentFontSize.current = Math.round(item?.fontSize);
     setFontSize(Math.round(item?.fontSize));
   }, [item?.fontSize]);
+
+  useEffect(() => {
+    let referItem = itemsRefs.current[activeID];
+    if (referItem && item?.contentEditable && item.itemType === "text") {
+      const range = document.createRange();
+      range.selectNodeContents(referItem);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }, [item.contentEditable]);
 
   return (
     <div
