@@ -154,7 +154,7 @@ const cardData = [
           rotate: "0",
           zIndex: 10,
           fontFamily: "Times New Roman",
-          textCurve: 120
+          textCurve: 0
         },
         {
           id: "e71ed857-1ae6-4b27-b12e-42e8edd37519",

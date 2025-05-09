@@ -22,13 +22,14 @@ export default function RangeFeature({
   const activeItem = itemsMap.get(activeID);
 
   function handleChange(value) {
+    if (!activeID) return;
     setData((prev) =>
       prev.map((item) =>
         item.id === activeID ? { ...item, [propertyName]: value } : item
       )
     );
     if (onHandleChange) {
-      onHandleChange(value);
+      onHandleChange({value,activeItem});
     }
   }
 

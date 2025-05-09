@@ -22,6 +22,9 @@ export default function useDraggable({
   const [isClicked, setIsClicked] = useState(false);
   const hasMovedRef = useRef(false);
   const angleRef = useRef(rotate || 0);
+  const initialWidth = useRef(null);
+  const initialHeight = useRef(null);
+  const initialFontSize = useRef(null);
 
   const startDrag = useCallback(
     ({ e, type, dir }) => {
@@ -30,8 +33,12 @@ export default function useDraggable({
 
       const element = e.currentTarget.closest("[data-draggable]");
       if (!element) return;
-      
+
       draggingRef.current = element;
+
+      initialFontSize.current = element.offsetHeight;
+      initialWidth.current = element.offsetWidth;
+      initialHeight.current = element.offsetHeight;
 
       setType(type || null);
       setDir(dir || null);
@@ -74,14 +81,15 @@ export default function useDraggable({
 
       const dy = e.clientY - startMousePos.y;
 
+      newPos.x =
+        initialWidth.current / 2 + startElementPos.x - width / 2 / zoomLevel;
+
       if (["br", "bl"].includes(dir)) {
         newScale = Math.max(0.5, 1 + dy / width / zoomLevel);
-        newPos.x = startElementPos.x - dy / 2 / zoomLevel;
       } else if (["tl", "tr"].includes(dir)) {
         newScale = Math.max(0.5, 1 - dy / width);
         const pixelChange = (newScale - 1) * height;
         newPos.y = startElementPos.y - pixelChange / 2 / zoomLevel;
-        newPos.x = startElementPos.x + dy / 2 / zoomLevel;
       }
     }
 
@@ -126,14 +134,9 @@ export default function useDraggable({
       return prev !== shouldShow ? shouldShow : prev;
     });
 
-    const hasMoved =
-      newPos.x !== positionRef.current.x || newPos.y !== positionRef.current.y;
-
-    if (hasMoved) {
-      positionRef.current = newPos;
-      hasMovedRef.current = true;
-      setPosition(newPos);
-    }
+    positionRef.current = newPos;
+    hasMovedRef.current = true;
+    setPosition(newPos);
 
     if (newScale <= 0.5) return;
 

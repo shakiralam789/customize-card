@@ -1,5 +1,5 @@
 import CcContext from "@/context/ccContext";
-import React, { useContext, useCallback } from "react";
+import React, { useContext } from "react";
 import FontChange from "./feature/FontChange";
 import ColorChange from "./feature/ColorChange";
 import TextAlign from "./feature/TextAlign";
@@ -8,7 +8,7 @@ import FontStyle from "./feature/FontStyle";
 import TextTransform from "./feature/TextTransform";
 import LineHeightChange from "./feature/LineHeightChange";
 import LetterSpacingChange from "./feature/LetterSpacingChange";
-import { ImageIcon, Languages, MessageCircleCode, Sticker } from "lucide-react";
+import { Languages, Sticker } from "lucide-react";
 import TextCurveChange from "./feature/TextCurveChange";
 import Drawer from "@/components/Drawer";
 import DrawerContent from "./DrawerContent";

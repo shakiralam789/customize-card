@@ -60,9 +60,7 @@ export default function DraggableWrapper({
     rotate: item?.rotate,
     onDragStart: (data) => {
       shouldBeSelected.current = true;
-      if (data?.type == "rotate" || data?.type == "move") {
-        setDragType(data?.type);
-      }
+      setDragType(data?.type);
     },
 
     onDragging: (data) => {
@@ -171,18 +169,22 @@ export default function DraggableWrapper({
       {isActive && !item?.locked && (
         <>
           <div className="absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 flex gap-1.5 items-center justify-center">
-            <HandleBtn
-              onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-              className={isDragging && dragType == "rotate" ? "active" : ""}
-            >
-              <RotateCcw />
-            </HandleBtn>
-            <HandleBtn
-              onMouseDown={(e) => startDrag({ e, type: "move" })}
-              className={isDragging && dragType == "move" ? "active" : ""}
-            >
-              <Move className="w-full" />
-            </HandleBtn>
+            {dragType == "resize" && isDragging ? null : (
+              <>
+                <HandleBtn
+                  onMouseDown={(e) => startDrag({ e, type: "rotate" })}
+                  className={isDragging && dragType == "rotate" ? "active" : ""}
+                >
+                  <RotateCcw />
+                </HandleBtn>
+                <HandleBtn
+                  onMouseDown={(e) => startDrag({ e, type: "move" })}
+                  className={isDragging && dragType == "move" ? "active" : ""}
+                >
+                  <Move className="w-full" />
+                </HandleBtn>
+              </>
+            )}
           </div>
 
           <span

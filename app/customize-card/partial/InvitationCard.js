@@ -25,9 +25,7 @@ export default function InvitationCard({
   isAnyItemDragging,
   setFrame,
 }) {
-
-
-  function handlePrevItem(crrItem){
+  function handlePrevItem(crrItem) {
     setAllItems((prevItems) => {
       const newItems = prevItems.map((s) => {
         const updated = { ...s, active: s.id === crrItem?.id };
@@ -45,7 +43,6 @@ export default function InvitationCard({
         if (
           !refEl ||
           refEl.innerHTML.trim() === "" ||
-          refEl.innerHTML === "Enter text..." ||
           refEl.innerHTML === "<br>"
         ) {
           return newItems.filter((item) => item.id !== activeID);
@@ -58,7 +55,10 @@ export default function InvitationCard({
             prevActiveItem?.contentEditable
           ) {
             requestAnimationFrame(() => {
-              refEl.innerHTML = getCurvedTextHTML(refEl.innerText || "");
+              refEl.innerHTML = getCurvedTextHTML(
+                refEl.innerText || "",
+                prevActiveItem?.textCurve
+              );
             });
           }
 
@@ -78,13 +78,11 @@ export default function InvitationCard({
     });
 
     setActiveID(crrItem?.id || null);
-
   }
 
   const handleFocus = (e, item) => {
-
     handlePrevItem(item);
-    
+
     let plch = item?.isPlaceholder;
 
     let target = e.target.closest(".movable-handle");
@@ -126,9 +124,7 @@ export default function InvitationCard({
       if (e.target.closest(".prevent-customize-card-blur") || activeID == null)
         return;
 
-    handlePrevItem();
-
-     
+      handlePrevItem();
     };
 
     document.addEventListener("mousedown", handleClickOutside);

@@ -218,28 +218,59 @@ export function removeLocalStorage(id) {
   localStorage.removeItem(`customize-card-data${id || ""}`);
 }
 
-export function getCurvedTextHTML(text = "", radius = 120) {
+export function getCurvedTextHTML(text = "", curve = 0) {
   if (!text) return false;
+  if (curve === 0) return `${text}`;
+
+  // Clamp curve
+  curve = Math.max(-100, Math.min(100, curve));
 
   const characters = text.split("");
-  const degree = 180 / characters.length;
+  const fontSize = 16;
+  const charWidth = fontSize * 0.6;
+  const arcLength = characters.length * charWidth;
+
+  const totalAngle = (360 * Math.abs(curve)) / 100;
+  const radius = arcLength / ((Math.PI * totalAngle) / 180);
+  const diameter = Math.ceil(radius * 2);
+  const isCurvingDown = curve > 0;
+
+  const startAngle = -totalAngle / 2;
+  const anglePerPixel = totalAngle / arcLength;
+  let currentAngle = startAngle;
 
   const html = characters
-    .map((char, i) => {
-      const rotate = i * degree - (degree * characters.length) / 2;
+    .map((char) => {
+      const rotate = currentAngle;
+      const transform = `
+        rotate(${rotate}deg)
+        translateY(${isCurvingDown ? -radius : radius}px)
+        rotate(${-rotate}deg)
+      `;
+      currentAngle += anglePerPixel * charWidth;
+
       return `<span style="
         position: absolute;
-        height: ${radius}px;
-        transform: rotate(${rotate}deg);
-        transform-origin: bottom center;
         left: 50%;
-        bottom: 0;
+        top: 50%;
+        transform-origin: center;
+        transform: ${transform};
         white-space: pre;
       ">${char}</span>`;
     })
     .join("");
 
-  return `<div style="position: relative; height: ${radius}px; width: ${
-    radius * 2
-  }px;">${html}</div>`;
+  return `
+    <div style="
+      width: ${diameter}px;
+      height: ${diameter / (100 / Math.abs(curve))}px;
+      position: relative;
+    ">
+      <div style="
+        translateY: ${isCurvingDown ? -radius : radius}px;
+      ">
+        ${html}
+      </div>
+    </div>
+  `;
 }

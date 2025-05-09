@@ -163,9 +163,7 @@ const CcProvider = ({ children }) => {
             if (element) {
               element.innerHTML = item.isPlaceholder
                 ? "Enter text..."
-                : !item?.textCurve
-                ? item.text
-                : getCurvedTextHTML(item?.text) || "";
+                : getCurvedTextHTML(item?.text, item?.textCurve || 0);
             }
           }
         });
