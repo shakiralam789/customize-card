@@ -10,6 +10,7 @@ export default function useDraggable({
   parentRef,
   zoomLevel,
   rotate,
+  item,
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState(initialPosition);
@@ -68,33 +69,47 @@ export default function useDraggable({
     let newAngle = 0;
 
     if (type === "move") {
-      const dx = e.clientX - startMousePos.x;
-      const dy = e.clientY - startMousePos.y;
+      const dx = (e.clientX - startMousePos.x) / zoomLevel;
+      const dy = (e.clientY - startMousePos.y) / zoomLevel;
 
       newPos = {
-        x: startElementPos.x + dx / zoomLevel,
-        y: startElementPos.y + dy / zoomLevel,
+        x: startElementPos.x + dx,
+        y: startElementPos.y + dy,
       };
     }
-    
+
     if (type === "resize") {
       if (!width) return;
 
-      const dy = e.clientY - startMousePos.y;
+      const dy = (e.clientY - startMousePos.y) / zoomLevel;
+
       let scaleDelta;
 
-      newPos.x =
-        initialWidth.current / 2 + startElementPos.x - width / 2 / zoomLevel;
-
-      console.log(dy,initialHeight.current);
-      
       if (["br", "bl"].includes(dir)) {
-        scaleDelta = 1 + dy / (initialHeight.current / zoomLevel);
+        scaleDelta = 1 + dy / initialHeight.current;
       } else if (["tl", "tr"].includes(dir)) {
-        scaleDelta = 1 - dy / (initialHeight.current / zoomLevel);
+        scaleDelta = 1 - dy / initialHeight.current;
         const scaledHeight = initialHeight.current * scaleDelta;
         const deltaHeight = scaledHeight - initialHeight.current;
-        newPos.y = startElementPos.y - deltaHeight / zoomLevel;
+        newPos.y = startElementPos.y - deltaHeight;
+      }
+
+      let scaledWidth = initialWidth.current * scaleDelta;
+      let deltaWidth = scaledWidth - initialWidth.current;
+
+      if (
+        item?.itemType !== "text" ||
+        (item?.itemType == "text" && item?.textAlign != "center")
+      ) {
+        if (dir === "tl" || dir === "bl") {
+          newPos.x = startElementPos.x - deltaWidth; // ok for shape
+          console.log('asd');
+          
+        } else if (dir === "tr" || dir === "br") {
+          newPos.x = startElementPos.x;
+        }
+      } else {
+        newPos.x = startElementPos.x - deltaWidth / 2;
       }
 
       newScale = Math.max(0.5, scaleDelta);

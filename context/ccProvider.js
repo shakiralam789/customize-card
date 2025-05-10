@@ -8,7 +8,7 @@ import { getCurvedTextHTML } from "@/helper/helper";
 const defText = {
   itemType: "text",
   position: { x: 200, y: 100 },
-  fontSize: 16,
+  fontSize: 24,
   textAlign: "center",
   color: "black",
   fontWeight: "normal",

@@ -52,13 +52,14 @@ export default function DraggableWrapper({
   const [blRotate, setBlRotate] = useState("bl");
   const [brRotate, setBrRotate] = useState("br");
 
-  const { scale, position, isDragging, startDrag } = useDraggable({
+  const { position, isDragging, startDrag } = useDraggable({
     zoomLevel,
     setHorizontalCentralLine,
     setShowCenterLine,
     initialPosition,
     parentRef: parentRef?.current,
     rotate: item?.rotate,
+    item,
     onDragStart: (data) => {
       shouldBeSelected.current = true;
       setDragType(data?.type);
@@ -73,8 +74,9 @@ export default function DraggableWrapper({
             setFontSize(currentFontSize.current);
           } else {
             currentWidth.current = initialWidth * data?.scale;
-            setWidth(currentWidth.current);
           }
+
+          setWidth(currentWidth?.current);
         }
 
         if (data?.type === "rotate") {
@@ -138,7 +140,7 @@ export default function DraggableWrapper({
       item.isPlaceholder = false;
     }
   }, [item.contentEditable]);
-
+  
   return (
     <div
       {...props}
@@ -156,7 +158,6 @@ export default function DraggableWrapper({
         ...style,
         zIndex: isDragging || isActive ? 99999 : zIndex,
         width: width,
-        fontSize: fontSize,
       }}
     >
       {typeof children === "function"
@@ -164,6 +165,7 @@ export default function DraggableWrapper({
             startDrag,
             isDragging,
             position,
+            fontSize
           })
         : children}
 

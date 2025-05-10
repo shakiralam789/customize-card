@@ -178,7 +178,7 @@ export default function InvitationCard({
                 itemsRefs={itemsRefs}
                 activeID={activeID}
               >
-                {({ isDragging, startDrag }) => (
+                {({ startDrag, fontSize }) => (
                   <>
                     {item.itemType === "text" && (
                       <div
@@ -207,6 +207,7 @@ export default function InvitationCard({
                           }, 0);
                         }}
                         style={{
+                          fontSize: `${fontSize || defText.fontSize}px`,
                           textAlign: `${item?.textAlign || defText.textAlign}`,
                           color: `${item?.color || defText.color}`,
                           fontWeight: `${
@@ -254,7 +255,7 @@ export default function InvitationCard({
                             delete itemsRefs.current[item.id]; // Clean up
                           }
                         }}
-                        className={`!cursor-move p-2 focus:outline-none`}
+                        className={`!cursor-move focus:outline-none`}
                         onMouseUp={(e) => {
                           setTimeout(() => {
                             if (!shouldBeSelected.current) return;

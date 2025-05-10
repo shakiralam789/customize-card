@@ -143,7 +143,7 @@ const cardData = [
           },
           fontSize: 9,
           contentEditable: false,
-          textAlign: "center",
+          textAlign: "left",
           color: "white",
           fontWeight: "normal",
           lineHeight: "2",

@@ -219,10 +219,9 @@ export function removeLocalStorage(id) {
 }
 
 export function getCurvedTextHTML(text = "", curve = 0) {
-  if (!text) return false;
+  if (!text) return "";
   if (curve === 0) return `${text}`;
 
-  // Clamp curve
   curve = Math.max(-100, Math.min(100, curve));
 
   const characters = text.split("");
