@@ -42,7 +42,7 @@ export default function DrawerContent() {
               className="w-full shadow hover:shadow-xl"
             >
               <Image
-                className="w-full aspect-square object-contain cursor-pointer"
+                className="w-full object-contain cursor-pointer"
                 src={item.src}
                 alt={item.alt}
                 width={100}

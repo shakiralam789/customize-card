@@ -32,20 +32,22 @@ export default function DraggableWrapper({
   itemsRefs,
   activeID,
   onMouseUp,
+  handlerRefs,
   ...props
 }) {
   const [rotate, setRotate] = useState(item?.rotate || 0);
   const [width, setWidth] = useState(item?.width || null);
+  const [height, setHeight] = useState(item?.height || null);
   const [fontSize, setFontSize] = useState(item?.fontSize || null);
 
   const currentAngle = useRef(item?.rotate);
   const currentWidth = useRef(item?.width || null);
+  const currentHeight = useRef(item?.height || null);
   const currentFontSize = useRef(item?.fontSize || null);
 
-  const animationFrame = useRef(null);
-
   const initialFontSize = mode === "text" ? item.fontSize : null;
-  const initialWidth = mode === "sticker" ? item.width : null;
+  const initialWidth = item.width || null;
+  const initialHeight = item?.height || null;
 
   const [dragType, setDragType] = useState(null);
 
@@ -74,11 +76,12 @@ export default function DraggableWrapper({
           if (mode === "text") {
             currentFontSize.current = initialFontSize * data?.scale;
             setFontSize(currentFontSize.current);
-          } else {
-            currentWidth.current = initialWidth * data?.scale;
           }
 
+          currentWidth.current = initialWidth * data?.scale;
+          currentHeight.current = initialHeight * data?.scale;
           setWidth(currentWidth?.current);
+          setHeight(currentHeight?.current);
         }
 
         if (data?.type === "rotate") {
@@ -128,6 +131,11 @@ export default function DraggableWrapper({
   }, [item?.width]);
 
   useEffect(() => {
+    currentHeight.current = item?.height;
+    setHeight(item?.height);
+  }, [item?.height]);
+
+  useEffect(() => {
     currentFontSize.current = Math.round(item?.fontSize);
     setFontSize(Math.round(item?.fontSize));
   }, [item?.fontSize]);
@@ -150,13 +158,19 @@ export default function DraggableWrapper({
         {...props}
         className={`group absolute ${className}`}
         style={{
-          cursor: isDragging ? "grabbing" : "grab",
-          transform: `translate(${position?.x}px, ${position?.y}px) rotate(${
-            rotate || 0
-          }deg)`,
+          left: `${position?.x}px`,
+          top: `${position?.y}px`,
+          transform: `rotate(${rotate || 0}deg)`,
           ...style,
           zIndex: isDragging || isActive ? 99999 : zIndex,
-          width: width + "px",
+          width:
+            item?.itemType === "text" && item.contentEditable
+              ? "auto"
+              : width + "px" || "auto",
+          height:
+            item?.itemType === "text" && item.contentEditable
+              ? "auto"
+              : height + "px" || "auto",
         }}
       >
         {typeof children === "function"
@@ -167,10 +181,18 @@ export default function DraggableWrapper({
       </div>
       <PortalComponent>
         <div
+          ref={(el) => {
+            if (el) {
+              handlerRefs.current[item.id] = el;
+            } else {
+              delete handlerRefs.current[item.id];
+            }
+          }}
           {...props}
           data-draggable
           className={`group absolute ${
-            (isAnyItemDragging && !isDragging) || item?.contentEditable
+            (item.itemType === "text" && isAnyItemDragging && !isDragging) ||
+            item?.contentEditable
               ? "pointer-events-none"
               : ""
           }
@@ -179,14 +201,14 @@ export default function DraggableWrapper({
              isDragging ? "movable-handle-hover" : ""
            } movable-handle ${className}`}
           style={{
-            cursor: isDragging ? "grabbing" : "grab",
-            transform: `translate(${position?.x}px, ${position?.y}px) rotate(${
-              rotate || 0
-            }deg)`,
+            cursor: isDragging && !item.contentEditable ? "grabbing" : "move",
+            left: `${position?.x}px`,
+            top: `${position?.y}px`,
+            transform: `rotate(${rotate || 0}deg)`,
             ...style,
             zIndex: isDragging || isActive ? 99999 : zIndex,
-            width: width + "px",
-            height: item?.height + "px" || "auto",
+            width: width + "px" || "auto",
+            height: height + "px" || "auto",
           }}
           onMouseDown={(e) => {
             if (

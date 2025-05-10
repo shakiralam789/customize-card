@@ -31,7 +31,7 @@ export default function useDraggable({
     ({ e, type, dir }) => {
       e.preventDefault();
       e.stopPropagation();
-      
+
       const element = e.currentTarget.closest("[data-draggable]");
       if (!element) return;
 
@@ -55,7 +55,7 @@ export default function useDraggable({
 
   const handleMouseMove = (e) => {
     if (!isClicked || !draggingRef.current) return;
-
+    
     setIsDragging(true);
 
     const element = draggingRef.current;
@@ -71,7 +71,7 @@ export default function useDraggable({
     if (type === "move") {
       const dx = (e.clientX - startMousePos.x) / zoomLevel;
       const dy = (e.clientY - startMousePos.y) / zoomLevel;
-
+      
       newPos = {
         x: startElementPos.x + dx,
         y: startElementPos.y + dy,
@@ -103,7 +103,6 @@ export default function useDraggable({
       ) {
         if (dir === "tl" || dir === "bl") {
           newPos.x = startElementPos.x - deltaWidth; // ok for shape
-          console.log('asd');
           
         } else if (dir === "tr" || dir === "br") {
           newPos.x = startElementPos.x;
@@ -162,7 +161,7 @@ export default function useDraggable({
 
     positionRef.current = newPos;
     setPosition(newPos);
-
+    
     onDragging?.({
       e,
       scale: newScale,

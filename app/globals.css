@@ -46,8 +46,9 @@ button {
   caret-color: #1BC47D
 }
 
-.carent-color {
-  caret-color: #1BC47D
+.editable-div{
+  caret-color: #1BC47D;
+  white-space:pre;
 }
 
 .movable-handle-hover {

@@ -5,30 +5,60 @@ import Image from "next/image";
 import { getCurvedTextHTML, getFontFamily } from "@/helper/helper";
 import CurvedText from "./CurvedText";
 
-export default function InvitationCard({
-  zoomLevel,
-  allItems,
-  activeID,
-  setActiveID,
-  itemsRefs,
-  shouldBeSelected,
-  defText,
-  defSticker,
-  showCenterLine,
-  parentRef,
-  setShowCenterLine,
-  setAllItems,
-  horizontalCentralLine,
-  setHorizontalCentralLine,
-  frame,
-  setIsAnyItemDragging,
-  isAnyItemDragging,
-  setFrame,
-}) {
+export default function InvitationCard({ contextProps }) {
+  const {
+    zoomLevel,
+    allItems,
+    activeID,
+    setActiveID,
+    itemsRefs,
+    shouldBeSelected,
+    defText,
+    showCenterLine,
+    parentRef,
+    setShowCenterLine,
+    setAllItems,
+    horizontalCentralLine,
+    setHorizontalCentralLine,
+    frame,
+    setIsAnyItemDragging,
+    isAnyItemDragging,
+    setFrame,
+    handlerRefs,
+    managePosition,
+  } = contextProps;
+
+  const scrollRef = useRef(null);
   function handlePrevItem(crrItem) {
     setAllItems((prevItems) => {
+      let position;
+      if (activeID) {
+        let prevHandler = handlerRefs.current[activeID];
+        const parent = parentRef.current;
+        position = managePosition({ idol: prevHandler, parent }, true);
+      }
+
       const newItems = prevItems.map((s) => {
-        const updated = { ...s, active: s.id === crrItem?.id };
+        const updated = {
+          ...s,
+          active: s.id === crrItem?.id,
+          top:
+            s.id == activeID && s.itemType === "text"
+              ? position?.top || 0
+              : s.top,
+          left:
+            s.id == activeID && s.itemType === "text"
+              ? position?.left || 0
+              : s.left,
+          width:
+            s.id == activeID && s.itemType === "text"
+              ? position?.width || "auto"
+              : s.width || "auto",
+          height:
+            s.id == activeID && s.itemType === "text"
+              ? position?.height || "auto"
+              : s.height || "auto",
+        };
         if (s.itemType === "text") {
           updated.contentEditable = s.id === crrItem?.id && crrItem?.active;
         }
@@ -104,21 +134,6 @@ export default function InvitationCard({
     }
   };
 
-  // useEffect(() => {
-  //   if (
-  //     activeID !== null &&
-  //     itemsRefs.current[activeID] &&
-  //     allItems[activeID]?.contentEditable
-  //   ) {
-  //     itemsRefs.current[activeID].focus();
-
-  //     const isPlaceholder = allItems[activeID].isPlaceholder;
-  //     if (isPlaceholder) {
-  //       itemsRefs.current[activeID].innerHTML = "";
-  //     }
-  //   }
-  // }, [activeID, allItems]);
-
   useLayoutEffect(() => {
     const handleClickOutside = (e) => {
       if (e.target.closest(".prevent-customize-card-blur") || activeID == null)
@@ -137,16 +152,30 @@ export default function InvitationCard({
     handleFocus(e, item);
   }
 
-  function handleStickerMouseup({ e }) {
+  function handleStickerMouseup({ e, item }) {
     setAllItems((prev) => {
       return prev.map((s) => ({
         ...s,
         active: s.id === item.id,
-        contentEditable: s.id === item.id,
       }));
     });
 
-    setActiveID(item.id);
+    setActiveID(item?.id);
+  }
+
+  function handleContentChange({ e }) {
+    if (!activeID) return;
+
+    let currentHandler = handlerRefs.current[activeID];
+    let currentElement = itemsRefs.current[activeID];
+    const parent = parentRef.current;
+
+    managePosition({
+      idol: currentElement,
+      follower: currentHandler,
+      parent,
+      scrollParent: scrollRef.current,
+    });
   }
 
   return (
@@ -164,7 +193,10 @@ export default function InvitationCard({
         }`,
       }}
     >
-      <div className="w-full h-full relative z-0 overflow-hidden">
+      <div
+        ref={scrollRef}
+        className="w-full h-full relative z-0 overflow-hidden"
+      >
         {frame.background}
         {allItems &&
           allItems.length > 0 &&
@@ -193,6 +225,7 @@ export default function InvitationCard({
                 isAnyItemDragging={isAnyItemDragging}
                 itemsRefs={itemsRefs}
                 activeID={activeID}
+                handlerRefs={handlerRefs}
                 onMouseUp={
                   (item.itemType === "sticker" && handleStickerMouseup) ||
                   handleTextMouseup ||
@@ -215,8 +248,7 @@ export default function InvitationCard({
                         className={`${
                           item.isPlaceholder ? "!text-green-600" : "text-black"
                         }
-                        ${!item?.contentEditable ? "!cursor-move" : ""}
-                        focus:outline-none whitespace-nowrap carent-color`}
+                        focus:outline-none whitespace-nowrap carent-color editable-div`}
                         style={{
                           fontSize: `${fontSize || defText.fontSize}px`,
                           textAlign: `${item?.textAlign || defText.textAlign}`,
@@ -241,6 +273,9 @@ export default function InvitationCard({
                             item?.fontFamily || defText.fontFamily
                           ),
                         }}
+                        onInput={(e) => {
+                          handleContentChange({ e });
+                        }}
                       >
                         Enter text...
                       </div>
@@ -255,7 +290,6 @@ export default function InvitationCard({
                             delete itemsRefs.current[item.id];
                           }
                         }}
-                        className={`!cursor-move focus:outline-none`}
                       >
                         <Image
                           className="w-full"

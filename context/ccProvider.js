@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
@@ -46,9 +46,11 @@ const CcProvider = ({ children }) => {
 
   const ignoreBlurRef = useRef(false);
   const itemsRefs = useRef({});
+  const handlerRefs = useRef({});
 
   const [allItems, setAllItems] = useState([]);
   const [frame, setFrame] = useState({});
+  const [newAddedId, setNewAddedId] = useState(null);
 
   function addNewItem(newData) {
     const id = uuid4();
@@ -60,12 +62,12 @@ const CcProvider = ({ children }) => {
       }));
       if (newData.itemType === "text") {
         updatedItems.contentEditable = false;
-        // updatedItems.isPlaceholder = true;
       }
-      return [...updatedItems, { id, ...newData }];
+      return [...updatedItems, { ...newData, id }];
     });
 
     setActiveID(id);
+    setNewAddedId(id);
   }
 
   function addNewText() {
@@ -120,7 +122,6 @@ const CcProvider = ({ children }) => {
     if (localTItems) {
       let parseItems = JSON.parse(localTItems);
       if (parseItems) {
-        
         items = parseItems?.data?.items || [];
         frameData = parseItems?.data?.frame || {};
       }
@@ -166,6 +167,76 @@ const CcProvider = ({ children }) => {
     setFrame(frameData);
   }
 
+  function managePosition(
+    { idol, follower, parent, scrollParent },
+    givePosition = false
+  ) {
+    if (!idol) return;
+
+    const rect = idol.getBoundingClientRect();
+    const parentRect = parent.getBoundingClientRect();
+
+    const targetWidth = idol.offsetWidth;
+    const targetHeight = idol.offsetHeight;
+
+    const targetLeft = rect.left - parentRect.left;
+    const targetTop = rect.top - parentRect.top;
+
+    if (scrollParent) {
+      requestAnimationFrame(() => {
+        scrollParent.scrollLeft = 0;
+        scrollParent.scrollTop = 0;
+      });
+    }
+
+    if (givePosition)
+      return {
+        width: targetWidth,
+        height: targetHeight,
+        left: targetLeft,
+        top: targetTop,
+      };
+
+    if (follower) {
+      follower.style.width = `${targetWidth}px`;
+      follower.style.height = `${targetHeight}px`;
+      follower.style.left = `${targetLeft}px`;
+      follower.style.top = `${targetTop}px`;
+    }
+  }
+
+  useEffect(() => {
+    if (newAddedId) {
+      const el = itemsRefs.current[newAddedId];
+      if (el) {
+        const resizeObserver = new ResizeObserver((entries) => {
+          for (let entry of entries) {
+            const { width, height } = entry.contentRect;
+            setAllItems((prevItems) => {
+              const updatedItems = prevItems.map((item) => {
+                if (item.id === newAddedId) {
+                  return {
+                    ...item,
+                    width,
+                    height,
+                  };
+                }
+                return item;
+              });
+              return updatedItems;
+            });
+          }
+        });
+
+        resizeObserver.observe(el);
+        
+        return () => {
+          resizeObserver.disconnect();
+        };
+      }
+    }
+  }, [newAddedId]);
+
   return (
     <CcContext.Provider
       value={{
@@ -195,6 +266,8 @@ const CcProvider = ({ children }) => {
         setFrame,
         isAnyItemDragging,
         setIsAnyItemDragging,
+        handlerRefs,
+        managePosition,
       }}
     >
       {children}
