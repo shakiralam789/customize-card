@@ -42,9 +42,7 @@ button {
 
 .movable-handle {
   cursor: pointer;
-  border: 2px solid transparent;
-  /* width: fit-content; */
-  padding: 8px;
+  outline: 2px solid transparent;
   caret-color: #1BC47D
 }
 
@@ -52,23 +50,25 @@ button {
   background: rgba(255, 255, 255, 0.281);
 }
 
-.movable-handle-parent:hover .movable-handle {
+.movable-handle:hover {
   background: rgba(255, 255, 255, 0.281);
 }
 
 .editable {
   background: rgba(255, 255, 255, 0.281);
-  border: 2px solid #1BC47D;
+  outline: 2px solid #1BC47D;
 }
 
 .movable-handle.active {
   cursor: default;
-  border-color: #1BC47D;
+  outline-color: #1BC47D;
   background: rgba(255, 255, 255, 0.281);
 }
+
 .movable-handle:not(.active):hover {
   border-color: #d6d6d6;
 }
+
 .menu {
   @apply overflow-y-auto py-1 z-[999] border border-gray-300 whitespace-nowrap bg-white shadow rounded-md min-w-[140px] 2xl:min-w-[180px]
 }

@@ -27,6 +27,7 @@ export default function DraggableWrapper({
   allItems,
   zoomLevel,
   setIsAnyItemDragging,
+  isAnyItemDragging,
   itemsRefs,
   activeID,
   ...props
@@ -51,7 +52,7 @@ export default function DraggableWrapper({
   const [blRotate, setBlRotate] = useState("bl");
   const [brRotate, setBrRotate] = useState("br");
 
-  const { position, isDragging, startDrag } = useDraggable({
+  const { scale, position, isDragging, startDrag } = useDraggable({
     zoomLevel,
     setHorizontalCentralLine,
     setShowCenterLine,
@@ -66,23 +67,19 @@ export default function DraggableWrapper({
     onDragging: (data) => {
       setIsAnyItemDragging(true);
       if (data?.type !== "move") {
-        if (!animationFrame.current) {
-          animationFrame.current = requestAnimationFrame(() => {
-            if (data?.type === "resize") {
-              if (mode === "text") {
-                currentFontSize.current = initialFontSize * data?.scale;
-              } else {
-                currentWidth.current = initialWidth * data?.scale;
-              }
-            }
+        if (data?.type === "resize") {
+          if (mode === "text") {
+            currentFontSize.current = initialFontSize * data?.scale;
+            setFontSize(currentFontSize.current);
+          } else {
+            currentWidth.current = initialWidth * data?.scale;
+            setWidth(currentWidth.current);
+          }
+        }
 
-            if (data?.type == "rotate") {
-              currentAngle.current = data?.angle;
-              setRotate(data?.angle);
-            }
-
-            animationFrame.current = null;
-          });
+        if (data?.type === "rotate") {
+          currentAngle.current = data?.angle;
+          setRotate(data?.angle);
         }
       }
     },
@@ -146,7 +143,11 @@ export default function DraggableWrapper({
     <div
       {...props}
       data-draggable
-      className={`group absolute ${className}`}
+      className={`group absolute ${
+        isAnyItemDragging && !isDragging ? "pointer-events-none" : ""
+      } ${
+        isDragging ? "movable-handle-hover" : ""
+      } movable-handle ${className}`}
       style={{
         cursor: isDragging ? "grabbing" : "grab",
         transform: `translate(${position?.x}px, ${position?.y}px) rotate(${
@@ -154,6 +155,8 @@ export default function DraggableWrapper({
         }deg)`,
         ...style,
         zIndex: isDragging || isActive ? 99999 : zIndex,
+        width: width,
+        fontSize: fontSize,
       }}
     >
       {typeof children === "function"
@@ -161,8 +164,6 @@ export default function DraggableWrapper({
             startDrag,
             isDragging,
             position,
-            width: currentWidth.current,
-            fontSize: currentFontSize.current,
           })
         : children}
 
@@ -189,21 +190,21 @@ export default function DraggableWrapper({
 
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: tlRotate })}
-            className={`cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0.5 left-0.5 -translate-x-1/2 -translate-y-1/2`}
+            className={`cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2`}
           ></span>
 
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
-            className={`cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0.5 right-0.5 translate-x-1/2 -translate-y-1/2`}
+            className={`cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 right-0 translate-x-1/2 -translate-y-1/2`}
           ></span>
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: blRotate })}
-            className={`cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0.5 left-0.5 -translate-x-1/2 translate-y-1/2`}
+            className={`cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2`}
           ></span>
 
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: brRotate })}
-            className={`cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0.5 right-0.5 translate-x-1/2 translate-y-1/2`}
+            className={`cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2`}
           ></span>
         </>
       )}

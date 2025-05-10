@@ -174,10 +174,11 @@ export default function InvitationCard({
                 setHorizontalCentralLine={setHorizontalCentralLine}
                 zoomLevel={zoomLevel}
                 setIsAnyItemDragging={setIsAnyItemDragging}
+                isAnyItemDragging={isAnyItemDragging}
                 itemsRefs={itemsRefs}
                 activeID={activeID}
               >
-                {({ isDragging, startDrag, width, fontSize }) => (
+                {({ isDragging, startDrag }) => (
                   <>
                     {item.itemType === "text" && (
                       <div
@@ -194,19 +195,11 @@ export default function InvitationCard({
                         }}
                         contentEditable={item.contentEditable}
                         suppressContentEditableWarning
-                        className={`
-                        ${
-                          isAnyItemDragging && !isDragging
-                            ? "pointer-events-none"
-                            : ""
-                        }
-                        ${item.active ? "active" : ""} ${
+                        className={`${
                           item.isPlaceholder ? "!text-green-600" : "text-black"
                         }
                         ${!item?.contentEditable ? "!cursor-move" : ""}
-                         ${
-                           isDragging ? "movable-handle-hover" : ""
-                         } movable-handle p-2 focus:outline-none whitespace-nowrap`}
+                        focus:outline-none whitespace-nowrap`}
                         onMouseUp={(e) => {
                           setTimeout(() => {
                             if (!shouldBeSelected.current) return;
@@ -214,7 +207,6 @@ export default function InvitationCard({
                           }, 0);
                         }}
                         style={{
-                          fontSize: `${fontSize || defText.fontSize}px`,
                           textAlign: `${item?.textAlign || defText.textAlign}`,
                           color: `${item?.color || defText.color}`,
                           fontWeight: `${
@@ -262,23 +254,7 @@ export default function InvitationCard({
                             delete itemsRefs.current[item.id]; // Clean up
                           }
                         }}
-                        className={`
-                        ${
-                          isAnyItemDragging && !isDragging
-                            ? "pointer-events-none"
-                            : ""
-                        }
-                        ${
-                          item.active ? "active" : ""
-                        } movable-handle !cursor-move p-2 focus:outline-none ${
-                          isDragging ? "movable-handle-hover" : ""
-                        }`}
-                        style={{
-                          width: `${width || defSticker?.width}px`,
-                          transform: `scale(${
-                            item?.scaleX || defSticker.scaleX
-                          }, ${item?.scaleY || defSticker.scaleY})`,
-                        }}
+                        className={`!cursor-move p-2 focus:outline-none`}
                         onMouseUp={(e) => {
                           setTimeout(() => {
                             if (!shouldBeSelected.current) return;

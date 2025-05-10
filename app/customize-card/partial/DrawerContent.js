@@ -25,17 +25,19 @@ export default function DrawerContent() {
       id: uuid4(),
       src: "/images/stickers/and.png",
       alt: "and",
-    }
+    },
   ];
 
   return (
-    <div className="p-4 grid grid-cols-3 gap-2">
+    <div className="prevent-customize-card-blur p-4 grid grid-cols-3 gap-2">
       {stickers &&
         stickers.length > 0 &&
         stickers.map((item) => {
           return (
             <div
-              onClick={(e) => addNewSticker(item)}
+              onClick={(e) => {
+                addNewSticker(item);
+              }}
               key={item.id}
               className="w-full shadow hover:shadow-xl"
             >

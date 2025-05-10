@@ -50,54 +50,46 @@ const CcProvider = ({ children }) => {
   const [allItems, setAllItems] = useState([]);
   const [frame, setFrame] = useState({});
 
-  function addNewText() {
+  function addNewItem(newData) {
     const id = uuid4();
-
     setAllItems((prevItems) => {
       const updatedItems = prevItems.map((item, index) => ({
         ...item,
         zIndex: 10 + index,
         active: false,
       }));
-
-      return [
-        ...updatedItems,
-        {
-          id: id,
-          text: "",
-          active: true,
-          contentEditable: true,
-          zIndex: 10 + prevItems.length,
-          name: "Text",
-
-          ...defText,
-        },
-      ];
+      if (newData.itemType === "text") {
+        updatedItems.contentEditable = false;
+        // updatedItems.isPlaceholder = true;
+      }
+      return [...updatedItems, { id, ...newData }];
     });
 
     setActiveID(id);
+  }
+
+  function addNewText() {
+    addNewItem({
+      text: "",
+      active: true,
+      contentEditable: true,
+      zIndex: 10 + allItems.length,
+      name: "Text",
+      ...defText,
+    });
+
     shouldBeSelected.current = true;
   }
 
   function addNewSticker(data) {
-    setAllItems((prevItems) => {
-      const itemsWithNewSticker = [
-        ...prevItems,
-        {
-          id: uuid4(),
-          ...defSticker,
-          ...data,
-          name: "Sticker",
-        },
-      ];
-
-      return itemsWithNewSticker.map((item, index) => ({
-        ...item,
-        zIndex: 10 + index,
-      }));
+    addNewItem({
+      ...defSticker,
+      ...data,
+      active: true,
+      zIndex: 10 + allItems.length,
+      name: "Sticker",
     });
 
-    setActiveID(null);
     setIsStickerDrawerOpen(false);
   }
   function deleteField() {

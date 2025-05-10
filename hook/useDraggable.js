@@ -56,6 +56,7 @@ export default function useDraggable({
     if (!isClicked || !draggingRef.current) return;
 
     setIsDragging(true);
+
     const element = draggingRef.current;
     const rect = element.getBoundingClientRect();
 
@@ -75,22 +76,28 @@ export default function useDraggable({
         y: startElementPos.y + dy / zoomLevel,
       };
     }
-
+    
     if (type === "resize") {
       if (!width) return;
 
       const dy = e.clientY - startMousePos.y;
+      let scaleDelta;
 
       newPos.x =
         initialWidth.current / 2 + startElementPos.x - width / 2 / zoomLevel;
 
+      console.log(dy,initialHeight.current);
+      
       if (["br", "bl"].includes(dir)) {
-        newScale = Math.max(0.5, 1 + dy / width / zoomLevel);
+        scaleDelta = 1 + dy / (initialHeight.current / zoomLevel);
       } else if (["tl", "tr"].includes(dir)) {
-        newScale = Math.max(0.5, 1 - dy / width);
-        const pixelChange = (newScale - 1) * height;
-        newPos.y = startElementPos.y - pixelChange / 2 / zoomLevel;
+        scaleDelta = 1 - dy / (initialHeight.current / zoomLevel);
+        const scaledHeight = initialHeight.current * scaleDelta;
+        const deltaHeight = scaledHeight - initialHeight.current;
+        newPos.y = startElementPos.y - deltaHeight / zoomLevel;
       }
+
+      newScale = Math.max(0.5, scaleDelta);
     }
 
     if (type === "rotate") {
@@ -134,11 +141,12 @@ export default function useDraggable({
       return prev !== shouldShow ? shouldShow : prev;
     });
 
-    positionRef.current = newPos;
     hasMovedRef.current = true;
-    setPosition(newPos);
 
-    if (newScale <= 0.5) return;
+    if (newScale <= 0.5 && type === "resize") return;
+
+    positionRef.current = newPos;
+    setPosition(newPos);
 
     onDragging?.({
       e,
