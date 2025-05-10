@@ -123,6 +123,7 @@ export default function InvitationCard({
     const handleClickOutside = (e) => {
       if (e.target.closest(".prevent-customize-card-blur") || activeID == null)
         return;
+
       handlePrevItem();
     };
 
@@ -132,22 +133,6 @@ export default function InvitationCard({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [activeID]);
-
-  function handleTextMouseup({ e, item }) {
-    handleFocus(e, item);
-  }
-
-  function handleStickerMouseup({ e }) {
-    setAllItems((prev) => {
-      return prev.map((s) => ({
-        ...s,
-        active: s.id === item.id,
-        contentEditable: s.id === item.id,
-      }));
-    });
-
-    setActiveID(item.id);
-  }
 
   return (
     <div
@@ -171,11 +156,10 @@ export default function InvitationCard({
           allItems.map((item, index) => {
             return (
               <DraggableWrapper
-                className={`prevent-customize-card-blur ${
-                  item?.hidden ? "hidden" : ""
-                } ${
+                className={`${item?.hidden ? "hidden" : ""} ${
                   item?.locked ? "pointer-events-none user-select-none" : ""
-                } ${item.active ? "active" : ""}`}
+                } ${item.active ? "active" : ""}
+                 prevent-customize-card-blur movable-handle-parent`}
                 initialPosition={item.position}
                 key={item.id}
                 item={item}
@@ -193,16 +177,15 @@ export default function InvitationCard({
                 isAnyItemDragging={isAnyItemDragging}
                 itemsRefs={itemsRefs}
                 activeID={activeID}
-                onMouseUp={
-                  (item.itemType === "sticker" && handleStickerMouseup) ||
-                  handleTextMouseup ||
-                  null
-                }
               >
-                {({ fontSize }) => (
+                {({ startDrag, fontSize }) => (
                   <>
                     {item.itemType === "text" && (
                       <div
+                        onMouseDown={(e) => {
+                          if (item.active && item?.contentEditable) return;
+                          startDrag({ e, type: "move" });
+                        }}
                         ref={(el) => {
                           if (el) {
                             itemsRefs.current[item.id] = el;
@@ -216,7 +199,13 @@ export default function InvitationCard({
                           item.isPlaceholder ? "!text-green-600" : "text-black"
                         }
                         ${!item?.contentEditable ? "!cursor-move" : ""}
-                        focus:outline-none whitespace-nowrap carent-color`}
+                        focus:outline-none whitespace-nowrap`}
+                        onMouseUp={(e) => {
+                          setTimeout(() => {
+                            if (!shouldBeSelected.current) return;
+                            handleFocus(e, item);
+                          }, 0);
+                        }}
                         style={{
                           fontSize: `${fontSize || defText.fontSize}px`,
                           textAlign: `${item?.textAlign || defText.textAlign}`,
@@ -242,20 +231,45 @@ export default function InvitationCard({
                           ),
                         }}
                       >
+                        {/* {!item?.textCurve && !item.contentEditable ? (
+                          <CurvedText
+                            radius={item.textCurve}
+                            text={item.text}
+                          />
+                        ) : (
+                          "Enter text..."
+                        )} */}
                         Enter text...
                       </div>
                     )}
 
                     {item.itemType === "sticker" && (
                       <div
+                        onMouseDown={(e) => {
+                          startDrag({ e, type: "move" });
+                        }}
                         ref={(el) => {
                           if (el) {
                             itemsRefs.current[item.id] = el;
                           } else {
-                            delete itemsRefs.current[item.id];
+                            delete itemsRefs.current[item.id]; // Clean up
                           }
                         }}
                         className={`!cursor-move focus:outline-none`}
+                        onMouseUp={(e) => {
+                          setTimeout(() => {
+                            if (!shouldBeSelected.current) return;
+                            setAllItems((prev) => {
+                              return prev.map((s) => ({
+                                ...s,
+                                active: s.id === item.id,
+                                contentEditable: s.id === item.id,
+                              }));
+                            });
+
+                            setActiveID(item.id);
+                          }, 0);
+                        }}
                       >
                         <Image
                           className="w-full"
@@ -272,15 +286,12 @@ export default function InvitationCard({
             );
           })}
       </div>
-      <div
-        id="handler-portal"
-        className="w-0 h-0 absolute top-0 left-0 z-10"
-      ></div>
+      <div id="handler-portal" className="w-full h-full relative z-0"></div>
       {showCenterLine && (
-        <div className="pointer-events-none z-20 absolute top-0 bottom-0 left-1/2 w-px border-l border-guide-line-color"></div>
+        <div className="pointer-events-none z-10 absolute top-0 bottom-0 left-1/2 w-px border-l border-guide-line-color"></div>
       )}
       {horizontalCentralLine && (
-        <div className="pointer-events-none z-20 absolute top-1/2 left-0 right-0 h-px border-t border-guide-line-color"></div>
+        <div className="pointer-events-none z-10 absolute top-1/2 left-0 right-0 h-px border-t border-guide-line-color"></div>
       )}
     </div>
   );

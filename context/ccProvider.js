@@ -120,6 +120,7 @@ const CcProvider = ({ children }) => {
     if (localTItems) {
       let parseItems = JSON.parse(localTItems);
       if (parseItems) {
+        
         items = parseItems?.data?.items || [];
         frameData = parseItems?.data?.frame || {};
       }

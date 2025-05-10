@@ -46,6 +46,10 @@ button {
   caret-color: #1BC47D
 }
 
+.carent-color {
+  caret-color: #1BC47D
+}
+
 .movable-handle-hover {
   background: rgba(255, 255, 255, 0.281);
 }
@@ -53,6 +57,7 @@ button {
 .movable-handle:hover {
   background: rgba(255, 255, 255, 0.281);
 }
+
 
 .editable {
   background: rgba(255, 255, 255, 0.281);
@@ -66,7 +71,11 @@ button {
 }
 
 .movable-handle:not(.active):hover {
-  border-color: #d6d6d6;
+  outline-color: #d6d6d6;
+}
+
+.movable-handle.content-editable {
+  background: transparent;
 }
 
 .menu {

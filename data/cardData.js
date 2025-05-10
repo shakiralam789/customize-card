@@ -10,8 +10,8 @@ const cardData = [
           text: '<p data-pm-slice="1 1 []">YOU ARE CORDIALLY</p><p>INVITED TO THE WEDDING OF </p>',
           isPlaceholder: false,
           position: {
-            x: 95,
-            y: 118,
+            x: 121,
+            y: 143,
           },
           fontSize: 9,
           contentEditable: false,
@@ -36,8 +36,8 @@ const cardData = [
           name: "LORALEIGH",
           itemType: "text",
           position: {
-            x: 88,
-            y: 180,
+            x: 115,
+            y: 193,
           },
           fontSize: 18,
           textAlign: "center",
@@ -61,8 +61,8 @@ const cardData = [
           name: "CHRISTOPHER",
           itemType: "text",
           position: {
-            x: 71,
-            y: 275,
+            x: 96,
+            y: 308,
           },
           fontSize: 18,
           textAlign: "center",
@@ -86,8 +86,8 @@ const cardData = [
           name: "SATURDAY",
           itemType: "text",
           position: {
-            x: 84,
-            y: 335,
+            x: 109,
+            y: 381,
           },
           fontSize: 9,
           textAlign: "center",
@@ -106,8 +106,8 @@ const cardData = [
           id: "4db09e3e-bff3-4f02-9714-d39885374466",
           itemType: "sticker",
           position: {
-            x: 132,
-            y: 232,
+            x: 151,
+            y: 250,
           },
           width: 100,
           scaleX: 1,
@@ -119,6 +119,7 @@ const cardData = [
           zIndex: 14,
           active: false,
           contentEditable: false,
+          fontSize: null,
         },
       ],
       frame: {
@@ -138,8 +139,8 @@ const cardData = [
           text: "YOU ARE CORDIALLY INVITED",
           isPlaceholder: false,
           position: {
-            x: 95,
-            y: 118,
+            x: 121,
+            y: 127,
           },
           fontSize: 9,
           contentEditable: false,
@@ -154,7 +155,9 @@ const cardData = [
           rotate: "0",
           zIndex: 10,
           fontFamily: "Times New Roman",
-          textCurve: 0
+          textCurve: 0,
+          width: "159.35",
+          height: "18",
         },
         {
           id: "e71ed857-1ae6-4b27-b12e-42e8edd37519",
@@ -165,8 +168,8 @@ const cardData = [
           name: "LORALEIGH",
           itemType: "text",
           position: {
-            x: 88,
-            y: 187,
+            x: 114,
+            y: 198,
           },
           fontSize: 18,
           textAlign: "center",
@@ -180,6 +183,8 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
+          width: "170.4",
+          height: "54",
         },
         {
           id: "cc0b9c71-2d81-4e1a-ae17-b6b69f74f0fb",
@@ -190,8 +195,8 @@ const cardData = [
           name: "CHRISTOPHER",
           itemType: "text",
           position: {
-            x: 71,
-            y: 275,
+            x: 98,
+            y: 304,
           },
           fontSize: 18,
           textAlign: "center",
@@ -205,6 +210,8 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
+          width: "205.3",
+          height: "54",
         },
         {
           id: "77973ef2-a0c8-49fc-bfbc-24c23ed384d3",
@@ -215,8 +222,8 @@ const cardData = [
           name: "SATURDAY",
           itemType: "text",
           position: {
-            x: 84,
-            y: 335,
+            x: 111,
+            y: 375,
           },
           fontSize: 9,
           textAlign: "center",
@@ -230,6 +237,8 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
+          width: "182.25",
+          height: "72",
         },
         {
           id: "9e1203c0-99d2-4957-8596-c289cdd589d5",
@@ -240,8 +249,8 @@ const cardData = [
           name: "Text",
           itemType: "text",
           position: {
-            x: 156,
-            y: 249,
+            x: 185,
+            y: 265,
           },
           fontSize: 16,
           textAlign: "center",
@@ -255,6 +264,8 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Dancing Script",
+          width: "29.4833",
+          height: "19.2",
         },
       ],
       frame: {

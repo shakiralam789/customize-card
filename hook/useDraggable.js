@@ -31,7 +31,7 @@ export default function useDraggable({
     ({ e, type, dir }) => {
       e.preventDefault();
       e.stopPropagation();
-
+      
       const element = e.currentTarget.closest("[data-draggable]");
       if (!element) return;
 
