@@ -25,8 +25,10 @@ export default function MainContentCom({
       style={{
         left: `${item?.position?.x}px`,
         top: `${item?.position?.y}px`,
-        transform: `rotate(${item.rotate || 0}deg)`,
-        // zIndex: isDragging || item.active ? 99999 : zIndex,
+        transform: `rotate(${item.rotate || 0}deg) scaleX(${
+          item.scaleX
+        }) scaleY(${item.scaleY})`,
+        zIndex: item?.zIndex || 0,
         width:
           item?.itemType === "text" && item.contentEditable
             ? "auto"

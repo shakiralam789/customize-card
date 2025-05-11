@@ -1,36 +1,23 @@
 import { createPortal } from "react-dom";
-import { useEffect, useRef, memo } from "react";
+import { useEffect, useState, memo } from "react";
 
 const PortalComponent = memo(function PortalComponent({ children }) {
-  const portalNodeRef = useRef(null);
+  const [portalNode, setPortalNode] = useState(null);
 
   useEffect(() => {
+    // Look for existing portal container
     let portalRoot = document.getElementById("handler-portal");
-    let createdNewPortal = false;
-
-    if (!portalRoot) {
-      portalRoot = document.createElement("div");
-      portalRoot.id = "handler-portal";
-      document.body.appendChild(portalRoot);
-      createdNewPortal = true;
+    
+    if (portalRoot) {
+      setPortalNode(portalRoot);
+    } else {
+      console.error("Portal container with id 'handler-portal' not found");
     }
-
-    portalNodeRef.current = portalRoot;
-
-    return () => {
-      if (createdNewPortal && portalRoot && portalRoot.parentNode) {
-        try {
-          portalRoot.parentNode.removeChild(portalRoot);
-        } catch (e) {
-          console.warn("Failed to remove portal node:", e);
-        }
-      }
-    };
   }, []);
 
-  if (!portalNodeRef.current) return null;
+  if (!portalNode) return null;
 
-  return createPortal(children, portalNodeRef.current);
+  return createPortal(children, portalNode);
 });
 
 export default PortalComponent;

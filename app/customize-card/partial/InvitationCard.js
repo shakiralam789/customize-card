@@ -1,6 +1,6 @@
 "use client";
 import React, { useLayoutEffect, useRef } from "react";
-import { getCurvedTextHTML } from "@/helper/helper";
+import { getCurvedTextHTML, managePosition } from "@/helper/helper";
 import MainContentCom from "./MainContentCom";
 import HandlerCom from "./HandlerCom";
 
@@ -17,17 +17,16 @@ export default function InvitationCard(props) {
     horizontalCentralLine,
     frame,
     handlerRefs,
-    managePosition,
+    scrollRef,
   } = contextProps;
 
-  const scrollRef = useRef(null);
   function handlePrevItem(crrItem) {
     setAllItems((prevItems) => {
       let position;
       if (activeID) {
         let prevHandler = handlerRefs.current[activeID];
         const parent = parentRef.current;
-        position = managePosition({ idol: prevHandler, parent }, true);
+        position = managePosition({ idol: prevHandler, parent });
       }
 
       const newItems = prevItems.map((s) => {
@@ -155,7 +154,7 @@ export default function InvitationCard(props) {
     setActiveID(item?.id);
   }
 
-  function handleContentChange({ e }) {
+  function handleContentChange() {
     if (!activeID) return;
 
     let currentHandler = handlerRefs.current[activeID];
@@ -227,7 +226,7 @@ export default function InvitationCard(props) {
             />
           ))}
       </div>
-      
+
       {showCenterLine && (
         <div className="pointer-events-none z-20 absolute top-0 bottom-0 left-1/2 w-px border-l border-guide-line-color"></div>
       )}

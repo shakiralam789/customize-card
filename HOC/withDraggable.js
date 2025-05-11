@@ -1,3 +1,9 @@
+import {
+  tlRotation,
+  trRotation,
+  blRotation,
+  brRotation,
+} from "@/helper/helper";
 import useDraggable from "@/hook/useDraggable";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -17,6 +23,8 @@ export default function withDraggable(Component) {
       handlerRefs,
     } = contextProps;
 
+    const hasMounted = useRef(true);
+
     const [itemState, setItemState] = useState({
       rotate: item?.rotate || 0,
       width: item?.width || null,
@@ -34,6 +42,8 @@ export default function withDraggable(Component) {
       width: item?.width || null,
       height: item?.height || null,
       fontSize: item?.fontSize || null,
+      top: item?.position?.y,
+      left: item?.position?.x,
     });
 
     const initialFontSize = item?.itemType === "text" ? item.fontSize : null;
@@ -48,6 +58,7 @@ export default function withDraggable(Component) {
       parentRef: parentRef?.current,
       rotate: item?.rotate,
       item,
+
       onDragStart: (data) => {
         shouldBeSelected.current = true;
         setItemState((prev) => ({ ...prev, dragType: data?.type }));
@@ -55,45 +66,41 @@ export default function withDraggable(Component) {
 
       onDragging: (data) => {
         setIsAnyItemDragging(true);
-
         let follower = mainRefs.current[item.id];
         let handler = handlerRefs.current[item.id];
 
         if (data?.type !== "move") {
           requestAnimationFrame(() => {
             if (data?.type === "resize") {
+              // Handle resize
               if (item?.itemType === "text") {
                 currentValues.current.fontSize = initialFontSize * data?.scale;
                 follower.style.fontSize = currentValues.current.fontSize + "px";
               }
               currentValues.current.width = initialWidth * data?.scale;
               currentValues.current.height = initialHeight * data?.scale;
+              currentValues.current.top = data.position.y;
+              currentValues.current.left = data.position.x;
 
-              follower.style.width = `${currentValues.current.width}px`;
-              follower.style.height = `${currentValues.current.height}px`;
-
-              handler.style.width = `${currentValues.current.width}px`;
-              handler.style.height = `${currentValues.current.height}px`;
-
-              follower.style.left = `${data.position.x}px`;
-              follower.style.top = `${data.position.y}px`;
-
-              handler.style.left = `${data.position.x}px`;
-              handler.style.top = `${data.position.y}px`;
-            }
-            if (data?.type === "rotate") {
+              [follower, handler].forEach((el) => {
+                if (!el) return;
+                el.style.width = `${currentValues.current.width}px`;
+                el.style.height = `${currentValues.current.height}px`;
+                el.style.left = `${data.position.x}px`;
+                el.style.top = `${data.position.y}px`;
+              });
+            } else if (data?.type === "rotate") {
               currentValues.current.angle = data?.angle;
-              follower.style.transform = `rotate(${currentValues.current.angle}deg)`;
-              handler.style.transform = `rotate(${currentValues.current.angle}deg)`;
+              const transform = `rotate(${currentValues.current.angle}deg)`;
+              follower && (follower.style.transform = transform);
+              handler && (handler.style.transform = transform);
             }
           });
         } else {
-          if (follower) {
-            follower.style.left = `${data.position.x}px`;
-            follower.style.top = `${data.position.y}px`;
-          }
-          handler.style.left = `${data.position.x}px`;
-          handler.style.top = `${data.position.y}px`;
+          follower && (follower.style.left = `${data.position.x}px`);
+          follower && (follower.style.top = `${data.position.y}px`);
+          handler && (handler.style.left = `${data.position.x}px`);
+          handler && (handler.style.top = `${data.position.y}px`);
         }
       },
 
@@ -106,32 +113,37 @@ export default function withDraggable(Component) {
           rotate: currentValues.current.angle,
           width: currentValues.current.width,
           height: currentValues.current.height,
+          top: currentValues.current.top,
+          left: currentValues.current.left,
+
           fontSize: currentValues.current.fontSize,
           dragType: null,
-          ...(data?.type === "rotate" &&
-            {
-              // tlRotate: tlRotation(data?.rotate),
-              // trRotate: trRotation(data?.rotate),
-              // blRotate: blRotation(data?.rotate),
-              // brRotate: brRotation(data?.rotate),
-            }),
+          ...(data?.type === "rotate" && {
+            tlRotate: tlRotation(data?.rotate),
+            trRotate: trRotation(data?.rotate),
+            blRotate: blRotation(data?.rotate),
+            brRotate: brRotation(data?.rotate),
+          }),
         }));
 
-        setAllItems((prevItems) => {
-          return prevItems.map((s, i) => {
-            if (s.id === item.id) {
-              return {
-                ...s,
-                position: data?.position,
-                rotate: currentValues.current.angle,
-                width: currentValues.current.width,
-                height: currentValues.current.height,
-                fontSize: currentValues.current.fontSize,
-              };
-            }
-            return s;
-          });
-        });
+        setAllItems((prevItems) =>
+          prevItems.map((s) =>
+            s.id === item.id
+              ? {
+                  ...s,
+                  position: data?.position,
+                  rotate: currentValues.current.angle,
+                  width: currentValues.current.width,
+                  height: currentValues.current.height,
+                  fontSize: currentValues.current.fontSize,
+                  position: {
+                    x: currentValues.current.left,
+                    y: currentValues.current.top,
+                  },
+                }
+              : s
+          )
+        );
       },
     });
 
@@ -140,28 +152,24 @@ export default function withDraggable(Component) {
         currentValues.current.angle = item.rotate;
         setItemState((prev) => ({ ...prev, rotate: item.rotate }));
       }
-    }, [item?.rotate]);
-
-    useEffect(() => {
       if (item?.width !== undefined) {
         currentValues.current.width = item.width;
         setItemState((prev) => ({ ...prev, width: item.width }));
       }
-    }, [item?.width]);
-
-    useEffect(() => {
       if (item?.height !== undefined) {
         currentValues.current.height = item.height;
         setItemState((prev) => ({ ...prev, height: item.height }));
       }
-    }, [item?.height]);
-
-    useEffect(() => {
       if (item?.fontSize !== undefined) {
         currentValues.current.fontSize = item.fontSize;
         setItemState((prev) => ({ ...prev, fontSize: item.fontSize }));
+
+        if (hasMounted.current) {
+          hasMounted.current = false;
+          return;
+        }
       }
-    }, [item?.fontSize]);
+    }, [item?.rotate, item?.width, item?.height, item?.fontSize]);
 
     useEffect(() => {
       let referItem = itemsRefs.current[activeID];

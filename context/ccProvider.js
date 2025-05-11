@@ -48,6 +48,7 @@ const CcProvider = ({ children }) => {
   const itemsRefs = useRef({});
   const handlerRefs = useRef({});
   const mainRefs = useRef({});
+  const scrollRef = useRef(null);
 
   const [allItems, setAllItems] = useState([]);
   const [frame, setFrame] = useState({});
@@ -168,44 +169,6 @@ const CcProvider = ({ children }) => {
     setFrame(frameData);
   }
 
-  function managePosition(
-    { idol, follower, parent, scrollParent },
-    givePosition = false
-  ) {
-    if (!idol) return;
-
-    const rect = idol.getBoundingClientRect();
-    const parentRect = parent.getBoundingClientRect();
-
-    const targetWidth = idol.offsetWidth;
-    const targetHeight = idol.offsetHeight;
-
-    const targetLeft = rect.left - parentRect.left;
-    const targetTop = rect.top - parentRect.top;
-
-    if (scrollParent) {
-      requestAnimationFrame(() => {
-        scrollParent.scrollLeft = 0;
-        scrollParent.scrollTop = 0;
-      });
-    }
-
-    if (givePosition)
-      return {
-        width: targetWidth,
-        height: targetHeight,
-        left: targetLeft,
-        top: targetTop,
-      };
-
-    if (follower) {
-      follower.style.width = `${targetWidth}px`;
-      follower.style.height = `${targetHeight}px`;
-      follower.style.left = `${targetLeft}px`;
-      follower.style.top = `${targetTop}px`;
-    }
-  }
-
   useEffect(() => {
     if (newAddedId) {
       const el = itemsRefs.current[newAddedId];
@@ -268,8 +231,8 @@ const CcProvider = ({ children }) => {
         isAnyItemDragging,
         setIsAnyItemDragging,
         handlerRefs,
-        managePosition,
-        mainRefs
+        mainRefs,
+        scrollRef
       }}
     >
       {children}

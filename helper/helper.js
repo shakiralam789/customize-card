@@ -273,3 +273,39 @@ export function getCurvedTextHTML(text = "", curve = 0) {
     </div>
   `;
 }
+
+export function managePosition(
+  { idol, follower, parent, scrollParent } = false
+) {
+  if (!idol) return;
+
+  const rect = idol.getBoundingClientRect();
+  const parentRect = parent.getBoundingClientRect();
+
+  const targetWidth = idol.offsetWidth;
+  const targetHeight = idol.offsetHeight;
+
+  const targetLeft = rect.left - parentRect.left;
+  const targetTop = rect.top - parentRect.top;
+
+  if (scrollParent) {
+    requestAnimationFrame(() => {
+      scrollParent.scrollLeft = 0;
+      scrollParent.scrollTop = 0;
+    });
+  }
+
+  if (follower) {
+    follower.style.width = `${targetWidth}px`;
+    follower.style.height = `${targetHeight}px`;
+    follower.style.left = `${targetLeft}px`;
+    follower.style.top = `${targetTop}px`;
+  }
+
+  return {
+    width: targetWidth,
+    height: targetHeight,
+    left: targetLeft,
+    top: targetTop,
+  };
+}
