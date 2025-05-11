@@ -96,8 +96,7 @@ export default function FontChange() {
               ...item,
               width: position?.width,
               height: position?.height,
-              top: position?.top,
-              left: position?.left,
+              position: { y: position.top, x: position.left },
               fontSize: fontRef.current,
             }
           : item

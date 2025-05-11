@@ -79,8 +79,6 @@ export default function withDraggable(Component) {
               }
               currentValues.current.width = initialWidth * data?.scale;
               currentValues.current.height = initialHeight * data?.scale;
-              currentValues.current.top = data.position.y;
-              currentValues.current.left = data.position.x;
 
               [follower, handler].forEach((el) => {
                 if (!el) return;
@@ -118,12 +116,12 @@ export default function withDraggable(Component) {
 
           fontSize: currentValues.current.fontSize,
           dragType: null,
-          ...(data?.type === "rotate" && {
-            tlRotate: tlRotation(data?.rotate),
-            trRotate: trRotation(data?.rotate),
-            blRotate: blRotation(data?.rotate),
-            brRotate: brRotation(data?.rotate),
-          }),
+          // ...(data?.type === "rotate" && {
+          //   tlRotate: tlRotation(data?.rotate),
+          //   trRotate: trRotation(data?.rotate),
+          //   blRotate: blRotation(data?.rotate),
+          //   brRotate: brRotation(data?.rotate),
+          // }),
         }));
 
         setAllItems((prevItems) =>
@@ -131,15 +129,11 @@ export default function withDraggable(Component) {
             s.id === item.id
               ? {
                   ...s,
-                  position: data?.position,
                   rotate: currentValues.current.angle,
                   width: currentValues.current.width,
                   height: currentValues.current.height,
                   fontSize: currentValues.current.fontSize,
-                  position: {
-                    x: currentValues.current.left,
-                    y: currentValues.current.top,
-                  },
+                  position: data.position,
                 }
               : s
           )
@@ -188,7 +182,6 @@ export default function withDraggable(Component) {
     return (
       <Component
         isDragging={isDragging}
-        position={position}
         dragType={dragType}
         startDrag={startDrag}
         tlRotate={tlRotate}

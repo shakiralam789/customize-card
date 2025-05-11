@@ -7,7 +7,6 @@ const HandlerCom = ({
   contextProps = {},
   item,
   isDragging,
-  position,
   dragType,
   startDrag,
   tlRotate,

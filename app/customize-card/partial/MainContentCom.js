@@ -25,9 +25,9 @@ export default function MainContentCom({
       style={{
         left: `${item?.position?.x}px`,
         top: `${item?.position?.y}px`,
-        transform: `rotate(${item.rotate || 0}deg) scaleX(${
-          item.scaleX
-        }) scaleY(${item.scaleY})`,
+        transform: `rotate(${
+          item?.rotate != null ? item.rotate : 0
+        }deg) scaleX(${item?.scaleX || 1}) scaleY(${item?.scaleY || 1})`,
         zIndex: item?.zIndex || 0,
         width:
           item?.itemType === "text" && item.contentEditable

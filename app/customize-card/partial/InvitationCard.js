@@ -23,38 +23,47 @@ export default function InvitationCard(props) {
   function handlePrevItem(crrItem) {
     setAllItems((prevItems) => {
       let position;
+
       if (activeID) {
         let prevHandler = handlerRefs.current[activeID];
         const parent = parentRef.current;
-        position = managePosition({ idol: prevHandler, parent });
+        position = managePosition({ idol: prevHandler, parent }, false);
       }
+
+      console.log("postion", position, "prev", prevItems);
 
       const newItems = prevItems.map((s) => {
         const updated = {
           ...s,
           active: s.id === crrItem?.id,
-          top:
-            s.id == activeID && s.itemType === "text"
-              ? position?.top || 0
-              : s.top,
-          left:
-            s.id == activeID && s.itemType === "text"
-              ? position?.left || 0
-              : s.left,
+          position: {
+            x:
+              s.id == activeID && s.itemType === "text" && position
+                ? position?.left
+                : s.position.x,
+            y:
+              s.id == activeID && s.itemType === "text" && position
+                ? position?.top
+                : s.position.y,
+          },
           width:
-            s.id == activeID && s.itemType === "text"
-              ? position?.width || "auto"
+            s.id == activeID && s.itemType === "text" && position
+              ? position?.width
               : s.width || "auto",
           height:
-            s.id == activeID && s.itemType === "text"
-              ? position?.height || "auto"
+            s.id == activeID && s.itemType === "text" && position
+              ? position?.height
               : s.height || "auto",
         };
+
         if (s.itemType === "text") {
           updated.contentEditable = s.id === crrItem?.id && crrItem?.active;
         }
+
         return updated;
       });
+
+      console.log(newItems);
 
       let prevActiveItem = prevItems.find((s) => s.id === activeID);
 
@@ -193,7 +202,7 @@ export default function InvitationCard(props) {
           allItems.length > 0 &&
           allItems.map((item) => (
             <MainContentCom
-              key={item.id}
+              key={item.id + "main"}
               item={item}
               handleContentChange={handleContentChange}
               contextProps={contextProps}
@@ -210,7 +219,7 @@ export default function InvitationCard(props) {
           allItems.length > 0 &&
           allItems.map((item) => (
             <HandlerCom
-              key={item.id}
+              key={item.id + "handler"}
               item={item}
               contextProps={contextProps}
               className={`prevent-customize-card-blur ${

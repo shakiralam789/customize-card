@@ -275,18 +275,26 @@ export function getCurvedTextHTML(text = "", curve = 0) {
 }
 
 export function managePosition(
-  { idol, follower, parent, scrollParent } = false
+  { idol, follower, parent, scrollParent },
+  withAction = true
 ) {
-  if (!idol) return;
+  if (!idol || !parent) return;
 
-  const rect = idol.getBoundingClientRect();
+  const idolRect = idol.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
 
+  // Calculate center-based positioning to account for rotation
   const targetWidth = idol.offsetWidth;
   const targetHeight = idol.offsetHeight;
 
-  const targetLeft = rect.left - parentRect.left;
-  const targetTop = rect.top - parentRect.top;
+  const centerX = idolRect.left + idolRect.width / 2;
+  const centerY = idolRect.top + idolRect.height / 2;
+
+  const parentLeft = parentRect.left;
+  const parentTop = parentRect.top;
+
+  const targetLeft = centerX - parentLeft - targetWidth / 2;
+  const targetTop = centerY - parentTop - targetHeight / 2;
 
   if (scrollParent) {
     requestAnimationFrame(() => {
@@ -295,13 +303,13 @@ export function managePosition(
     });
   }
 
-  if (follower) {
+  if (follower && withAction) {
     follower.style.width = `${targetWidth}px`;
     follower.style.height = `${targetHeight}px`;
     follower.style.left = `${targetLeft}px`;
     follower.style.top = `${targetTop}px`;
   }
-
+  
   return {
     width: targetWidth,
     height: targetHeight,
@@ -309,3 +317,4 @@ export function managePosition(
     top: targetTop,
   };
 }
+
