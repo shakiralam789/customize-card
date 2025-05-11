@@ -1,7 +1,7 @@
 import HandleBtn from "@/components/HandleBtn";
 import withDraggable from "@/HOC/withDraggable";
 import { Move, RotateCcw } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 
 const HandlerCom = ({
   contextProps = {},
@@ -48,12 +48,12 @@ const HandlerCom = ({
            } movable-handle ${className}`}
       style={{
         cursor: isDragging && !item.contentEditable ? "grabbing" : "move",
-        left: `${position?.x}px`,
-        top: `${position?.y}px`,
-        transform: `rotate(${currentValues.current.angle || 0}deg)`,
+        left: `${item?.position?.x}px`,
+        top: `${item?.position?.y}px`,
+        transform: `rotate(${item.rotate || 0}deg)`,
         zIndex: isDragging || item.active ? 99999 : item?.zIndex,
-        width: currentValues.current.width + "px" || "auto",
-        height: currentValues.current.height + "px" || "auto",
+        width: item.width + "px" || "auto",
+        height: item.height + "px" || "auto",
       }}
       onMouseDown={(e) => {
         if (item?.itemType == "text" && item.active && item?.contentEditable)

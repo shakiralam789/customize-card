@@ -47,6 +47,7 @@ const CcProvider = ({ children }) => {
   const ignoreBlurRef = useRef(false);
   const itemsRefs = useRef({});
   const handlerRefs = useRef({});
+  const mainRefs = useRef({});
 
   const [allItems, setAllItems] = useState([]);
   const [frame, setFrame] = useState({});
@@ -268,6 +269,7 @@ const CcProvider = ({ children }) => {
         setIsAnyItemDragging,
         handlerRefs,
         managePosition,
+        mainRefs
       }}
     >
       {children}

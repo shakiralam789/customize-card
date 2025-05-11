@@ -12,7 +12,9 @@ export default function withDraggable(Component) {
       zoomLevel,
       setIsAnyItemDragging,
       itemsRefs,
+      mainRefs,
       activeID,
+      handlerRefs,
     } = contextProps;
 
     const [itemState, setItemState] = useState({
@@ -53,21 +55,45 @@ export default function withDraggable(Component) {
 
       onDragging: (data) => {
         setIsAnyItemDragging(true);
+
+        let follower = mainRefs.current[item.id];
+        let handler = handlerRefs.current[item.id];
+
         if (data?.type !== "move") {
           requestAnimationFrame(() => {
             if (data?.type === "resize") {
               if (item?.itemType === "text") {
                 currentValues.current.fontSize = initialFontSize * data?.scale;
+                follower.style.fontSize = currentValues.current.fontSize + "px";
               }
               currentValues.current.width = initialWidth * data?.scale;
               currentValues.current.height = initialHeight * data?.scale;
+
+              follower.style.width = `${currentValues.current.width}px`;
+              follower.style.height = `${currentValues.current.height}px`;
+
+              handler.style.width = `${currentValues.current.width}px`;
+              handler.style.height = `${currentValues.current.height}px`;
+
+              follower.style.left = `${data.position.x}px`;
+              follower.style.top = `${data.position.y}px`;
+
+              handler.style.left = `${data.position.x}px`;
+              handler.style.top = `${data.position.y}px`;
             }
             if (data?.type === "rotate") {
               currentValues.current.angle = data?.angle;
+              follower.style.transform = `rotate(${currentValues.current.angle}deg)`;
+              handler.style.transform = `rotate(${currentValues.current.angle}deg)`;
             }
-            // Force a re-render by updating a minimal piece of state
-            // setItemState(prev => ({...prev}));
           });
+        } else {
+          if (follower) {
+            follower.style.left = `${data.position.x}px`;
+            follower.style.top = `${data.position.y}px`;
+          }
+          handler.style.left = `${data.position.x}px`;
+          handler.style.top = `${data.position.y}px`;
         }
       },
 

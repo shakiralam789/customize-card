@@ -10,15 +10,22 @@ export default function MainContentCom({
   className,
   ...rest
 }) {
-  const { itemsRefs = {}, defText = {} } = contextProps;
+  const { itemsRefs = {}, defText = {}, mainRefs = {} } = contextProps;
   return (
     <div
       {...rest}
+      ref={(el) => {
+        if (el) {
+          mainRefs.current[item.id] = el;
+        } else {
+          delete mainRefs.current[item.id];
+        }
+      }}
       className={`group absolute ${className}`}
       style={{
         left: `${item?.position?.x}px`,
         top: `${item?.position?.y}px`,
-        transform: `rotate(${item.angle || 0}deg)`,
+        transform: `rotate(${item.rotate || 0}deg)`,
         // zIndex: isDragging || item.active ? 99999 : zIndex,
         width:
           item?.itemType === "text" && item.contentEditable
@@ -28,6 +35,7 @@ export default function MainContentCom({
           item?.itemType === "text" && item.contentEditable
             ? "auto"
             : item.height + "px" || "auto",
+        fontSize: `${item.fontSize || defText.fontSize}px`,
       }}
     >
       {item.itemType === "text" && (
@@ -44,7 +52,6 @@ export default function MainContentCom({
           className={`${item.isPlaceholder ? "!text-green-600" : "text-black"}
                               focus:outline-none whitespace-nowrap carent-color editable-div`}
           style={{
-            fontSize: `${item.fontSize || defText.fontSize}px`,
             textAlign: `${item?.textAlign || defText.textAlign}`,
             color: `${item?.color || defText.color}`,
             fontWeight: `${item?.fontWeight || defText.fontWeight}`,
