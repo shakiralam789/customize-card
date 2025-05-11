@@ -282,7 +282,7 @@ export default function InvitationCard({ contextProps }) {
                     )}
 
                     {item.itemType === "sticker" && (
-                      <div
+                      <Image
                         ref={(el) => {
                           if (el) {
                             itemsRefs.current[item.id] = el;
@@ -290,15 +290,12 @@ export default function InvitationCard({ contextProps }) {
                             delete itemsRefs.current[item.id];
                           }
                         }}
-                      >
-                        <Image
-                          className="w-full"
-                          width={400}
-                          height={400}
-                          src={item.src}
-                          alt={item?.alt || "image"}
-                        />
-                      </div>
+                        className="w-full"
+                        width={400}
+                        height={400}
+                        src={item.src}
+                        alt={item?.alt || "image"}
+                      />
                     )}
                   </>
                 )}

@@ -35,26 +35,28 @@ export default function DraggableWrapper({
   handlerRefs,
   ...props
 }) {
-  const [rotate, setRotate] = useState(item?.rotate || 0);
-  const [width, setWidth] = useState(item?.width || null);
-  const [height, setHeight] = useState(item?.height || null);
-  const [fontSize, setFontSize] = useState(item?.fontSize || null);
+  const [itemState, setItemState] = useState({
+    rotate: item?.rotate || 0,
+    width: item?.width || null,
+    height: item?.height || null,
+    fontSize: item?.fontSize || null,
+    tlRotate: "tl",
+    trRotate: "tr",
+    blRotate: "bl",
+    brRotate: "br",
+    dragType: null,
+  });
 
-  const currentAngle = useRef(item?.rotate);
-  const currentWidth = useRef(item?.width || null);
-  const currentHeight = useRef(item?.height || null);
-  const currentFontSize = useRef(item?.fontSize || null);
+  const currentValues = useRef({
+    angle: item?.rotate || 0,
+    width: item?.width || null,
+    height: item?.height || null,
+    fontSize: item?.fontSize || null,
+  });
 
   const initialFontSize = mode === "text" ? item.fontSize : null;
   const initialWidth = item.width || null;
   const initialHeight = item?.height || null;
-
-  const [dragType, setDragType] = useState(null);
-
-  const [tlRotate, setTlRotate] = useState("tl");
-  const [trRotate, setTrRotate] = useState("tr");
-  const [blRotate, setBlRotate] = useState("bl");
-  const [brRotate, setBrRotate] = useState("br");
 
   const { position, isDragging, startDrag } = useDraggable({
     zoomLevel,
@@ -66,78 +68,92 @@ export default function DraggableWrapper({
     item,
     onDragStart: (data) => {
       shouldBeSelected.current = true;
-      setDragType(data?.type);
+      setItemState((prev) => ({ ...prev, dragType: data?.type }));
     },
 
     onDragging: (data) => {
       setIsAnyItemDragging(true);
       if (data?.type !== "move") {
-        if (data?.type === "resize") {
-          if (mode === "text") {
-            currentFontSize.current = initialFontSize * data?.scale;
-            setFontSize(currentFontSize.current);
+        requestAnimationFrame(() => {
+          if (data?.type === "resize") {
+            if (mode === "text") {
+              currentValues.current.fontSize = initialFontSize * data?.scale;
+            }
+            currentValues.current.width = initialWidth * data?.scale;
+            currentValues.current.height = initialHeight * data?.scale;
           }
-
-          currentWidth.current = initialWidth * data?.scale;
-          currentHeight.current = initialHeight * data?.scale;
-          setWidth(currentWidth?.current);
-          setHeight(currentHeight?.current);
-        }
-
-        if (data?.type === "rotate") {
-          currentAngle.current = data?.angle;
-          setRotate(data?.angle);
-        }
+          if (data?.type === "rotate") {
+            currentValues.current.angle = data?.angle;
+          }
+          // Force a re-render by updating a minimal piece of state
+          // setItemState(prev => ({...prev}));
+        });
       }
     },
+
     onDragEnd: (data) => {
       shouldBeSelected.current = !data?.hasMoved;
-
       setIsAnyItemDragging(false);
-      setRotate(currentAngle.current);
+
+      setItemState((prev) => ({
+        ...prev,
+        rotate: currentValues.current.angle,
+        width: currentValues.current.width,
+        height: currentValues.current.height,
+        fontSize: currentValues.current.fontSize,
+        dragType: null,
+        ...(data?.type === "rotate" && {
+          // tlRotate: tlRotation(data?.rotate),
+          // trRotate: trRotation(data?.rotate),
+          // blRotate: blRotation(data?.rotate),
+          // brRotate: brRotation(data?.rotate),
+        }),
+      }));
+
       setAllItems((prevItems) => {
         return prevItems.map((item, i) => {
           if (i === index) {
-            const updatedItem = { ...item };
-            updatedItem.position = data?.position;
-            updatedItem.rotate = currentAngle.current;
-            updatedItem.width = currentWidth.current;
-            updatedItem.fontSize = Math.round(currentFontSize.current);
-            return updatedItem;
+            return {
+              ...item,
+              position: data?.position,
+              rotate: currentValues.current.angle,
+              width: currentValues.current.width,
+              height: currentValues.current.height,
+              fontSize: currentValues.current.fontSize,
+            };
           }
           return item;
         });
       });
-
-      if (data?.type == "rotate") {
-        setTlRotate(tlRotation(data?.rotate));
-        setTrRotate(trRotation(data?.rotate));
-        setBlRotate(blRotation(data?.rotate));
-        setBrRotate(brRotation(data?.rotate));
-      }
-
-      setDragType(null);
     },
   });
 
   useEffect(() => {
-    currentAngle.current = item?.rotate;
-    setRotate(item?.rotate);
+    if (item?.rotate !== undefined) {
+      currentValues.current.angle = item.rotate;
+      setItemState((prev) => ({ ...prev, rotate: item.rotate }));
+    }
   }, [item?.rotate]);
 
   useEffect(() => {
-    currentWidth.current = item?.width;
-    setWidth(item?.width);
+    if (item?.width !== undefined) {
+      currentValues.current.width = item.width;
+      setItemState((prev) => ({ ...prev, width: item.width }));
+    }
   }, [item?.width]);
 
   useEffect(() => {
-    currentHeight.current = item?.height;
-    setHeight(item?.height);
+    if (item?.height !== undefined) {
+      currentValues.current.height = item.height;
+      setItemState((prev) => ({ ...prev, height: item.height }));
+    }
   }, [item?.height]);
 
   useEffect(() => {
-    currentFontSize.current = Math.round(item?.fontSize);
-    setFontSize(Math.round(item?.fontSize));
+    if (item?.fontSize !== undefined) {
+      currentValues.current.fontSize = item.fontSize;
+      setItemState((prev) => ({ ...prev, fontSize: item.fontSize }));
+    }
   }, [item?.fontSize]);
 
   useEffect(() => {
@@ -150,7 +166,9 @@ export default function DraggableWrapper({
       sel.addRange(range);
       item.isPlaceholder = false;
     }
-  }, [item.contentEditable]);
+  }, [item.contentEditable, activeID]);
+
+  const { dragType, tlRotate, trRotate, blRotate, brRotate } = itemState;
 
   return (
     <>
@@ -160,22 +178,21 @@ export default function DraggableWrapper({
         style={{
           left: `${position?.x}px`,
           top: `${position?.y}px`,
-          transform: `rotate(${rotate || 0}deg)`,
-          ...style,
+          transform: `rotate(${currentValues.current.angle || 0}deg)`,
           zIndex: isDragging || isActive ? 99999 : zIndex,
           width:
             item?.itemType === "text" && item.contentEditable
               ? "auto"
-              : width + "px" || "auto",
+              : currentValues.current.width + "px" || "auto",
           height:
             item?.itemType === "text" && item.contentEditable
               ? "auto"
-              : height + "px" || "auto",
+              : currentValues.current.height + "px" || "auto",
         }}
       >
         {typeof children === "function"
           ? children({
-              fontSize,
+              fontSize: currentValues.current.fontSize,
             })
           : children}
       </div>
@@ -204,11 +221,10 @@ export default function DraggableWrapper({
             cursor: isDragging && !item.contentEditable ? "grabbing" : "move",
             left: `${position?.x}px`,
             top: `${position?.y}px`,
-            transform: `rotate(${rotate || 0}deg)`,
-            ...style,
+            transform: `rotate(${currentValues.current.angle || 0}deg)`,
             zIndex: isDragging || isActive ? 99999 : zIndex,
-            width: width + "px" || "auto",
-            height: height + "px" || "auto",
+            width: currentValues.current.width + "px" || "auto",
+            height: currentValues.current.height + "px" || "auto",
           }}
           onMouseDown={(e) => {
             if (
@@ -252,6 +268,7 @@ export default function DraggableWrapper({
                 )}
               </div>
 
+              {/* Corner resize handlers */}
               <span
                 onMouseDown={(e) =>
                   startDrag({ e, type: "resize", dir: tlRotate })
@@ -285,12 +302,3 @@ export default function DraggableWrapper({
     </>
   );
 }
-
-// export default React.memo(DraggableWrapper, (prev, next) => {
-//   return (
-//     JSON.stringify(prev.item) == JSON.stringify(next.item) &&
-//     prev.isActive === next.isActive &&
-//     prev.zoomLevel === next.zoomLevel &&
-//     prev.mode === next.mode
-//   );
-// });
