@@ -30,8 +30,6 @@ export default function InvitationCard(props) {
         position = managePosition({ idol: prevHandler, parent }, false);
       }
 
-      console.log("postion", position, "prev", prevItems);
-
       const newItems = prevItems.map((s) => {
         const updated = {
           ...s,
@@ -62,8 +60,6 @@ export default function InvitationCard(props) {
 
         return updated;
       });
-
-      console.log(newItems);
 
       let prevActiveItem = prevItems.find((s) => s.id === activeID);
 

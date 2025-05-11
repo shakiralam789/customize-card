@@ -1,3 +1,4 @@
+// withDraggable.js - Modified version
 import {
   tlRotation,
   trRotation,
@@ -61,6 +62,7 @@ export default function withDraggable(Component) {
 
       onDragStart: (data) => {
         shouldBeSelected.current = true;
+        
         setItemState((prev) => ({ ...prev, dragType: data?.type }));
       },
 
@@ -70,74 +72,105 @@ export default function withDraggable(Component) {
         let handler = handlerRefs.current[item.id];
 
         if (data?.type !== "move") {
-          requestAnimationFrame(() => {
-            if (data?.type === "resize") {
-              // Handle resize
-              if (item?.itemType === "text") {
-                currentValues.current.fontSize = initialFontSize * data?.scale;
-                follower.style.fontSize = currentValues.current.fontSize + "px";
-              }
-              currentValues.current.width = initialWidth * data?.scale;
-              currentValues.current.height = initialHeight * data?.scale;
+          if (data?.type === "resize") {
+            // Store exact values without rounding
+            const newWidth = initialWidth * data?.scale;
+            const newHeight = initialHeight * data?.scale;
+            const newFontSize = item?.itemType === "text" ? initialFontSize * data?.scale : null;
+            
+            // Update the current values with precise calculations
+            currentValues.current.width = newWidth;
+            currentValues.current.height = newHeight;
+            currentValues.current.fontSize = newFontSize;
 
+            requestAnimationFrame(() => {
+              if (!follower && !handler) return;
+              
+              // Apply the same exact values to both elements
               [follower, handler].forEach((el) => {
                 if (!el) return;
-                el.style.width = `${currentValues.current.width}px`;
-                el.style.height = `${currentValues.current.height}px`;
+                
+                if (item?.itemType === "text" && newFontSize) {
+                  el.style.fontSize = `${newFontSize}px`;
+                }
+                
+                // Use explicit pixel dimensions during resize
+                el.style.width = `${newWidth}px`;
+                el.style.height = `${newHeight}px`;
                 el.style.left = `${data.position.x}px`;
                 el.style.top = `${data.position.y}px`;
               });
-            } else if (data?.type === "rotate") {
-              currentValues.current.angle = data?.angle;
-              const transform = `rotate(${currentValues.current.angle}deg)`;
-              follower && (follower.style.transform = transform);
-              handler && (handler.style.transform = transform);
+            });
+          } else if (data?.type === "rotate") {
+            currentValues.current.angle = data?.angle;
+            const transform = `rotate(${data?.angle}deg)`;
+            
+            requestAnimationFrame(() => {
+              if (follower) follower.style.transform = transform;
+              if (handler) handler.style.transform = transform;
+            });
+          }
+        } else {
+          // For move operations
+          requestAnimationFrame(() => {
+            if (follower) {
+              follower.style.left = `${data.position.x}px`;
+              follower.style.top = `${data.position.y}px`;
+            }
+            if (handler) {
+              handler.style.left = `${data.position.x}px`;
+              handler.style.top = `${data.position.y}px`;
             }
           });
-        } else {
-          follower && (follower.style.left = `${data.position.x}px`);
-          follower && (follower.style.top = `${data.position.y}px`);
-          handler && (handler.style.left = `${data.position.x}px`);
-          handler && (handler.style.top = `${data.position.y}px`);
         }
       },
 
       onDragEnd: (data) => {
         shouldBeSelected.current = !data?.hasMoved;
         setIsAnyItemDragging(false);
+        
+        const updatedItem = {
+          ...item,
+          rotate: currentValues.current.angle,
+          width: currentValues.current.width,
+          height: currentValues.current.height,
+          fontSize: currentValues.current.fontSize,
+          position: data.position,
+        };
 
         setItemState((prev) => ({
           ...prev,
           rotate: currentValues.current.angle,
           width: currentValues.current.width,
           height: currentValues.current.height,
-          top: currentValues.current.top,
-          left: currentValues.current.left,
-
           fontSize: currentValues.current.fontSize,
           dragType: null,
-          // ...(data?.type === "rotate" && {
-          //   tlRotate: tlRotation(data?.rotate),
-          //   trRotate: trRotation(data?.rotate),
-          //   blRotate: blRotation(data?.rotate),
-          //   brRotate: brRotation(data?.rotate),
-          // }),
         }));
 
         setAllItems((prevItems) =>
-          prevItems.map((s) =>
-            s.id === item.id
-              ? {
-                  ...s,
-                  rotate: currentValues.current.angle,
-                  width: currentValues.current.width,
-                  height: currentValues.current.height,
-                  fontSize: currentValues.current.fontSize,
-                  position: data.position,
-                }
-              : s
-          )
+          prevItems.map((s) => (s.id === item.id ? updatedItem : s))
         );
+        
+        const follower = mainRefs.current[item.id];
+        const handler = handlerRefs.current[item.id];
+        
+        if (follower || handler) {
+          requestAnimationFrame(() => {
+            [follower, handler].forEach((el) => {
+              if (!el) return;
+              
+              if (item?.itemType === "text" && updatedItem.fontSize) {
+                el.style.fontSize = `${updatedItem.fontSize}px`;
+              }
+              
+              el.style.width = `${updatedItem.width}px`;
+              el.style.height = `${updatedItem.height}px`;
+              el.style.left = `${updatedItem.position.x}px`;
+              el.style.top = `${updatedItem.position.y}px`;
+              el.style.transform = `rotate(${updatedItem.rotate}deg)`;
+            });
+          });
+        }
       },
     });
 

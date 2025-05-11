@@ -54,19 +54,22 @@ const HandlerCom = ({
         width: item.width + "px" || "auto",
         height: item.height + "px" || "auto",
       }}
-      onMouseDown={(e) => {
-        if (item?.itemType == "text" && item.active && item?.contentEditable)
-          return;
-
-        startDrag({ e, type: "move" });
-      }}
-      onMouseUp={(e) => {
-        setTimeout(() => {
-          if (!shouldBeSelected.current) return;
-          onMouseUp({ e, item });
-        }, 0);
-      }}
     >
+      <div
+        onMouseDown={(e) => {
+          if (item?.itemType == "text" && item.active && item?.contentEditable)
+            return;
+
+          startDrag({ e, type: "move" });
+        }}
+        onMouseUp={(e) => {
+          setTimeout(() => {
+            if (!shouldBeSelected.current) return;
+            onMouseUp({ e, item });
+          }, 0);
+        }}
+        className="absolute top-0 left-0 w-full h-full"
+      ></div>
       {item.active && !item?.locked && (
         <>
           <div className="pointer-events-auto absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 flex gap-1.5 items-center justify-center">

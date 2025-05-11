@@ -17,91 +17,144 @@ export default function FontChange() {
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
 
+  const fontChangeInProgress = useRef(false);
+
   const [initialFontSize, setInitialFontSize] = useState(
     activeItem?.fontSize || 16
   );
   const fontRef = useRef(activeItem?.fontSize);
 
-  function handleContentChange(value) {
-    if (!activeID) return;
-
-    mainRefs.current[activeID].style.width = `auto`;
-    mainRefs.current[activeID].style.height = `auto`;
-
-    let currentHandler = handlerRefs.current[activeID];
-    let currentElement = itemsRefs.current[activeID];
-    const parent = parentRef.current;
-
-    managePosition({
-      idol: currentElement,
-      follower: currentHandler,
-      parent,
-      scrollParent: scrollRef.current,
-    });
-  }
-
   function changeFontSize(value) {
-    if (!activeID) return;
-    setInitialFontSize(value);
-    fontRef.current = value;
-    mainRefs.current[activeID].style.width = `auto`;
-    mainRefs.current[activeID].style.height = `auto`;
+    if (!activeID || !value) return;
+
+    fontChangeInProgress.current = true;
+
+    const newSize = parseInt(value, 10);
+    if (isNaN(newSize)) return;
+
+    setInitialFontSize(newSize);
+    fontRef.current = newSize;
+
+    if (mainRefs.current[activeID]) {
+      mainRefs.current[activeID].style.fontSize = `${newSize}px`;
+
+      mainRefs.current[activeID].style.width = `auto`;
+      mainRefs.current[activeID].style.height = `auto`;
+
+      requestAnimationFrame(() => {
+        updateElementDimensions();
+      });
+    }
   }
 
   function increaseFontSize() {
     if (!activeID) return;
+
+    fontChangeInProgress.current = true;
+
     setInitialFontSize((prev) => {
       let current = prev + 1;
       fontRef.current = current;
-      mainRefs.current[activeID].style.width = `auto`;
-      mainRefs.current[activeID].style.height = `auto`;
-      mainRefs.current[activeID].style.fontSize = current + `px`;
+
+      if (mainRefs.current[activeID]) {
+        mainRefs.current[activeID].style.fontSize = `${current}px`;
+        mainRefs.current[activeID].style.width = `auto`;
+        mainRefs.current[activeID].style.height = `auto`;
+
+        requestAnimationFrame(() => {
+          updateElementDimensions();
+        });
+      }
+
       return current;
     });
   }
 
   function decreaseFontSize() {
     if (!activeID) return;
+
+    fontChangeInProgress.current = true;
+
     setInitialFontSize((prev) => {
       let current = prev - 1;
       fontRef.current = current;
-      mainRefs.current[activeID].style.fontSize = current + `px`;
-      mainRefs.current[activeID].style.width = `auto`;
-      mainRefs.current[activeID].style.height = `auto`;
+
+      if (mainRefs.current[activeID]) {
+        mainRefs.current[activeID].style.fontSize = `${current}px`;
+        mainRefs.current[activeID].style.width = `auto`;
+        mainRefs.current[activeID].style.height = `auto`;
+
+        requestAnimationFrame(() => {
+          updateElementDimensions();
+        });
+      }
+
       return current;
     });
   }
 
-  useEffect(() => {
+  // Helper function to update dimensions after font change
+  function updateElementDimensions() {
     if (!activeID) return;
-
-    mainRefs.current[activeID].style.width = `auto`;
-    mainRefs.current[activeID].style.height = `auto`;
 
     let currentHandler = handlerRefs.current[activeID];
     let currentElement = itemsRefs.current[activeID];
     const parent = parentRef.current;
 
-    let position = managePosition({
+    if (!currentElement || !parent) return;
+
+    // Get new position based on content
+    const position = managePosition({
       idol: currentElement,
       follower: currentHandler,
       parent,
       scrollParent: scrollRef.current,
     });
 
+    // Update state with new dimensions
+    updateElementState(position);
+  }
+
+  // Helper function to update the element state
+  function updateElementState(position) {
+    if (!activeID || !position) return;
+
+    // Set explicit dimensions after calculation
+    if (mainRefs.current[activeID]) {
+      mainRefs.current[activeID].style.width = `${position.width}px`;
+      mainRefs.current[activeID].style.height = `${position.height}px`;
+    }
+
+    if (handlerRefs.current[activeID]) {
+      handlerRefs.current[activeID].style.width = `${position.width}px`;
+      handlerRefs.current[activeID].style.height = `${position.height}px`;
+    }
+
+    // Update the global state with new dimensions
     setAllItems((prevItems) =>
       prevItems.map((item) =>
         item.id === activeID
           ? {
               ...item,
-              width: position?.width,
-              height: position?.height,
+              width: position.width,
+              height: position.height,
               position: { y: position.top, x: position.left },
               fontSize: fontRef.current,
             }
           : item
       )
     );
+
+    // Clear the flag once state update is complete
+    fontChangeInProgress.current = false;
+  }
+
+  useEffect(() => {
+    // Only run this effect if the font size changes
+    if (!activeID || fontChangeInProgress.current) return;
+
+    // Update dimensions whenever initialFontSize changes
+    updateElementDimensions();
   }, [initialFontSize]);
 
   useEffect(() => {
