@@ -102,12 +102,13 @@ export default function DraggableWrapper({
         height: currentValues.current.height,
         fontSize: currentValues.current.fontSize,
         dragType: null,
-        ...(data?.type === "rotate" && {
-          // tlRotate: tlRotation(data?.rotate),
-          // trRotate: trRotation(data?.rotate),
-          // blRotate: blRotation(data?.rotate),
-          // brRotate: brRotation(data?.rotate),
-        }),
+        ...(data?.type === "rotate" &&
+          {
+            // tlRotate: tlRotation(data?.rotate),
+            // trRotate: trRotation(data?.rotate),
+            // blRotate: blRotation(data?.rotate),
+            // brRotate: brRotation(data?.rotate),
+          }),
       }));
 
       setAllItems((prevItems) => {
@@ -196,109 +197,7 @@ export default function DraggableWrapper({
             })
           : children}
       </div>
-      <PortalComponent>
-        <div
-          ref={(el) => {
-            if (el) {
-              handlerRefs.current[item.id] = el;
-            } else {
-              delete handlerRefs.current[item.id];
-            }
-          }}
-          {...props}
-          data-draggable
-          className={`group absolute ${
-            (item.itemType === "text" && isAnyItemDragging && !isDragging) ||
-            item?.contentEditable
-              ? "pointer-events-none"
-              : ""
-          }
-          ${item?.contentEditable ? "content-editable" : ""}
-           ${
-             isDragging ? "movable-handle-hover" : ""
-           } movable-handle ${className}`}
-          style={{
-            cursor: isDragging && !item.contentEditable ? "grabbing" : "move",
-            left: `${position?.x}px`,
-            top: `${position?.y}px`,
-            transform: `rotate(${currentValues.current.angle || 0}deg)`,
-            zIndex: isDragging || isActive ? 99999 : zIndex,
-            width: currentValues.current.width + "px" || "auto",
-            height: currentValues.current.height + "px" || "auto",
-          }}
-          onMouseDown={(e) => {
-            if (
-              item?.itemType == "text" &&
-              item.active &&
-              item?.contentEditable
-            )
-              return;
-
-            startDrag({ e, type: "move" });
-          }}
-          onMouseUp={(e) => {
-            setTimeout(() => {
-              if (!shouldBeSelected.current) return;
-              onMouseUp({ e, item });
-            }, 0);
-          }}
-        >
-          {isActive && !item?.locked && (
-            <>
-              <div className="pointer-events-auto absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 flex gap-1.5 items-center justify-center">
-                {dragType == "resize" && isDragging ? null : (
-                  <>
-                    <HandleBtn
-                      onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-                      className={
-                        isDragging && dragType == "rotate" ? "active" : ""
-                      }
-                    >
-                      <RotateCcw />
-                    </HandleBtn>
-                    <HandleBtn
-                      onMouseDown={(e) => startDrag({ e, type: "move" })}
-                      className={
-                        isDragging && dragType == "move" ? "active" : ""
-                      }
-                    >
-                      <Move className="w-full" />
-                    </HandleBtn>
-                  </>
-                )}
-              </div>
-
-              {/* Corner resize handlers */}
-              <span
-                onMouseDown={(e) =>
-                  startDrag({ e, type: "resize", dir: tlRotate })
-                }
-                className={`pointer-events-auto cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2`}
-              ></span>
-
-              <span
-                onMouseDown={(e) =>
-                  startDrag({ e, type: "resize", dir: trRotate })
-                }
-                className={`pointer-events-auto cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 right-0 translate-x-1/2 -translate-y-1/2`}
-              ></span>
-              <span
-                onMouseDown={(e) =>
-                  startDrag({ e, type: "resize", dir: blRotate })
-                }
-                className={`pointer-events-auto cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2`}
-              ></span>
-
-              <span
-                onMouseDown={(e) =>
-                  startDrag({ e, type: "resize", dir: brRotate })
-                }
-                className={`pointer-events-auto cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2`}
-              ></span>
-            </>
-          )}
-        </div>
-      </PortalComponent>
     </>
   );
 }
+

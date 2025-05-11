@@ -1,29 +1,21 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
-import DraggableWrapper from "@/components/DraggableWrapper";
-import Image from "next/image";
-import { getCurvedTextHTML, getFontFamily } from "@/helper/helper";
-import CurvedText from "./CurvedText";
+import React, { useLayoutEffect, useRef } from "react";
+import { getCurvedTextHTML } from "@/helper/helper";
+import MainContentCom from "./MainContentCom";
+import HandlerCom from "./HandlerCom";
 
-export default function InvitationCard({ contextProps }) {
-  const {
-    zoomLevel,
+export default function InvitationCard(props) {
+  let contextProps = props.contextProps;
+  let {
     allItems,
     activeID,
     setActiveID,
     itemsRefs,
-    shouldBeSelected,
-    defText,
     showCenterLine,
     parentRef,
-    setShowCenterLine,
     setAllItems,
     horizontalCentralLine,
-    setHorizontalCentralLine,
     frame,
-    setIsAnyItemDragging,
-    isAnyItemDragging,
-    setFrame,
     handlerRefs,
     managePosition,
   } = contextProps;
@@ -200,113 +192,42 @@ export default function InvitationCard({ contextProps }) {
         {frame.background}
         {allItems &&
           allItems.length > 0 &&
-          allItems.map((item, index) => {
-            return (
-              <DraggableWrapper
-                className={`prevent-customize-card-blur ${
-                  item?.hidden ? "hidden" : ""
-                } ${
-                  item?.locked ? "pointer-events-none user-select-none" : ""
-                } ${item.active ? "active" : ""}`}
-                initialPosition={item.position}
-                key={item.id}
-                item={item}
-                index={index}
-                zIndex={item?.zIndex || 10}
-                isActive={item.active}
-                mode={item.itemType}
-                parentRef={parentRef}
-                setShowCenterLine={setShowCenterLine}
-                setAllItems={setAllItems}
-                shouldBeSelected={shouldBeSelected}
-                setHorizontalCentralLine={setHorizontalCentralLine}
-                zoomLevel={zoomLevel}
-                setIsAnyItemDragging={setIsAnyItemDragging}
-                isAnyItemDragging={isAnyItemDragging}
-                itemsRefs={itemsRefs}
-                activeID={activeID}
-                handlerRefs={handlerRefs}
-                onMouseUp={
-                  (item.itemType === "sticker" && handleStickerMouseup) ||
-                  handleTextMouseup ||
-                  null
-                }
-              >
-                {({ fontSize }) => (
-                  <>
-                    {item.itemType === "text" && (
-                      <div
-                        ref={(el) => {
-                          if (el) {
-                            itemsRefs.current[item.id] = el;
-                          } else {
-                            delete itemsRefs.current[item.id];
-                          }
-                        }}
-                        contentEditable={item.contentEditable}
-                        suppressContentEditableWarning
-                        className={`${
-                          item.isPlaceholder ? "!text-green-600" : "text-black"
-                        }
-                        focus:outline-none whitespace-nowrap carent-color editable-div`}
-                        style={{
-                          fontSize: `${fontSize || defText.fontSize}px`,
-                          textAlign: `${item?.textAlign || defText.textAlign}`,
-                          color: `${item?.color || defText.color}`,
-                          fontWeight: `${
-                            item?.fontWeight || defText.fontWeight
-                          }`,
-                          fontStyle: `${item?.fontStyle || defText.fontStyle}`,
-                          lineHeight: `${
-                            item?.lineHeight ||
-                            item?.lineHeight.toString() == "0"
-                              ? item.lineHeight
-                              : defText.lineHeight
-                          }`,
-                          letterSpacing: `${
-                            item?.letterSpacing || defText.letterSpacing
-                          }px`,
-                          textTransform: `${
-                            item?.textTransform || defText.textTransform
-                          }`,
-                          fontFamily: getFontFamily(
-                            item?.fontFamily || defText.fontFamily
-                          ),
-                        }}
-                        onInput={(e) => {
-                          handleContentChange({ e });
-                        }}
-                      >
-                        Enter text...
-                      </div>
-                    )}
-
-                    {item.itemType === "sticker" && (
-                      <Image
-                        ref={(el) => {
-                          if (el) {
-                            itemsRefs.current[item.id] = el;
-                          } else {
-                            delete itemsRefs.current[item.id];
-                          }
-                        }}
-                        className="w-full"
-                        width={400}
-                        height={400}
-                        src={item.src}
-                        alt={item?.alt || "image"}
-                      />
-                    )}
-                  </>
-                )}
-              </DraggableWrapper>
-            );
-          })}
+          allItems.map((item) => (
+            <MainContentCom
+              key={item.id}
+              item={item}
+              handleContentChange={handleContentChange}
+              contextProps={contextProps}
+              className={`prevent-customize-card-blur ${
+                item?.hidden ? "hidden" : ""
+              } ${item?.locked ? "pointer-events-none user-select-none" : ""} ${
+                item.active ? "active" : ""
+              }`}
+            />
+          ))}
       </div>
-      <div
-        id="handler-portal"
-        className="w-0 h-0 absolute top-0 left-0 z-10"
-      ></div>
+      <div className="w-0 h-0 absolute top-0 left-0 z-10">
+        {allItems &&
+          allItems.length > 0 &&
+          allItems.map((item) => (
+            <HandlerCom
+              key={item.id}
+              item={item}
+              contextProps={contextProps}
+              className={`prevent-customize-card-blur ${
+                item?.hidden ? "hidden" : ""
+              } ${item?.locked ? "pointer-events-none user-select-none" : ""} ${
+                item.active ? "active" : ""
+              }`}
+              onMouseUp={
+                (item.itemType === "sticker" && handleStickerMouseup) ||
+                handleTextMouseup ||
+                null
+              }
+            />
+          ))}
+      </div>
+      
       {showCenterLine && (
         <div className="pointer-events-none z-20 absolute top-0 bottom-0 left-1/2 w-px border-l border-guide-line-color"></div>
       )}

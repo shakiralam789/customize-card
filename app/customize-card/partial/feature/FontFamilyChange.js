@@ -49,7 +49,7 @@ export default function FontFamilyChange() {
       menuButton={
         <MenuButton
           className={
-            "min-w-[150px] px-2 flex items-center justify-between gap-2 h-[28px] rounded border border-gray-200 hover:bg-gray-100 [&.szh-menu-button--open]:bg-gray-100"
+            "min-w-[150px] px-2 flex items-center justify-between gap-2 h-[28px] whitespace-nowrap rounded border border-gray-200 hover:bg-gray-100 [&.szh-menu-button--open]:bg-gray-100"
           }
         >
           <span style={{ fontFamily: getFontFamily(activeItem?.fontFamily) }}>
