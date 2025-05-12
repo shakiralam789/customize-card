@@ -42,9 +42,9 @@ const HandlerCom = ({
           : ""
       }
           ${item?.contentEditable ? "content-editable" : ""}
-           ${
-             isDragging ? "movable-handle-hover" : ""
-           } movable-handle ${className}`}
+           ${isDragging ? "movable-handle-hover" : ""} movable-handle ${
+        item?.itemType || ""
+      } ${className}`}
       style={{
         cursor: isDragging && !item.contentEditable ? "grabbing" : "move",
         left: `${item?.position?.x}px`,
@@ -92,19 +92,32 @@ const HandlerCom = ({
           </div>
 
           {/* Corner resize handlers */}
-          <span
-            onMouseDown={(e) => startDrag({ e, type: "resize", dir: tlRotate })}
-            className={`pointer-events-auto cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2`}
-          ></span>
 
-          <span
-            onMouseDown={(e) => startDrag({ e, type: "resize", dir: trRotate })}
-            className={`pointer-events-auto cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 right-0 translate-x-1/2 -translate-y-1/2`}
-          ></span>
-          <span
-            onMouseDown={(e) => startDrag({ e, type: "resize", dir: blRotate })}
-            className={`pointer-events-auto cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2`}
-          ></span>
+          {item.width && item.width && item.height > 60 && (
+            <>
+              <span
+                onMouseDown={(e) =>
+                  startDrag({ e, type: "resize", dir: tlRotate })
+                }
+                className={`pointer-events-auto cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2`}
+              ></span>
+
+              <span
+                onMouseDown={(e) =>
+                  startDrag({ e, type: "resize", dir: trRotate })
+                }
+                className={`pointer-events-auto cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 right-0 translate-x-1/2 -translate-y-1/2`}
+              ></span>
+            </>
+          )}
+          {item?.width > 60 && (
+            <span
+              onMouseDown={(e) =>
+                startDrag({ e, type: "resize", dir: blRotate })
+              }
+              className={`pointer-events-auto cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2`}
+            ></span>
+          )}
 
           <span
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: brRotate })}

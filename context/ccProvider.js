@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
@@ -157,7 +157,7 @@ const CcProvider = ({ children }) => {
 
       setAllItems(updatedItem);
 
-      undoStack.current = [];
+      undoStack.current = [_cloneDeep(updatedItem)];
       redoStack.current = [];
 
       setTimeout(() => {
@@ -224,8 +224,6 @@ const CcProvider = ({ children }) => {
           : item
       )
     );
-
-    // fontChangeInProgress.current = false;
   }
 
   useEffect(() => {
@@ -260,63 +258,115 @@ const CcProvider = ({ children }) => {
     }
   }, [newAddedId]);
 
+  const lastRecordedState = useRef(null);
+  const isDebouncingRef = useRef(false);
+  const timerRef = useRef(null);
+
   useEffect(() => {
     if (isUndoingOrRedoing.current) {
       isUndoingOrRedoing.current = false;
       return;
     }
 
-    undoStack.current.push(_cloneDeep(allItems));
+    if (allItems.length === 0 && undoStack.current.length > 0) {
+      return;
+    }
 
-    redoStack.current = [];
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => {
+      const stateHash = JSON.stringify(allItems);
+
+      if (lastRecordedState.current !== stateHash) {
+        undoStack.current.push(_cloneDeep(allItems));
+        redoStack.current = [];
+
+        lastRecordedState.current = stateHash;
+      }
+
+      timerRef.current = null;
+    }, 100);
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
   }, [allItems]);
 
   const updateItems = (newItems) => {
     setAllItems(newItems);
   };
 
-  // Undo function
   const undo = () => {
-    // If there's nothing to undo, return
+
     if (undoStack.current.length <= 1) return;
 
-    // Move current state to redo stack
-    redoStack.current.push(undoStack.current.pop());
+    const currentState = _cloneDeep(allItems);
 
-    // Get previous state
+    undoStack.current.pop();
+
     const previousState = undoStack.current[undoStack.current.length - 1];
 
-    // Flag that we're undoing to avoid recording this change
+    redoStack.current.push(currentState);
+
     isUndoingOrRedoing.current = true;
 
-    // Restore previous state
     setAllItems(_cloneDeep(previousState));
+
+    console.log(previousState);
+    
+    setTimeout(() => {
+      previousState.forEach((item) => {
+        if (item.active) {
+          setActiveID(item.id);
+        }
+
+        if (item.itemType === "text") {
+          const element = itemsRefs.current[item.id];
+
+          if (element) {
+            element.innerHTML = item.isPlaceholder
+              ? "Enter text..."
+              : getCurvedTextHTML(item?.text, item?.textCurve || 0);
+          }
+        }
+      });
+    }, 0);
   };
 
   // Redo function
   const redo = () => {
-    // If there's nothing to redo, return
+    
     if (redoStack.current.length === 0) return;
 
-    // Get the next state
     const nextState = redoStack.current.pop();
 
-    // Add to undo stack
-    undoStack.current.push(_cloneDeep(nextState));
-
-    // Flag that we're redoing to avoid recording this change
     isUndoingOrRedoing.current = true;
 
-    // Apply the state
     setAllItems(_cloneDeep(nextState));
-  };
 
-  // Initialize history when component mounts
-  useEffect(() => {
-    // Add initial state to undo stack
-    undoStack.current = [_cloneDeep(allItems)];
-    redoStack.current = [];
-  }, []);
+    undoStack.current.push(_cloneDeep(nextState));
+
+    setTimeout(() => {
+      nextState.forEach((item) => {
+        if (item.active) {
+          setActiveID(item.id);
+        }
+        if (item.itemType === "text") {
+          const element = itemsRefs.current[item.id];
+
+          if (element) {
+            element.innerHTML = item.isPlaceholder
+              ? "Enter text..."
+              : getCurvedTextHTML(item?.text, item?.textCurve || 0);
+          }
+        }
+      });
+    }, 0);
+  };
 
   return (
     <CcContext.Provider

@@ -71,8 +71,13 @@ button {
   background: rgba(255, 255, 255, 0.281);
 }
 
+
 .movable-handle:not(.active):hover {
   outline-color: #d6d6d6;
+}
+
+.movable-handle.active.sticker {
+  background: transparent;
 }
 
 .movable-handle.content-editable {

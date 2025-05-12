@@ -342,7 +342,7 @@ const cardData = [
         },
         {
           id: "df4a0e4f-8da3-4e6c-b389-ed06701fb2ae",
-          name: "Text Copy",
+          name: "Text",
           itemType: "text",
           text: "winano james",
           active: false,
@@ -396,7 +396,7 @@ const cardData = [
         },
         {
           id: "65936559-6fd5-467a-a7b3-edccc7556fa1",
-          name: "Text Copy Copy",
+          name: "Text Copy 2",
           itemType: "text",
           text: '<p data-pm-slice="1 1 []"><em>7pm - 11pm</em></p><p><em>314 West 42nd Street, Kelso</em></p><p><em>RSVP to Andy at 123.456.7890</em></p>',
           active: false,

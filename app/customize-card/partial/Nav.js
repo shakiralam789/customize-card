@@ -72,7 +72,9 @@ export default function Nav() {
 
             <UploadImage />
 
-            {/* <button className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
+            {/* <button onClick={() => {
+              console.log(allItems)
+            }} className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="size-5 mr-2"
@@ -101,14 +103,14 @@ export default function Nav() {
               <button
                 onClick={undo}
                 disabled={undoStack.current.length <= 1}
-                className="disabled:opacity-50 flex items-center justify-center rounded-full size-8 hover:bg-gray-100 cursor-pointer"
+                className="disabled:opacity-50 flex items-center justify-center rounded-full size-8 hover:bg-gray-200 cursor-pointer"
               >
                 <Undo />
               </button>
               <button
                 onClick={redo}
                 disabled={undoStack.current.length <= 0}
-                className="disabled:opacity-50 flex items-center justify-center rounded-full size-8 hover:bg-gray-100 cursor-pointer"
+                className="disabled:opacity-50 flex items-center justify-center rounded-full size-8 hover:bg-gray-200 cursor-pointer"
               >
                 <Redo />
               </button>

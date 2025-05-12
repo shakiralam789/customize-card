@@ -21,15 +21,16 @@ export default function InvitationCard(props) {
   } = contextProps;
 
   function handlePrevItem(crrItem) {
+    let position;
+
+    if (activeID) {
+      let prevHandler = handlerRefs.current[activeID];
+      const parent = parentRef.current;
+      position = managePosition({ idol: prevHandler, parent }, false);
+    }
+
     setAllItems((prevItems) => {
-      let position;
-
-      if (activeID) {
-        let prevHandler = handlerRefs.current[activeID];
-        const parent = parentRef.current;
-        position = managePosition({ idol: prevHandler, parent }, false);
-      }
-
+     
       const newItems = prevItems.map((s) => {
         const updated = {
           ...s,
