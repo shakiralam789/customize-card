@@ -17,6 +17,11 @@ const weddingCardList = [
     title: "Geometric Floral",
     image: "/images/invitations/inv-card-design.png",
   },
+  {
+    id: "3",
+    title: "Geometric Floral",
+    image: "/images/invitations/cosmic-star-preview.jpeg",
+  },
 ];
 
 export default function Page() {

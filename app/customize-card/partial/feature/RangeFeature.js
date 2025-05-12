@@ -10,8 +10,8 @@ export default function RangeFeature({
   min = 0,
   max = 100,
   step = 1,
-  defValue = 1.5,
-  unit = "px",
+  defValue = 0,
+  unit = "em",
   onHandleChange = () => {},
 }) {
   const {
@@ -38,7 +38,7 @@ export default function RangeFeature({
 
     fontChangeInProgress.current = true;
 
-    const newValue = parseInt(value, 10);
+    const newValue = value;
     if (isNaN(newValue)) return;
 
     setInitialValue(newValue);
@@ -106,7 +106,10 @@ export default function RangeFeature({
         >
           <div className="flex justify-between mb-1">
             <span className="text-xs">{title}</span>
-            <span className="text-xs font-medium">{initialValue}{unit}</span>
+            <span className="text-xs font-medium">
+              {initialValue}
+              {unit}
+            </span>
           </div>
           <input
             type="range"

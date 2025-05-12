@@ -5,7 +5,14 @@ import { CaseUpper } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function TextTransform() {
-  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const {
+    allItems,
+    setAllItems,
+    activeID,
+    mainRefs,
+    updateElementState,
+    updateElementDimensions,
+  } = useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
   function changeTextTransform(value) {
@@ -21,6 +28,17 @@ export default function TextTransform() {
           : item
       )
     );
+
+    if (mainRefs.current[activeID]) {
+      mainRefs.current[activeID].style.width = `auto`;
+      mainRefs.current[activeID].style.height = `auto`;
+
+      requestAnimationFrame(() => {
+        updateElementDimensions((position) => {
+          updateElementState(position);
+        });
+      });
+    }
   }
 
   return (

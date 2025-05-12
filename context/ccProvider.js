@@ -12,7 +12,7 @@ const defText = {
   textAlign: "center",
   color: "black",
   fontWeight: "normal",
-  lineHeight: "1.2",
+  lineHeight: "150",
   fontStyle: "normal",
   letterSpacing: "0",
   textTransform: "none",
@@ -124,7 +124,6 @@ const CcProvider = ({ children }) => {
     if (localTItems) {
       let parseItems = JSON.parse(localTItems);
       if (parseItems) {
-        
         items = parseItems?.data?.items || [];
         frameData = parseItems?.data?.frame || {};
       }
@@ -214,7 +213,7 @@ const CcProvider = ({ children }) => {
               ...item,
               width: position.width,
               height: position.height,
-              position: { y: position.top, x: position.left },
+              // position: { y: position.top, x: position.left },
               fontSize: fontSize || item.fontSize,
             }
           : item

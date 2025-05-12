@@ -5,10 +5,10 @@ export default function LetterSpacingChange() {
     <RangeFeature
       propertyName="letterSpacing"
       title="Letter Spacing"
-      min={-1}
-      max={50}
-      step={1}
-      defValue={1.2}
+      min={-0.25}
+      max={1}
+      step={0.01}
+      defValue={0}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

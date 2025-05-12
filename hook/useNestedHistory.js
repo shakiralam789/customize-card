@@ -9,7 +9,7 @@ function useNestedHistory(initialState) {
       cmd.execute();
       undoStack.current.push(cmd);
       redoStack.current = [];
-      forceRerender(n => n + 1); // Trigger UI update
+      forceRerender(n => n + 1);
     };
   
     const undo = () => {
