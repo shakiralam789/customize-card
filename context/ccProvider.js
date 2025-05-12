@@ -4,6 +4,7 @@ import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
 import { getCurvedTextHTML, managePosition } from "@/helper/helper";
+import _cloneDeep from "lodash/cloneDeep";
 
 const defText = {
   itemType: "text",
@@ -32,6 +33,12 @@ const defSticker = {
 };
 
 const CcProvider = ({ children }) => {
+  const [allItems, setAllItems] = useState([]);
+  const undoStack = useRef([]);
+  const redoStack = useRef([]);
+
+  const isUndoingOrRedoing = useRef(false);
+
   const [zoom, setZoom] = useState(100);
   const [showCenterLine, setShowCenterLine] = useState(false);
   const [horizontalCentralLine, setHorizontalCentralLine] = useState(false);
@@ -51,7 +58,6 @@ const CcProvider = ({ children }) => {
   const mainRefs = useRef({});
   const scrollRef = useRef(null);
 
-  const [allItems, setAllItems] = useState([]);
   const [frame, setFrame] = useState({});
   const [newAddedId, setNewAddedId] = useState(null);
 
@@ -151,6 +157,9 @@ const CcProvider = ({ children }) => {
 
       setAllItems(updatedItem);
 
+      undoStack.current = [];
+      redoStack.current = [];
+
       setTimeout(() => {
         updatedItem.forEach((item) => {
           if (item.itemType === "text") {
@@ -188,14 +197,6 @@ const CcProvider = ({ children }) => {
       false
     );
 
-    if (callBack) {
-      callBack(position);
-    }
-  }
-
-  function updateElementState(position, fontSize) {
-    if (!activeID || !position) return;
-
     if (mainRefs.current[activeID]) {
       mainRefs.current[activeID].style.width = `${position.width}px`;
       mainRefs.current[activeID].style.height = `${position.height}px`;
@@ -206,6 +207,10 @@ const CcProvider = ({ children }) => {
       handlerRefs.current[activeID].style.height = `${position.height}px`;
     }
 
+    return position;
+  }
+
+  function updateElementState(position, fontSize) {
     setAllItems((prevItems) =>
       prevItems.map((item) =>
         item.id === activeID
@@ -220,7 +225,7 @@ const CcProvider = ({ children }) => {
       )
     );
 
-    fontChangeInProgress.current = false;
+    // fontChangeInProgress.current = false;
   }
 
   useEffect(() => {
@@ -254,6 +259,64 @@ const CcProvider = ({ children }) => {
       }
     }
   }, [newAddedId]);
+
+  useEffect(() => {
+    if (isUndoingOrRedoing.current) {
+      isUndoingOrRedoing.current = false;
+      return;
+    }
+
+    undoStack.current.push(_cloneDeep(allItems));
+
+    redoStack.current = [];
+  }, [allItems]);
+
+  const updateItems = (newItems) => {
+    setAllItems(newItems);
+  };
+
+  // Undo function
+  const undo = () => {
+    // If there's nothing to undo, return
+    if (undoStack.current.length <= 1) return;
+
+    // Move current state to redo stack
+    redoStack.current.push(undoStack.current.pop());
+
+    // Get previous state
+    const previousState = undoStack.current[undoStack.current.length - 1];
+
+    // Flag that we're undoing to avoid recording this change
+    isUndoingOrRedoing.current = true;
+
+    // Restore previous state
+    setAllItems(_cloneDeep(previousState));
+  };
+
+  // Redo function
+  const redo = () => {
+    // If there's nothing to redo, return
+    if (redoStack.current.length === 0) return;
+
+    // Get the next state
+    const nextState = redoStack.current.pop();
+
+    // Add to undo stack
+    undoStack.current.push(_cloneDeep(nextState));
+
+    // Flag that we're redoing to avoid recording this change
+    isUndoingOrRedoing.current = true;
+
+    // Apply the state
+    setAllItems(_cloneDeep(nextState));
+  };
+
+  // Initialize history when component mounts
+  useEffect(() => {
+    // Add initial state to undo stack
+    undoStack.current = [_cloneDeep(allItems)];
+    redoStack.current = [];
+  }, []);
 
   return (
     <CcContext.Provider
@@ -290,6 +353,11 @@ const CcProvider = ({ children }) => {
         updateElementDimensions,
         updateElementState,
         fontChangeInProgress,
+        undo,
+        redo,
+        updateItems,
+        undoStack,
+        redoStack,
       }}
     >
       {children}

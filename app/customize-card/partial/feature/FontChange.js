@@ -9,9 +9,9 @@ export default function FontChange() {
     activeID,
     mainRefs,
     updateElementDimensions,
-    fontChangeInProgress,
+    // fontChangeInProgress,
     updateElementState,
-    itemsRefs
+    // itemsRefs
   } = useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
@@ -25,7 +25,7 @@ export default function FontChange() {
   function changeFontSize(value) {
     if (!activeID || !value) return;
 
-    fontChangeInProgress.current = true;
+    // fontChangeInProgress.current = true;
 
     const newSize = parseInt(value, 10);
     if (isNaN(newSize)) return;
@@ -40,9 +40,8 @@ export default function FontChange() {
       mainRefs.current[activeID].style.height = `auto`;
 
       requestAnimationFrame(() => {
-        updateElementDimensions((position) => {
-          updateElementState(position, fontRef.current);
-        });
+        let newPosition = updateElementDimensions();
+        updateElementState(newPosition, fontRef.current);
       });
     }
   }
@@ -50,7 +49,7 @@ export default function FontChange() {
   function handleSizeWithClick(dir) {
     if (!activeID) return;
 
-    fontChangeInProgress.current = true;
+    // fontChangeInProgress.current = true;
 
     setInitialFontSize((prev) => {
       let current = prev + dir;
@@ -62,9 +61,8 @@ export default function FontChange() {
         mainRefs.current[activeID].style.height = `auto`;
 
         requestAnimationFrame(() => {
-          updateElementDimensions((position) => {
-            updateElementState(position, fontRef.current);
-          });
+          let newPosition = updateElementDimensions();
+          updateElementState(newPosition, fontRef.current);
         });
       }
 

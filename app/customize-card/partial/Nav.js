@@ -8,7 +8,7 @@ import FontStyle from "./feature/FontStyle";
 import TextTransform from "./feature/TextTransform";
 import LineHeightChange from "./feature/LineHeightChange";
 import LetterSpacingChange from "./feature/LetterSpacingChange";
-import { Languages, Sticker } from "lucide-react";
+import { Languages, Redo, Sticker, Undo } from "lucide-react";
 import TextCurveChange from "./feature/TextCurveChange";
 import Drawer from "@/components/Drawer";
 import DrawerContent from "./DrawerContent";
@@ -30,6 +30,10 @@ export default function Nav() {
     allItems,
     isStickerDrawerOpen,
     setIsStickerDrawerOpen,
+    undo,
+    redo,
+    undoStack,
+    redoStack,
   } = useContext(CcContext);
 
   const itemsMap = useItemsMap(allItems);
@@ -92,27 +96,45 @@ export default function Nav() {
             </button> */}
           </div>
 
-          <div className="flex space-x-2">
-            <button className="hover:bg-gray-100 cursor-pointer text-emerald-500 font-semibold px-2 py-1 rounded">
-              Save draft
-            </button>
-            <button className="cursor-pointer bg-emerald-500 font-semibold text-white px-4 py-1.5 rounded hover:bg-emerald-600 flex items-center">
-              Next
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 ml-1"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+          <div className="flex items-center space-x-4">
+            <div className="text-gray-700 flex items-center space-x-2">
+              <button
+                onClick={undo}
+                disabled={undoStack.current.length <= 1}
+                className="disabled:opacity-50 flex items-center justify-center rounded-full size-8 hover:bg-gray-100 cursor-pointer"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
+                <Undo />
+              </button>
+              <button
+                onClick={redo}
+                disabled={undoStack.current.length <= 0}
+                className="disabled:opacity-50 flex items-center justify-center rounded-full size-8 hover:bg-gray-100 cursor-pointer"
+              >
+                <Redo />
+              </button>
+            </div>
+            <div className="flex space-x-2">
+              <button className="hover:bg-gray-100 cursor-pointer text-emerald-500 font-semibold px-2 py-1 rounded">
+                Save draft
+              </button>
+              <button className="cursor-pointer bg-emerald-500 font-semibold text-white px-4 py-1.5 rounded hover:bg-emerald-600 flex items-center">
+                Next
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 ml-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
         {activeID != null && !activeItem?.locked && (

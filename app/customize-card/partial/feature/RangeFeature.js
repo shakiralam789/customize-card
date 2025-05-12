@@ -1,7 +1,7 @@
 import IconBtn from "@/components/IconBtn";
 import CcContext from "@/context/ccContext";
 import useItemsMap from "@/hook/useItemMap";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { use, useContext, useEffect, useRef, useState } from "react";
 
 export default function RangeFeature({
   title = "",
@@ -18,7 +18,7 @@ export default function RangeFeature({
     updateElementDimensions,
     mainRefs,
     handlerRefs,
-    fontChangeInProgress,
+    // fontChangeInProgress,
     allItems,
     setAllItems,
     activeID,
@@ -33,11 +33,12 @@ export default function RangeFeature({
   const activeItem = itemsMap.get(activeID);
 
   const [initialValue, setInitialValue] = useState(getCurrent());
+  const positionRef = useRef(activeItem?.position || {});
 
   function handleChange(value) {
     if (!activeID || !value) return;
 
-    fontChangeInProgress.current = true;
+    // fontChangeInProgress.current = true;
 
     const newValue = value;
     if (isNaN(newValue)) return;
@@ -64,9 +65,7 @@ export default function RangeFeature({
         mainRefs.current[activeID].style.height = `auto`;
 
         requestAnimationFrame(() => {
-          updateElementDimensions((position) => {
-            updateElementState(position);
-          });
+          positionRef.current = updateElementDimensions();
         });
       }
     }
@@ -83,7 +82,16 @@ export default function RangeFeature({
   function handleDragEnd(value) {
     setAllItems((prevItems) =>
       prevItems.map((item) =>
-        item.id === activeID ? { ...item, [propertyName]: value } : item
+        item.id === activeID
+          ? {
+              ...item,
+              [propertyName]: value,
+              width: positionRef.current.width,
+              height: positionRef.current.height,
+              // position: { y: position.top, x: position.left },
+              // fontSize: fontSize || item.fontSize,
+            }
+          : item
       )
     );
   }
@@ -104,7 +112,6 @@ export default function RangeFeature({
   useEffect(() => {
     if (activeItem?.[propertyName]) {
       setInitialValue(activeItem?.[propertyName]);
-      // fontRef.current = activeItem?.[propertyName];
     }
   }, [activeID, activeItem?.[propertyName]]);
 
