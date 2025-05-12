@@ -15,7 +15,6 @@ import DrawerContent from "./DrawerContent";
 import FlipShape from "./feature/FlipShape";
 import FlipVerticalShape from "./feature/FlipVertiacalShape";
 import RotateShape from "./feature/RotateShape";
-import RotateText from "./feature/RotateText";
 import DeleteItem from "./feature/DeleteItem";
 import useItemsMap from "@/hook/useItemMap";
 import FontFamilyChange from "./feature/FontFamilyChange";
@@ -133,7 +132,7 @@ export default function Nav() {
                 <LineHeightChange />
                 <LetterSpacingChange />
                 <TextCurveChange />
-                <RotateText />
+                <RotateShape />
                 <Duplicate />
               </div>
             )}

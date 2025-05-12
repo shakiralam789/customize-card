@@ -17,6 +17,7 @@ export default function RangeFeature({
   const {
     updateElementDimensions,
     mainRefs,
+    handlerRefs,
     fontChangeInProgress,
     allItems,
     setAllItems,
@@ -44,16 +45,30 @@ export default function RangeFeature({
     setInitialValue(newValue);
 
     if (mainRefs.current[activeID]) {
-      itemsRefs.current[activeID].style[propertyName] = `${newValue}${unit}`;
+      if (propertyName == "rotate") {
+        mainRefs.current[
+          activeID
+        ].style.transform = `rotate(${newValue}deg) scaleX(${
+          activeItem?.scaleX || 1
+        }) scaleY(${activeItem?.scaleY || 1})`;
 
-      mainRefs.current[activeID].style.width = `auto`;
-      mainRefs.current[activeID].style.height = `auto`;
+        handlerRefs.current[
+          activeID
+        ].style.transform = `rotate(${newValue}deg)`;
+      } else {
+        itemsRefs.current[activeID].style[propertyName] = `${newValue}${unit}`;
+      }
 
-      requestAnimationFrame(() => {
-        updateElementDimensions((position) => {
-          updateElementState(position);
+      if (propertyName != "rotate") {
+        mainRefs.current[activeID].style.width = `auto`;
+        mainRefs.current[activeID].style.height = `auto`;
+
+        requestAnimationFrame(() => {
+          updateElementDimensions((position) => {
+            updateElementState(position);
+          });
         });
-      });
+      }
     }
 
     if (onHandleChange) {
@@ -85,6 +100,13 @@ export default function RangeFeature({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (activeItem?.[propertyName]) {
+      setInitialValue(activeItem?.[propertyName]);
+      // fontRef.current = activeItem?.[propertyName];
+    }
+  }, [activeID, activeItem?.[propertyName]]);
 
   function getCurrent() {
     if (activeID === null || !propertyName) return defValue;
