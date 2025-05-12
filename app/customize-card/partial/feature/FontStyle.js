@@ -5,10 +5,18 @@ import { Italic } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function FontStyle() {
-  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const {
+    allItems,
+    setAllItems,
+    activeID,
+    // mainRefs,
+    // updateElementDimensions,
+    // updateElementState,
+  } = useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
   function changeFontStyle() {
+    if (!activeID) return;
     setAllItems((prev) =>
       prev.map((item) =>
         item.id === activeID
@@ -19,6 +27,17 @@ export default function FontStyle() {
           : item
       )
     );
+
+    // if (mainRefs.current[activeID]) {
+    //   mainRefs.current[activeID].style.width = `auto`;
+    //   mainRefs.current[activeID].style.height = `auto`;
+
+    //   requestAnimationFrame(() => {
+    //     updateElementDimensions((position) => {
+    //       updateElementState(position);
+    //     });
+    //   });
+    // }
   }
   return (
     <IconBtn

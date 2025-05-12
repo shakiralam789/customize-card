@@ -62,7 +62,7 @@ export default function MainContentCom({
               item?.lineHeight || item?.lineHeight.toString() == "0"
                 ? item.lineHeight
                 : defText.lineHeight
-            }`,
+            }%`,
             letterSpacing: `${item?.letterSpacing || defText.letterSpacing}px`,
             textTransform: `${item?.textTransform || defText.textTransform}`,
             fontFamily: getFontFamily(item?.fontFamily || defText.fontFamily),

@@ -3,7 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
-import { getCurvedTextHTML } from "@/helper/helper";
+import { getCurvedTextHTML, managePosition } from "@/helper/helper";
 
 const defText = {
   itemType: "text",
@@ -36,6 +36,7 @@ const CcProvider = ({ children }) => {
   const [showCenterLine, setShowCenterLine] = useState(false);
   const [horizontalCentralLine, setHorizontalCentralLine] = useState(false);
   const [isAnyItemDragging, setIsAnyItemDragging] = useState(false);
+  const fontChangeInProgress = useRef(false);
 
   const parentRef = useRef(null);
   const [isStickerDrawerOpen, setIsStickerDrawerOpen] = useState(false);
@@ -115,7 +116,6 @@ const CcProvider = ({ children }) => {
   function getDataOnLoad(id) {
     let items = [];
     let frameData = {};
-    // let zoom = 100;
 
     let storageName = `customize-card-data${id || ""}`;
 
@@ -124,6 +124,7 @@ const CcProvider = ({ children }) => {
     if (localTItems) {
       let parseItems = JSON.parse(localTItems);
       if (parseItems) {
+        
         items = parseItems?.data?.items || [];
         frameData = parseItems?.data?.frame || {};
       }
@@ -169,6 +170,60 @@ const CcProvider = ({ children }) => {
     setFrame(frameData);
   }
 
+  function updateElementDimensions(callBack) {
+    if (!activeID) return;
+
+    let currentHandler = handlerRefs.current[activeID];
+    let currentElement = itemsRefs.current[activeID];
+    const parent = parentRef.current;
+
+    if (!currentElement || !parent) return;
+
+    const position = managePosition(
+      {
+        idol: currentElement,
+        follower: currentHandler,
+        parent,
+        scrollParent: scrollRef.current,
+      },
+      false
+    );
+
+    if (callBack) {
+      callBack(position);
+    }
+  }
+
+  function updateElementState(position, fontSize) {
+    if (!activeID || !position) return;
+
+    if (mainRefs.current[activeID]) {
+      mainRefs.current[activeID].style.width = `${position.width}px`;
+      mainRefs.current[activeID].style.height = `${position.height}px`;
+    }
+
+    if (handlerRefs.current[activeID]) {
+      handlerRefs.current[activeID].style.width = `${position.width}px`;
+      handlerRefs.current[activeID].style.height = `${position.height}px`;
+    }
+
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID
+          ? {
+              ...item,
+              width: position.width,
+              height: position.height,
+              position: { y: position.top, x: position.left },
+              fontSize: fontSize || item.fontSize,
+            }
+          : item
+      )
+    );
+
+    fontChangeInProgress.current = false;
+  }
+
   useEffect(() => {
     if (newAddedId) {
       const el = itemsRefs.current[newAddedId];
@@ -193,7 +248,7 @@ const CcProvider = ({ children }) => {
         });
 
         resizeObserver.observe(el);
-        
+
         return () => {
           resizeObserver.disconnect();
         };
@@ -232,7 +287,10 @@ const CcProvider = ({ children }) => {
         setIsAnyItemDragging,
         handlerRefs,
         mainRefs,
-        scrollRef
+        scrollRef,
+        updateElementDimensions,
+        updateElementState,
+        fontChangeInProgress,
       }}
     >
       {children}

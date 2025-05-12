@@ -1,21 +1,15 @@
-import CcContext from "@/context/ccContext";
-import React, { useContext } from "react";
 import RangeFeature from "./RangeFeature";
 
 export default function LineHeightChange() {
-  const { allItems, setAllItems, activeID } = useContext(CcContext);
-
   return (
     <RangeFeature
-      data={allItems}
-      setData={setAllItems}
-      activeID={activeID}
       propertyName="lineHeight"
       title="Line Height"
       min={0}
-      max={4}
-      step={0.1}
+      max={500}
+      step={5}
       defValue={1.5}
+      unit="%"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

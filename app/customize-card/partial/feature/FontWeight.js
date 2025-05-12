@@ -5,7 +5,14 @@ import { Bold } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function FontWeight() {
-  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const {
+    allItems,
+    setAllItems,
+    activeID,
+    updateElementState,
+    updateElementDimensions,
+    mainRefs,
+  } = useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
   function changeFontWeight() {
@@ -19,6 +26,16 @@ export default function FontWeight() {
           : item
       )
     );
+    if (mainRefs.current[activeID]) {
+      mainRefs.current[activeID].style.width = `auto`;
+      mainRefs.current[activeID].style.height = `auto`;
+
+      requestAnimationFrame(() => {
+        updateElementDimensions((position) => {
+          updateElementState(position);
+        });
+      });
+    }
   }
   return (
     <IconBtn

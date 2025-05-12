@@ -1,11 +1,9 @@
 import IconBtn from "@/components/IconBtn";
+import CcContext from "@/context/ccContext";
 import useItemsMap from "@/hook/useItemMap";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 export default function RangeFeature({
-  data,
-  setData,
-  activeID,
   title = "",
   propertyName,
   children,
@@ -13,29 +11,67 @@ export default function RangeFeature({
   max = 100,
   step = 1,
   defValue = 1.5,
+  unit = "px",
   onHandleChange = () => {},
 }) {
+  const {
+    updateElementDimensions,
+    mainRefs,
+    fontChangeInProgress,
+    allItems,
+    setAllItems,
+    activeID,
+    updateElementState,
+    itemsRefs,
+  } = useContext(CcContext);
+
   const [showPopup, setShowPopup] = useState(false);
   const popupRef = useRef(null);
 
-  const itemsMap = useItemsMap(data);
+  const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
 
+  const [initialValue, setInitialValue] = useState(getCurrent());
+
   function handleChange(value) {
-    if (!activeID) return;
-    setData((prev) =>
-      prev.map((item) =>
-        item.id === activeID ? { ...item, [propertyName]: value } : item
-      )
-    );
+    if (!activeID || !value) return;
+
+    fontChangeInProgress.current = true;
+
+    const newValue = parseInt(value, 10);
+    if (isNaN(newValue)) return;
+
+    setInitialValue(newValue);
+
+    if (mainRefs.current[activeID]) {
+      itemsRefs.current[activeID].style[propertyName] = `${newValue}${unit}`;
+
+      mainRefs.current[activeID].style.width = `auto`;
+      mainRefs.current[activeID].style.height = `auto`;
+
+      requestAnimationFrame(() => {
+        updateElementDimensions((position) => {
+          updateElementState(position);
+        });
+      });
+    }
+
     if (onHandleChange) {
-      onHandleChange({value,activeItem});
+      onHandleChange({ value, activeItem });
     }
   }
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
   };
+
+  function handleDragEnd(value) {
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID ? { ...item, [propertyName]: value } : item
+      )
+    );
+  }
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -50,11 +86,11 @@ export default function RangeFeature({
     };
   }, []);
 
-  const getCurrent = () => {
+  function getCurrent() {
     if (activeID === null || !propertyName) return defValue;
     const value = activeItem?.[propertyName];
     return value !== undefined && value !== null ? value : defValue;
-  };
+  }
 
   return (
     <div className="relative">
@@ -70,15 +106,16 @@ export default function RangeFeature({
         >
           <div className="flex justify-between mb-1">
             <span className="text-xs">{title}</span>
-            <span className="text-xs font-medium">{getCurrent()}</span>
+            <span className="text-xs font-medium">{initialValue}{unit}</span>
           </div>
           <input
             type="range"
             min={min}
             max={max}
             step={step}
-            value={getCurrent()}
+            value={initialValue}
             onChange={(e) => handleChange(e.target.value)}
+            onPointerUp={(e) => handleDragEnd(e.target.value)}
             className="w-full"
           />
           <div className="flex justify-between mt-1">

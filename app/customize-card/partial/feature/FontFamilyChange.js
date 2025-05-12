@@ -7,7 +7,14 @@ import { ChevronDown } from "lucide-react";
 import React, { useContext } from "react";
 
 export default function FontFamilyChange() {
-  const { allItems, setAllItems, activeID } = useContext(CcContext);
+  const {
+    allItems,
+    setAllItems,
+    activeID,
+    mainRefs,
+    updateElementDimensions,
+    updateElementState,
+  } = useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
   const fonts = [
@@ -41,6 +48,25 @@ export default function FontFamilyChange() {
     "Cinzel",
   ];
 
+  function handleFontFamily(font) {
+    if (!activeID) return;
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID ? { ...item, fontFamily: font } : item
+      )
+    );
+    if (mainRefs.current[activeID]) {
+      mainRefs.current[activeID].style.width = `auto`;
+      mainRefs.current[activeID].style.height = `auto`;
+
+      requestAnimationFrame(() => {
+        updateElementDimensions((position) => {
+          updateElementState(position);
+        });
+      });
+    }
+  }
+
   return (
     <Menu
       menuClassName={"menu !w-[300px]"}
@@ -63,14 +89,7 @@ export default function FontFamilyChange() {
         <MenuItemCom
           key={index}
           style={{ fontFamily: getFontFamily(font) }}
-          onClick={() => {
-            if (!activeID) return;
-            setAllItems((prevItems) =>
-              prevItems.map((item) =>
-                item.id === activeID ? { ...item, fontFamily: font } : item
-              )
-            );
-          }}
+          onClick={() => handleFontFamily(font)}
         >
           {font}
         </MenuItemCom>

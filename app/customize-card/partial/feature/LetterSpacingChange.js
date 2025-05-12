@@ -1,20 +1,13 @@
-import CcContext from "@/context/ccContext";
-import React, { useContext } from "react";
 import RangeFeature from "./RangeFeature";
 
 export default function LetterSpacingChange() {
-  const { allItems, setAllItems, activeID } = useContext(CcContext);
-
   return (
     <RangeFeature
-      data={allItems}
-      setData={setAllItems}
-      activeID={activeID}
       propertyName="letterSpacing"
       title="Letter Spacing"
       min={-1}
-      max={10}
-      step={0.1}
+      max={50}
+      step={1}
       defValue={1.2}
     >
       <svg
