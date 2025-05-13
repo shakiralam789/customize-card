@@ -17,41 +17,43 @@ export default function InvitationCard(props) {
     horizontalCentralLine,
     frame,
     handlerRefs,
+    mainRefs,
     scrollRef,
+    debouncedSetAllItems,
   } = contextProps;
 
   function handlePrevItem(crrItem) {
     let position;
 
-    if (activeID) {
-      let prevHandler = handlerRefs.current[activeID];
-      const parent = parentRef.current;
-      position = managePosition({ idol: prevHandler, parent }, false);
-    }
+    // if (activeID) {
+    //   let prevHandler = handlerRefs.current[activeID];
+    //   const parent = parentRef.current;
+    //   position = managePosition({ idol: prevHandler, parent }, false);
+    // }
 
     setAllItems((prevItems) => {
       const newItems = prevItems.map((s) => {
         const updated = {
           ...s,
           active: s.id === crrItem?.id,
-          position: {
-            x:
-              s.id == activeID && s.itemType === "text" && position
-                ? position?.left
-                : s.position.x,
-            y:
-              s.id == activeID && s.itemType === "text" && position
-                ? position?.top
-                : s.position.y,
-          },
-          width:
-            s.id == activeID && s.itemType === "text" && position
-              ? position?.width
-              : s.width || "auto",
-          height:
-            s.id == activeID && s.itemType === "text" && position
-              ? position?.height
-              : s.height || "auto",
+          // position: {
+          //   x:
+          //     s.id == activeID && s.itemType === "text" && position
+          //       ? position?.left
+          //       : s.position.x,
+          //   y:
+          //     s.id == activeID && s.itemType === "text" && position
+          //       ? position?.top
+          //       : s.position.y,
+          // },
+          // width:
+          //   s.id == activeID && s.itemType === "text" && position
+          //     ? position?.width
+          //     : s.width || "auto",
+          // height:
+          //   s.id == activeID && s.itemType === "text" && position
+          //     ? position?.height
+          //     : s.height || "auto",
         };
 
         if (s.itemType === "text") {
@@ -107,7 +109,6 @@ export default function InvitationCard(props) {
   }
 
   const handleFocus = (e, item) => {
-    
     handlePrevItem(item);
 
     let plch = item?.isPlaceholder;
@@ -160,18 +161,26 @@ export default function InvitationCard(props) {
     setActiveID(item?.id);
   }
 
-  function handleContentChange() {
+  function handleContentChange({ e }) {
     if (!activeID) return;
-
     let currentHandler = handlerRefs.current[activeID];
     let currentElement = itemsRefs.current[activeID];
     const parent = parentRef.current;
 
-    managePosition({
+    let { width, height } = managePosition({
       idol: currentElement,
       follower: currentHandler,
       parent,
       scrollParent: scrollRef.current,
+    });
+
+    debouncedSetAllItems((prev) => {
+      return prev.map((s) => ({
+        ...s,
+        text: s.id === activeID ? e.target.innerHTML : s.text,
+        width: s.id === activeID ? width : s.width,
+        height: s.id === activeID ? height : s.height,
+      }));
     });
   }
 

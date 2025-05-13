@@ -1,5 +1,4 @@
 import CcContext from "@/context/ccContext";
-import { managePosition } from "@/helper/helper";
 import useItemsMap from "@/hook/useItemMap";
 import React, { useContext, useEffect, useRef, useState } from "react";
 

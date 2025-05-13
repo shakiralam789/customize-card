@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
@@ -8,7 +8,7 @@ import _cloneDeep from "lodash/cloneDeep";
 
 const defText = {
   itemType: "text",
-  position: { x: 200, y: 100 },
+  position: { x: 130, y: 100 },
   fontSize: 24,
   textAlign: "center",
   color: "black",
@@ -60,6 +60,30 @@ const CcProvider = ({ children }) => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
   const [frame, setFrame] = useState({});
+
+  const debounceTimerRef = useRef(null);
+
+  const debouncedSetAllItems = useCallback(
+    (updateFn) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+
+      debounceTimerRef.current = setTimeout(() => {
+        setAllItems(updateFn);
+        debounceTimerRef.current = null;
+      }, 150);
+    },
+    [setAllItems]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   function addNewItem(newData) {
     const id = uuid4();
@@ -231,6 +255,8 @@ const CcProvider = ({ children }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
+    // console.log('render allitems');
+
     if (isUndoingOrRedoing.current) {
       isUndoingOrRedoing.current = false;
       return;
@@ -387,7 +413,8 @@ const CcProvider = ({ children }) => {
         updateItems,
         undoStack,
         redoStack,
-        fontsLoaded
+        fontsLoaded,
+        debouncedSetAllItems
       }}
     >
       {children}

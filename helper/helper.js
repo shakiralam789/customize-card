@@ -184,34 +184,34 @@ export function brRotation(rotate) {
 export function getFontFamily(font) {
   const fallbackMap = {
     // System fonts with appropriate fallbacks
-    "Arial": ["Helvetica", "sans-serif"],
+    Arial: ["Helvetica", "sans-serif"],
     "Courier New": ["Courier", "monospace"],
-    "Georgia": ["Times", "serif"],
+    Georgia: ["Times", "serif"],
     "Times New Roman": ["Times", "serif"],
-    "Verdana": ["Geneva", "sans-serif"],
+    Verdana: ["Geneva", "sans-serif"],
     "Trebuchet MS": ["Helvetica", "sans-serif"],
-    "Tahoma": ["Geneva", "sans-serif"],
+    Tahoma: ["Geneva", "sans-serif"],
     "Lucida Console": ["Monaco", "monospace"],
-    "Impact": ["Charcoal", "sans-serif"],
+    Impact: ["Charcoal", "sans-serif"],
     "Palatino Linotype": ["Book Antiqua", "Palatino", "serif"],
     "Segoe UI": ["Helvetica", "Arial", "sans-serif"],
-    
+
     // Decorative fonts with appropriate fallbacks
     "Dancing Script": ["cursive"],
     "Great Vibes": ["cursive"],
-    "Pacifico": ["cursive"],
-    "Satisfy": ["cursive"],
-    "Parisienne": ["cursive"],
+    Pacifico: ["cursive"],
+    Satisfy: ["cursive"],
+    Parisienne: ["cursive"],
     "Alex Brush": ["cursive"],
-    "Allura": ["cursive"],
-    "Sacramento": ["cursive"],
+    Allura: ["cursive"],
+    Sacramento: ["cursive"],
     "Marck Script": ["cursive"],
-    "Cookie": ["cursive"],
+    Cookie: ["cursive"],
     "Herr Von Muellerhoff": ["cursive"],
-    "Tangerine": ["cursive"],
+    Tangerine: ["cursive"],
     "Cormorant Garamond": ["Georgia", "serif"],
     "Playfair Display": ["Georgia", "Times New Roman", "serif"],
-    "Cinzel": ["Times New Roman", "serif"],
+    Cinzel: ["Times New Roman", "serif"],
   };
 
   const fallbacks = fallbackMap[font] || ["sans-serif"];
