@@ -11,7 +11,7 @@ import LetterSpacingChange from "./feature/LetterSpacingChange";
 import { Languages, Redo, Sticker, Undo } from "lucide-react";
 import TextCurveChange from "./feature/TextCurveChange";
 import Drawer from "@/components/Drawer";
-import DrawerContent from "./DrawerContent";
+import DrawerContent from "./StickerDrawerContent";
 import FlipShape from "./feature/FlipShape";
 import FlipVerticalShape from "./feature/FlipVertiacalShape";
 import RotateShape from "./feature/RotateShape";

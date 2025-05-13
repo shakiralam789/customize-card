@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
@@ -59,7 +59,6 @@ const CcProvider = ({ children }) => {
   const scrollRef = useRef(null);
 
   const [frame, setFrame] = useState({});
-  const [newAddedId, setNewAddedId] = useState(null);
 
   function addNewItem(newData) {
     const id = uuid4();
@@ -76,7 +75,6 @@ const CcProvider = ({ children }) => {
     });
 
     setActiveID(id);
-    setNewAddedId(id);
   }
 
   function addNewText() {
@@ -85,6 +83,8 @@ const CcProvider = ({ children }) => {
       active: true,
       contentEditable: true,
       zIndex: 10 + allItems.length,
+      width: 122,
+      height: 36,
       name: "Text",
       ...defText,
     });
@@ -92,10 +92,10 @@ const CcProvider = ({ children }) => {
     shouldBeSelected.current = true;
   }
 
-  function addNewSticker(data) {
+  function addNewSticker(item) {
     addNewItem({
       ...defSticker,
-      ...data,
+      ...item,
       active: true,
       zIndex: 10 + allItems.length,
       name: "Sticker",
@@ -226,43 +226,12 @@ const CcProvider = ({ children }) => {
     );
   }
 
-  useEffect(() => {
-    if (newAddedId) {
-      const el = itemsRefs.current[newAddedId];
-      if (el) {
-        const resizeObserver = new ResizeObserver((entries) => {
-          for (let entry of entries) {
-            const { width, height } = entry.contentRect;
-            setAllItems((prevItems) => {
-              const updatedItems = prevItems.map((item) => {
-                if (item.id === newAddedId) {
-                  return {
-                    ...item,
-                    width,
-                    height,
-                  };
-                }
-                return item;
-              });
-              return updatedItems;
-            });
-          }
-        });
-
-        resizeObserver.observe(el);
-
-        return () => {
-          resizeObserver.disconnect();
-        };
-      }
-    }
-  }, [newAddedId]);
-
   const lastRecordedState = useRef(null);
-  const isDebouncingRef = useRef(false);
   const timerRef = useRef(null);
 
   useEffect(() => {
+    console.log("render allItems");
+
     if (isUndoingOrRedoing.current) {
       isUndoingOrRedoing.current = false;
       return;
@@ -301,7 +270,6 @@ const CcProvider = ({ children }) => {
   };
 
   const undo = () => {
-
     if (undoStack.current.length <= 1) return;
 
     const currentState = _cloneDeep(allItems);
@@ -316,8 +284,6 @@ const CcProvider = ({ children }) => {
 
     setAllItems(_cloneDeep(previousState));
 
-    console.log(previousState);
-    
     setTimeout(() => {
       previousState.forEach((item) => {
         if (item.active) {
@@ -339,7 +305,6 @@ const CcProvider = ({ children }) => {
 
   // Redo function
   const redo = () => {
-    
     if (redoStack.current.length === 0) return;
 
     const nextState = redoStack.current.pop();

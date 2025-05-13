@@ -35,8 +35,17 @@ export default function DrawerContent() {
         stickers.map((item) => {
           return (
             <div
-              onClick={(e) => {
-                addNewSticker(item);
+              onClick={async () => {
+                const img = new window.Image();
+                img.src = item.src;
+
+                img.onload = () => {
+                  let width = 100;
+                  let height = (img.naturalHeight / img.naturalWidth) * width;
+                  item.width = width;
+                  item.height = height;
+                  addNewSticker(item);
+                };
               }}
               key={item.id}
               className="w-full shadow hover:shadow-xl"

@@ -309,7 +309,7 @@ export function managePosition(
     follower.style.left = `${targetLeft}px`;
     follower.style.top = `${targetTop}px`;
   }
-  
+
   return {
     width: targetWidth,
     height: targetHeight,
@@ -318,3 +318,14 @@ export function managePosition(
   };
 }
 
+export function getImageDimensions(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    };
+    img.onerror = reject;
+
+    img.src = URL.createObjectURL(file);
+  });
+}

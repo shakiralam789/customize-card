@@ -3,6 +3,7 @@ import { ImageIcon } from "lucide-react";
 import uuid4 from "uuid4";
 import NavMenuBtn from "@/components/NavMenuBtn";
 import CcContext from "@/context/ccContext";
+import { getImageDimensions } from "@/helper/helper";
 
 export default function UploadImage() {
   const { addNewSticker } = useContext(CcContext);
@@ -13,9 +14,17 @@ export default function UploadImage() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files?.[0];
+
     if (!file) return;
+
+    let fixedWidth = 100;
+
+    let { height, width } = await getImageDimensions(file);
+
+    height = (height / width) * fixedWidth;
+    width = fixedWidth;
 
     const validImageTypes = [
       "image/jpeg",
@@ -37,6 +46,8 @@ export default function UploadImage() {
       id,
       src,
       alt,
+      width,
+      height,
     };
 
     addNewSticker(imageData);
