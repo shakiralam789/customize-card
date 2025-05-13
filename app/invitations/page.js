@@ -54,6 +54,10 @@ export default function Page() {
             </div>
           ))}
         <Link
+          onClick={(e) => {
+            removeLocalStorage();
+            router.push(`/customize-card`);
+          }}
           href={"/customize-card"}
           className="min-h-[300px] flex justify-center items-center flex-col text-gray-500 h-full bg-white shadow overflow-hidden transition hover:shadow-xl"
         >

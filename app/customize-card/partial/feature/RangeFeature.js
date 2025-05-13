@@ -18,11 +18,9 @@ export default function RangeFeature({
     updateElementDimensions,
     mainRefs,
     handlerRefs,
-    // fontChangeInProgress,
     allItems,
     setAllItems,
     activeID,
-    updateElementState,
     itemsRefs,
   } = useContext(CcContext);
 
@@ -37,8 +35,6 @@ export default function RangeFeature({
 
   function handleChange(value) {
     if (!activeID || !value) return;
-
-    // fontChangeInProgress.current = true;
 
     const newValue = value;
     if (isNaN(newValue)) return;
@@ -86,8 +82,8 @@ export default function RangeFeature({
           ? {
               ...item,
               [propertyName]: value,
-              width: positionRef.current.width,
-              height: positionRef.current.height,
+              width: positionRef.current?.width || activeItem?.width,
+              height: positionRef.current.height || activeItem?.height,
               // position: { y: position.top, x: position.left },
               // fontSize: fontSize || item.fontSize,
             }

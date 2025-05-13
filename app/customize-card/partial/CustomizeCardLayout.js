@@ -5,14 +5,11 @@ import Head from "next/head";
 import Nav from "./Nav";
 import EditPanelBar from "./EditorPanel/EditPanelBar";
 
-export default function CustomizeCardLayout({
-  zoom,
-  setZoom,
-  children,
-}) {
+export default function CustomizeCardLayout({ zoom, setZoom, children }) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -71,7 +68,21 @@ export default function CustomizeCardLayout({
     setZoom(100);
     setPosition({ x: 0, y: 0 });
   };
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Cinzel&family=Cormorant+Garamond&family=Cookie&family=Dancing+Script&family=Great+Vibes&family=Herr+Von+Muellerhoff&family=Marck+Script&family=Pacifico&family=Parisienne&family=Playfair+Display&family=Sacramento&family=Satisfy&family=Tangerine&display=swap');
+    `;
+    document.head.appendChild(style);
 
+    setTimeout(() => {
+      setFontsLoaded(true);
+    }, 500);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
   return (
     <div className="overflow-hidden h-screen">
       <Head>
@@ -93,7 +104,7 @@ export default function CustomizeCardLayout({
       {/* Main Content Area */}
       <div>
         <div
-          className="cursor-move flex flex-col items-center justify-center p-4 relative overflow-hidden"
+          className="flex flex-col items-center justify-center p-4 relative overflow-hidden"
           style={{ height: "calc(100vh - 54px)" }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
@@ -102,7 +113,7 @@ export default function CustomizeCardLayout({
         >
           {/* Invitation Card */}
           <div
-            className="invitation-card relative cursor-default"
+            className="invitation-card relative"
             style={{
               transform: `scale(${zoom / 100}) translate(${
                 position.x / (zoom / 100)

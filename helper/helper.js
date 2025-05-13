@@ -183,14 +183,35 @@ export function brRotation(rotate) {
 
 export function getFontFamily(font) {
   const fallbackMap = {
-    "Dancing Script": ['"Brush Script MT"', '"Comic Sans MS"', "cursive"],
-    Pacifico: ["cursive"],
-    "Playfair Display": ['"Georgia"', '"Times New Roman"', "serif"],
-    Roboto: ['"Helvetica Neue"', "Arial", "sans-serif"],
-    "Open Sans": ['"Helvetica Neue"', "Arial", "sans-serif"],
-    Montserrat: ["Arial", "sans-serif"],
-    "Courier New": ['"Lucida Console"', "monospace"],
-    // Add more mappings as needed
+    // System fonts with appropriate fallbacks
+    "Arial": ["Helvetica", "sans-serif"],
+    "Courier New": ["Courier", "monospace"],
+    "Georgia": ["Times", "serif"],
+    "Times New Roman": ["Times", "serif"],
+    "Verdana": ["Geneva", "sans-serif"],
+    "Trebuchet MS": ["Helvetica", "sans-serif"],
+    "Tahoma": ["Geneva", "sans-serif"],
+    "Lucida Console": ["Monaco", "monospace"],
+    "Impact": ["Charcoal", "sans-serif"],
+    "Palatino Linotype": ["Book Antiqua", "Palatino", "serif"],
+    "Segoe UI": ["Helvetica", "Arial", "sans-serif"],
+    
+    // Decorative fonts with appropriate fallbacks
+    "Dancing Script": ["cursive"],
+    "Great Vibes": ["cursive"],
+    "Pacifico": ["cursive"],
+    "Satisfy": ["cursive"],
+    "Parisienne": ["cursive"],
+    "Alex Brush": ["cursive"],
+    "Allura": ["cursive"],
+    "Sacramento": ["cursive"],
+    "Marck Script": ["cursive"],
+    "Cookie": ["cursive"],
+    "Herr Von Muellerhoff": ["cursive"],
+    "Tangerine": ["cursive"],
+    "Cormorant Garamond": ["Georgia", "serif"],
+    "Playfair Display": ["Georgia", "Times New Roman", "serif"],
+    "Cinzel": ["Times New Roman", "serif"],
   };
 
   const fallbacks = fallbackMap[font] || ["sans-serif"];

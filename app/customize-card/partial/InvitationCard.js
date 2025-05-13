@@ -30,8 +30,6 @@ export default function InvitationCard(props) {
     }
 
     setAllItems((prevItems) => {
-      //  console.log('prev',prevItems);
-
       const newItems = prevItems.map((s) => {
         const updated = {
           ...s,

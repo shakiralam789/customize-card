@@ -51,8 +51,7 @@ export default function MainContentCom({
           }}
           contentEditable={item.contentEditable}
           suppressContentEditableWarning
-          className={`${item.isPlaceholder ? "!text-green-600" : "text-black"}
-                              focus:outline-none whitespace-nowrap carent-color editable-div`}
+          className={`focus:outline-none whitespace-nowrap carent-color editable-div`}
           style={{
             textAlign: `${item?.textAlign || defText.textAlign}`,
             color: `${item?.color || defText.color}`,
@@ -85,10 +84,11 @@ export default function MainContentCom({
             }
           }}
           className="w-full"
-          width={400}
-          height={400}
           src={item.src}
           alt={item?.alt || "image"}
+          width={500}
+          height={300}
+          priority
         />
       )}
     </div>

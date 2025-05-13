@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
@@ -230,7 +230,7 @@ const CcProvider = ({ children }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    
+
     if (isUndoingOrRedoing.current) {
       isUndoingOrRedoing.current = false;
       return;
@@ -302,7 +302,6 @@ const CcProvider = ({ children }) => {
     }, 0);
   };
 
-  // Redo function
   const redo = () => {
     if (redoStack.current.length === 0) return;
 

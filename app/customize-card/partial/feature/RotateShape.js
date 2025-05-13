@@ -1,5 +1,3 @@
-import CcContext from "@/context/ccContext";
-import React, { useContext } from "react";
 import { RotateCcw } from "lucide-react";
 import RangeFeature from "./RangeFeature";
 

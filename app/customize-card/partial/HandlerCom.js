@@ -24,6 +24,24 @@ const HandlerCom = ({
     shouldBeSelected,
   } = contextProps;
 
+  useEffect(() => {
+    if (isDragging) {
+      if (dragType === "move") {
+        document.body.classList.add("moving");
+      } else if (dragType === "rotate") {
+        document.body.classList.add("grabbing");
+      } else if (dragType === "resize") {
+        document.body.classList.add("resizing");
+      }
+    }
+
+    return () => {
+      document.body.classList.remove("moving");
+      document.body.classList.remove("grabbing");
+      document.body.classList.remove("resizing");
+    };
+  }, [isDragging]);
+
   return (
     <div
       {...rest}
@@ -77,13 +95,17 @@ const HandlerCom = ({
               <>
                 <HandleBtn
                   onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-                  className={`cursor-alias ${isDragging && dragType == "rotate" ? "active" : ""}`}
+                  className={`cursor-alias ${
+                    isDragging && dragType == "rotate" ? "active" : ""
+                  }`}
                 >
                   <RotateCcw />
                 </HandleBtn>
                 <HandleBtn
                   onMouseDown={(e) => startDrag({ e, type: "move" })}
-                  className={` ${isDragging && dragType == "move" ? "active" : ""}`}
+                  className={` ${
+                    isDragging && dragType == "move" ? "active" : ""
+                  }`}
                 >
                   <Move className="w-full" />
                 </HandleBtn>
