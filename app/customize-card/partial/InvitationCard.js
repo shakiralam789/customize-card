@@ -28,11 +28,10 @@ export default function InvitationCard(props) {
       const parent = parentRef.current;
       position = managePosition({ idol: prevHandler, parent }, false);
     }
-    
-    setAllItems((prevItems) => {
 
-    //  console.log('prev',prevItems);
-     
+    setAllItems((prevItems) => {
+      //  console.log('prev',prevItems);
+
       const newItems = prevItems.map((s) => {
         const updated = {
           ...s,
@@ -110,6 +109,7 @@ export default function InvitationCard(props) {
   }
 
   const handleFocus = (e, item) => {
+    
     handlePrevItem(item);
 
     let plch = item?.isPlaceholder;

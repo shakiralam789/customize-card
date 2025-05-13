@@ -46,16 +46,17 @@ export default function useDraggable({
       setIsClicked(true);
       setStartMousePos({ x: e.clientX, y: e.clientY });
 
-      setStartElementPos(positionRef.current);
+      setStartElementPos(initialPosition);
+      positionRef.current = initialPosition;
 
-      onDragStart?.({ e, position: positionRef.current, type, element });
+      onDragStart?.({ e, position: initialPosition, type, element });
     },
     [onDragStart]
   );
 
   const handleMouseMove = (e) => {
     if (!isClicked || !draggingRef.current) return;
-    
+
     setIsDragging(true);
 
     const element = draggingRef.current;
@@ -71,7 +72,7 @@ export default function useDraggable({
     if (type === "move") {
       const dx = (e.clientX - startMousePos.x) / zoomLevel;
       const dy = (e.clientY - startMousePos.y) / zoomLevel;
-      
+
       newPos = {
         x: startElementPos.x + dx,
         y: startElementPos.y + dy,
@@ -103,7 +104,6 @@ export default function useDraggable({
       ) {
         if (dir === "tl" || dir === "bl") {
           newPos.x = startElementPos.x - deltaWidth; // ok for shape
-          
         } else if (dir === "tr" || dir === "br") {
           newPos.x = startElementPos.x;
         }
@@ -161,7 +161,7 @@ export default function useDraggable({
 
     positionRef.current = newPos;
     setPosition(newPos);
-    
+
     onDragging?.({
       e,
       scale: newScale,

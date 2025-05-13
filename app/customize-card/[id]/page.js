@@ -15,10 +15,9 @@ export default function Page() {
     if (id) {
       contextProps.getDataOnLoad(id);
     }
-  }, [id]);
+  }, []);
 
   useEffect(() => {
-
     if (!id) return;
 
     if (hasMounted.current) {

@@ -178,7 +178,7 @@ const CcProvider = ({ children }) => {
     setFrame(frameData);
   }
 
-  function updateElementDimensions(callBack) {
+  function updateElementDimensions() {
     if (!activeID) return;
 
     let currentHandler = handlerRefs.current[activeID];
@@ -230,8 +230,7 @@ const CcProvider = ({ children }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    console.log("render allItems");
-
+    
     if (isUndoingOrRedoing.current) {
       isUndoingOrRedoing.current = false;
       return;

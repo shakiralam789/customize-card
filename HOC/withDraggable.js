@@ -53,7 +53,7 @@ export default function withDraggable(Component) {
     const initialWidth = item.width || null;
     const initialHeight = item?.height || null;
 
-    const { position, isDragging, startDrag } = useDraggable({
+    const { isDragging, startDrag } = useDraggable({
       zoomLevel,
       setHorizontalCentralLine,
       setShowCenterLine,
@@ -64,7 +64,6 @@ export default function withDraggable(Component) {
 
       onDragStart: (data) => {
         shouldBeSelected.current = true;
-        
         setItemState((prev) => ({ ...prev, dragType: data?.type }));
       },
 
@@ -78,8 +77,9 @@ export default function withDraggable(Component) {
             // Store exact values without rounding
             const newWidth = initialWidth * data?.scale;
             const newHeight = initialHeight * data?.scale;
-            const newFontSize = item?.itemType === "text" ? initialFontSize * data?.scale : null;
-            
+            const newFontSize =
+              item?.itemType === "text" ? initialFontSize * data?.scale : null;
+
             // Update the current values with precise calculations
             currentValues.current.width = newWidth;
             currentValues.current.height = newHeight;
@@ -87,15 +87,15 @@ export default function withDraggable(Component) {
 
             requestAnimationFrame(() => {
               if (!follower && !handler) return;
-              
+
               // Apply the same exact values to both elements
               [follower, handler].forEach((el) => {
                 if (!el) return;
-                
+
                 if (item?.itemType === "text" && newFontSize) {
                   el.style.fontSize = `${newFontSize}px`;
                 }
-                
+
                 // Use explicit pixel dimensions during resize
                 el.style.width = `${newWidth}px`;
                 el.style.height = `${newHeight}px`;
@@ -106,7 +106,7 @@ export default function withDraggable(Component) {
           } else if (data?.type === "rotate") {
             currentValues.current.angle = data?.angle;
             const transform = `rotate(${data?.angle}deg)`;
-            
+
             requestAnimationFrame(() => {
               if (follower) follower.style.transform = transform;
               if (handler) handler.style.transform = transform;
@@ -130,7 +130,7 @@ export default function withDraggable(Component) {
       onDragEnd: (data) => {
         shouldBeSelected.current = !data?.hasMoved;
         setIsAnyItemDragging(false);
-        
+        if (!data.hasMoved) return;
         const updatedItem = {
           ...item,
           rotate: currentValues.current.angle,
@@ -152,19 +152,19 @@ export default function withDraggable(Component) {
         setAllItems((prevItems) =>
           prevItems.map((s) => (s.id === item.id ? updatedItem : s))
         );
-        
+
         const follower = mainRefs.current[item.id];
         const handler = handlerRefs.current[item.id];
-        
+
         if (follower || handler) {
           requestAnimationFrame(() => {
             [follower, handler].forEach((el) => {
               if (!el) return;
-              
+
               if (item?.itemType === "text" && updatedItem.fontSize) {
                 el.style.fontSize = `${updatedItem.fontSize}px`;
               }
-              
+
               el.style.width = `${updatedItem.width}px`;
               el.style.height = `${updatedItem.height}px`;
               el.style.left = `${updatedItem.position.x}px`;
@@ -198,7 +198,14 @@ export default function withDraggable(Component) {
           return;
         }
       }
-    }, [item?.rotate, item?.width, item?.height, item?.fontSize]);
+    }, [
+      item?.rotate,
+      item?.width,
+      item?.height,
+      item?.fontSize,
+      // item?.position?.x,
+      // item?.position?.y,
+    ]);
 
     useEffect(() => {
       let referItem = itemsRefs.current[activeID];

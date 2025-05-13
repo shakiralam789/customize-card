@@ -77,13 +77,13 @@ const HandlerCom = ({
               <>
                 <HandleBtn
                   onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-                  className={isDragging && dragType == "rotate" ? "active" : ""}
+                  className={`cursor-alias ${isDragging && dragType == "rotate" ? "active" : ""}`}
                 >
                   <RotateCcw />
                 </HandleBtn>
                 <HandleBtn
                   onMouseDown={(e) => startDrag({ e, type: "move" })}
-                  className={isDragging && dragType == "move" ? "active" : ""}
+                  className={` ${isDragging && dragType == "move" ? "active" : ""}`}
                 >
                   <Move className="w-full" />
                 </HandleBtn>
