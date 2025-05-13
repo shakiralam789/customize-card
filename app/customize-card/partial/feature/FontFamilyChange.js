@@ -14,10 +14,10 @@ export default function FontFamilyChange() {
     mainRefs,
     updateElementDimensions,
     updateElementState,
+    fontsLoaded
   } = useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
-  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   const fonts = [
     // System / Web-safe fonts
@@ -51,22 +51,6 @@ export default function FontFamilyChange() {
     "Cinzel",
   ];
 
-  // useEffect(() => {
-  //   const style = document.createElement('style');
-  //   style.textContent = `
-  //     @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Cinzel&family=Cormorant+Garamond&family=Cookie&family=Dancing+Script&family=Great+Vibes&family=Herr+Von+Muellerhoff&family=Marck+Script&family=Pacifico&family=Parisienne&family=Playfair+Display&family=Sacramento&family=Satisfy&family=Tangerine&display=swap');
-  //   `;
-  //   document.head.appendChild(style);
-
-  //   setTimeout(() => {
-  //     setFontsLoaded(true);
-  //   }, 500);
-
-  //   return () => {
-  //     document.head.removeChild(style);
-  //   };
-  // }, []);
-
   function handleFontFamily(font) {
     if (!activeID) return;
     setAllItems((prevItems) =>
@@ -86,39 +70,42 @@ export default function FontFamilyChange() {
   }
 
   return (
-    <Menu
-      menuClassName={"menu !w-[300px]"}
-      align="end"
-      gap={4}
-      menuButton={
-        <MenuButton
-          className={
-            "min-w-[150px] px-2 flex items-center justify-between gap-2 h-[28px] whitespace-nowrap rounded border border-gray-200 hover:bg-gray-100 [&.szh-menu-button--open]:bg-gray-100"
-          }
-        >
-          <span
-            style={{
-              fontFamily: getFontFamily(activeItem?.fontFamily),
-            }}
+    <div className="relative">
+      <Menu
+        menuClassName={"menu h-[calc(100vh-101px)] !w-[300px]"}
+        align="end"
+        gap={4}
+        menuButton={
+          <MenuButton
+            className={
+              "min-w-[150px] px-2 flex items-center justify-between gap-2 h-[28px] whitespace-nowrap rounded border border-gray-200 hover:bg-gray-100 [&.szh-menu-button--open]:bg-gray-100"
+            }
           >
-            {activeItem?.fontFamily || "Arial"}
-          </span>
-          <ChevronDown className="size-5" />
-        </MenuButton>
-      }
-    >
-      {fonts.map((font, index) => (
-        <MenuItemCom
-          key={index}
-          style={{
-            fontFamily: getFontFamily(font),
-            opacity: fontsLoaded ? 1 : 0.5,
-          }}
-          onClick={() => handleFontFamily(font)}
-        >
-          {font}
-        </MenuItemCom>
-      ))}
-    </Menu>
+            <span
+              style={{
+                fontFamily: getFontFamily(activeItem?.fontFamily),
+                opacity: fontsLoaded ? 1 : 0,
+              }}
+            >
+              {activeItem?.fontFamily || "Arial"}
+            </span>
+            <ChevronDown className="size-5" />
+          </MenuButton>
+        }
+      >
+        {fonts.map((font, index) => (
+          <MenuItemCom
+            className="font-list"
+            key={index}
+            style={{
+              fontFamily: getFontFamily(font),
+            }}
+            onClick={() => handleFontFamily(font)}
+          >
+            {font}
+          </MenuItemCom>
+        ))}
+      </Menu>
+    </div>
   );
 }

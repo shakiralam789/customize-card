@@ -9,7 +9,6 @@ export default function CustomizeCardLayout({ zoom, setZoom, children }) {
   const [isDragging, setIsDragging] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -68,21 +67,7 @@ export default function CustomizeCardLayout({ zoom, setZoom, children }) {
     setZoom(100);
     setPosition({ x: 0, y: 0 });
   };
-  useEffect(() => {
-    const style = document.createElement("style");
-    style.textContent = `
-      @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Cinzel&family=Cormorant+Garamond&family=Cookie&family=Dancing+Script&family=Great+Vibes&family=Herr+Von+Muellerhoff&family=Marck+Script&family=Pacifico&family=Parisienne&family=Playfair+Display&family=Sacramento&family=Satisfy&family=Tangerine&display=swap');
-    `;
-    document.head.appendChild(style);
-
-    setTimeout(() => {
-      setFontsLoaded(true);
-    }, 500);
-
-    return () => {
-      document.head.removeChild(style);
-    };
-  }, []);
+ 
   return (
     <div className="overflow-hidden h-screen">
       <Head>

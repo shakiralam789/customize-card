@@ -1,5 +1,4 @@
 @import "tailwindcss";
-/* @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Cinzel&family=Cormorant+Garamond&family=Cookie&family=Dancing+Script&family=Great+Vibes&family=Herr+Von+Muellerhoff&family=Marck+Script&family=Pacifico&family=Parisienne&family=Playfair+Display&family=Sacramento&family=Satisfy&family=Tangerine&display=swap'); */
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -100,11 +99,12 @@ body.resizing {
   @apply overflow-y-auto py-1 z-[999] border border-gray-300 whitespace-nowrap bg-white shadow rounded-md min-w-[140px] 2xl:min-w-[180px]
 }
 
-.list {
-  @apply capitalize !cursor-pointer w-full text-left !text-[11px] lg:!text-xs 2xl:!text-[15px] !text-gray-500 hover:bg-gray-100 !px-2 !py-2 2xl:!px-3 2xl:!py-3;
+.font-list {
+  @apply capitalize !cursor-pointer w-full text-left text-base !text-gray-500 hover:bg-gray-100 !px-2 !py-2 2xl:!px-3 2xl:!py-3;
 }
 
 .list.active,
+.font-list.active,
 .list-with-icon.active {
   @apply bg-gray-100;
 }

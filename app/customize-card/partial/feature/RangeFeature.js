@@ -106,15 +106,14 @@ export default function RangeFeature({
   }, []);
 
   useEffect(() => {
-    if (activeItem?.[propertyName]) {
-      setInitialValue(activeItem?.[propertyName]);
+    if (activeItem?.[propertyName] != null) {
+      setInitialValue(activeItem[propertyName]);
     }
   }, [activeID, activeItem?.[propertyName]]);
 
   function getCurrent() {
     if (activeID === null || !propertyName) return defValue;
-    const value = activeItem?.[propertyName];
-    return value !== undefined && value !== null ? value : defValue;
+    return activeItem?.[propertyName] ?? defValue;
   }
 
   return (

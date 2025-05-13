@@ -121,6 +121,9 @@ export default function useDraggable({
       const dy = e.clientY - centerY;
       newAngle =
         Math.round((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
+      if(newAngle ){
+
+      }
       angleRef.current = newAngle;
     }
 
@@ -174,6 +177,7 @@ export default function useDraggable({
   const stopDrag = () => {
     setIsDragging(false);
     setType(null);
+    setDir(null);
     setShowCenterLine(false);
     setHorizontalCentralLine(false);
     draggingRef.current = null;
@@ -204,5 +208,6 @@ export default function useDraggable({
     position,
     isDragging,
     startDrag,
+    dir
   };
 }

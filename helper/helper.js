@@ -304,7 +304,6 @@ export function managePosition(
   const idolRect = idol.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
 
-  // Calculate center-based positioning to account for rotation
   const targetWidth = idol.offsetWidth;
   const targetHeight = idol.offsetHeight;
 

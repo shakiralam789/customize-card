@@ -57,6 +57,7 @@ const CcProvider = ({ children }) => {
   const handlerRefs = useRef({});
   const mainRefs = useRef({});
   const scrollRef = useRef(null);
+  const [fontsLoaded, setFontsLoaded] = useState(false);
 
   const [frame, setFrame] = useState({});
 
@@ -230,7 +231,6 @@ const CcProvider = ({ children }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-
     if (isUndoingOrRedoing.current) {
       isUndoingOrRedoing.current = false;
       return;
@@ -331,6 +331,22 @@ const CcProvider = ({ children }) => {
     }, 0);
   };
 
+  useEffect(() => {
+    const style = document.createElement("style");
+    style.textContent = `
+      @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Allura&family=Cinzel&family=Cormorant+Garamond&family=Cookie&family=Dancing+Script&family=Great+Vibes&family=Herr+Von+Muellerhoff&family=Marck+Script&family=Pacifico&family=Parisienne&family=Playfair+Display&family=Sacramento&family=Satisfy&family=Tangerine&display=swap');
+    `;
+    document.head.appendChild(style);
+
+    setTimeout(() => {
+      setFontsLoaded(true);
+    }, 500);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
+
   return (
     <CcContext.Provider
       value={{
@@ -371,6 +387,7 @@ const CcProvider = ({ children }) => {
         updateItems,
         undoStack,
         redoStack,
+        fontsLoaded
       }}
     >
       {children}

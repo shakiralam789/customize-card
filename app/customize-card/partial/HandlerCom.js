@@ -1,4 +1,5 @@
 import HandleBtn from "@/components/HandleBtn";
+import ResizeCircle from "@/components/ResizeCircle";
 import withDraggable from "@/HOC/withDraggable";
 import { Move, RotateCcw } from "lucide-react";
 import React, { useEffect } from "react";
@@ -16,6 +17,8 @@ const HandlerCom = ({
   currentValues,
   onMouseUp,
   className,
+  dir,
+  angle,
   ...rest
 }) => {
   const {
@@ -100,6 +103,16 @@ const HandlerCom = ({
                   }`}
                 >
                   <RotateCcw />
+                  {isDragging && dragType == "rotate" && (
+                    <div
+                      style={{
+                        transform: `rotate(-${angle}deg)`,
+                      }}
+                      className="text-white text-xs font-medium rounded-md bg-opacity-80 bg-black px-2 py-1 absolute top-[-50px] left-[50px] -translate-x-1/2"
+                    >
+                      {angle}&deg;
+                    </div>
+                  )}
                 </HandleBtn>
                 <HandleBtn
                   onMouseDown={(e) => startDrag({ e, type: "move" })}
@@ -117,34 +130,50 @@ const HandlerCom = ({
 
           {item.width && item.width && item.height > 60 && (
             <>
-              <span
+              <ResizeCircle
                 onMouseDown={(e) =>
                   startDrag({ e, type: "resize", dir: tlRotate })
                 }
-                className={`pointer-events-auto cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2`}
-              ></span>
+                className={`${
+                  isDragging && dragType == "resize" && dir && dir == tlRotate
+                    ? "active"
+                    : ""
+                } pointer-events-auto cursor-nwse-resize size-handler absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2`}
+              ></ResizeCircle>
 
-              <span
+              <ResizeCircle
                 onMouseDown={(e) =>
                   startDrag({ e, type: "resize", dir: trRotate })
                 }
-                className={`pointer-events-auto cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute top-0 right-0 translate-x-1/2 -translate-y-1/2`}
-              ></span>
+                className={`${
+                  isDragging && dragType == "resize" && dir && dir == trRotate
+                    ? "active"
+                    : ""
+                } pointer-events-auto cursor-nesw-resize size-handler absolute top-0 right-0 translate-x-1/2 -translate-y-1/2`}
+              ></ResizeCircle>
             </>
           )}
           {item?.width > 60 && (
-            <span
+            <ResizeCircle
               onMouseDown={(e) =>
                 startDrag({ e, type: "resize", dir: blRotate })
               }
-              className={`pointer-events-auto cursor-nesw-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2`}
-            ></span>
+              className={`${
+                isDragging && dragType == "resize" && dir && dir == blRotate
+                  ? "active"
+                  : ""
+              } pointer-events-auto cursor-nesw-resize size-handler absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2`}
+            ></ResizeCircle>
           )}
 
-          <span
+          <ResizeCircle
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: brRotate })}
-            className={`pointer-events-auto cursor-nwse-resize size-handler border border-gray-400 size-3.5 bg-white rounded-full absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2`}
-          ></span>
+            className={`${
+              isDragging && dragType == "resize" && dir && dir == brRotate
+                ? "active"
+                : ""
+            } pointer-events-auto cursor-nwse-resize size-handler absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2`}
+          ></ResizeCircle>
         </>
       )}
     </div>

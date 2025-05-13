@@ -27,7 +27,7 @@ export default function withDraggable(Component) {
     // const {}  = useNestedHistory()
 
     const hasMounted = useRef(true);
-
+    const [angle, setAngle] = useState(item?.rotate || 0);
     const [itemState, setItemState] = useState({
       rotate: item?.rotate || 0,
       width: item?.width || null,
@@ -53,7 +53,7 @@ export default function withDraggable(Component) {
     const initialWidth = item.width || null;
     const initialHeight = item?.height || null;
 
-    const { isDragging, startDrag } = useDraggable({
+    const { isDragging, startDrag, dir } = useDraggable({
       zoomLevel,
       setHorizontalCentralLine,
       setShowCenterLine,
@@ -106,7 +106,7 @@ export default function withDraggable(Component) {
           } else if (data?.type === "rotate") {
             currentValues.current.angle = data?.angle;
             const transform = `rotate(${data?.angle}deg)`;
-
+            setAngle(data?.angle);
             requestAnimationFrame(() => {
               if (follower) follower.style.transform = transform;
               if (handler) handler.style.transform = transform;
@@ -233,6 +233,8 @@ export default function withDraggable(Component) {
         currentValues={currentValues}
         item={item}
         contextProps={contextProps}
+        dir={dir}
+        angle={angle}
         {...rest}
       />
     );
