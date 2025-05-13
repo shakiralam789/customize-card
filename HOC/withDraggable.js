@@ -108,7 +108,10 @@ export default function withDraggable(Component) {
             const transform = `rotate(${data?.angle}deg)`;
             setAngle(data?.angle);
             requestAnimationFrame(() => {
-              if (follower) follower.style.transform = transform;
+              if (follower)
+                follower.style.transform = `rotate(${data?.angle}deg) scaleX(${
+                  item?.scaleX || 1
+                }) scaleY(${item?.scaleY || 1})`;
               if (handler) handler.style.transform = transform;
             });
           }
@@ -158,7 +161,7 @@ export default function withDraggable(Component) {
 
         if (follower || handler) {
           requestAnimationFrame(() => {
-            [follower, handler].forEach((el) => {
+            [follower, handler].forEach((el, i) => {
               if (!el) return;
 
               if (item?.itemType === "text" && updatedItem.fontSize) {
@@ -169,8 +172,13 @@ export default function withDraggable(Component) {
               el.style.height = `${updatedItem.height}px`;
               el.style.left = `${updatedItem.position.x}px`;
               el.style.top = `${updatedItem.position.y}px`;
-              el.style.transform = `rotate(${updatedItem.rotate}deg)`;
             });
+
+            follower.style.transform = `rotate(${
+              updatedItem.rotate
+            }deg) scaleX(${item?.scaleX || 1}) scaleY(${item?.scaleY || 1})`;
+
+            handler.style.transform = `rotate(${updatedItem.rotate}deg)`;
           });
         }
       },
