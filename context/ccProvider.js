@@ -36,6 +36,7 @@ const CcProvider = ({ children }) => {
   const [allItems, setAllItems] = useState([]);
   const undoStack = useRef([]);
   const redoStack = useRef([]);
+  const [guides, setGuides] = [];
 
   const isUndoingOrRedoing = useRef(false);
 
@@ -203,7 +204,7 @@ const CcProvider = ({ children }) => {
     setFrame(frameData);
   }
 
-  function updateElementDimensions() {
+  function updateElementDimensions(activeItem) {
     if (!activeID) return;
 
     let currentHandler = handlerRefs.current[activeID];
@@ -218,6 +219,7 @@ const CcProvider = ({ children }) => {
         follower: currentHandler,
         parent,
         scrollParent: scrollRef.current,
+        item: activeItem || {},
       },
       false
     );
@@ -243,8 +245,40 @@ const CcProvider = ({ children }) => {
               ...item,
               width: position.width,
               height: position.height,
-              // position: { y: position.top, x: position.left },
+              position: { y: position.top, x: position.left },
               fontSize: fontSize || item.fontSize,
+            }
+          : item
+      )
+    );
+  }
+
+  function updateElementDimensionsByFont({
+    prevFont,
+    currentFont,
+    activeItem,
+  }) {
+    let fontIncrement = currentFont / prevFont;
+    let width = activeItem.width * fontIncrement;
+    let height = activeItem.height * fontIncrement;
+
+    let dw = activeItem.width - width;
+
+    if (activeItem.textAlign == "center") {
+      activeItem.position.x += dw / 2;
+    } else if (activeItem.textAlign == "right") {
+      activeItem.position.x += dw;
+    }
+
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeItem?.id
+          ? {
+              ...item,
+              width,
+              height,
+              position: { y: activeItem.position.y, x: activeItem.position.x },
+              fontSize: currentFont || item.fontSize,
             }
           : item
       )
@@ -414,7 +448,8 @@ const CcProvider = ({ children }) => {
         undoStack,
         redoStack,
         fontsLoaded,
-        debouncedSetAllItems
+        debouncedSetAllItems,
+        updateElementDimensionsByFont,
       }}
     >
       {children}

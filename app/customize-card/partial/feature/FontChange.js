@@ -3,15 +3,8 @@ import useItemsMap from "@/hook/useItemMap";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 export default function FontChange() {
-  const {
-    allItems,
-    activeID,
-    mainRefs,
-    updateElementDimensions,
-    // fontChangeInProgress,
-    updateElementState,
-    // itemsRefs
-  } = useContext(CcContext);
+  const { allItems, activeID, updateElementDimensionsByFont } =
+    useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
 
@@ -21,52 +14,40 @@ export default function FontChange() {
 
   const fontRef = useRef(activeItem?.fontSize);
 
-  function changeFontSize(value) {
-    if (!activeID || !value) return;
+  // function changeFontSize(value) {
+  //   if (!activeID || !value) return;
 
-    // fontChangeInProgress.current = true;
+  //   const newSize = parseInt(value, 10);
+  //   if (isNaN(newSize)) return;
 
-    const newSize = parseInt(value, 10);
-    if (isNaN(newSize)) return;
+  //   setInitialFontSize(newSize);
+  //   updateElementDimensionsByFont({
+  //     prevFont,
+  //     newSize,
+  //     activeItem,
+  //   });
 
-    setInitialFontSize(newSize);
-    fontRef.current = newSize;
-
-    if (mainRefs.current[activeID]) {
-      mainRefs.current[activeID].style.fontSize = `${newSize}px`;
-
-      mainRefs.current[activeID].style.width = `auto`;
-      mainRefs.current[activeID].style.height = `auto`;
-
-      requestAnimationFrame(() => {
-        let newPosition = updateElementDimensions();
-        updateElementState(newPosition, fontRef.current);
-      });
-    }
-  }
+  //   fontRef.current = newSize;
+  // }
 
   function handleSizeWithClick(dir) {
     if (!activeID) return;
 
-    // fontChangeInProgress.current = true;
-
     setInitialFontSize((prev) => {
       let current = prev + dir;
-      fontRef.current = current;
-
-      if (mainRefs.current[activeID]) {
-        mainRefs.current[activeID].style.fontSize = `${current}px`;
-        mainRefs.current[activeID].style.width = `auto`;
-        mainRefs.current[activeID].style.height = `auto`;
-
-        requestAnimationFrame(() => {
-          let newPosition = updateElementDimensions();
-          updateElementState(newPosition, fontRef.current);
-        });
-      }
-
       return current;
     });
+
+    let prevFont = fontRef.current;
+    let currentFont = prevFont + dir;
+
+    updateElementDimensionsByFont({
+      prevFont,
+      currentFont,
+      activeItem,
+    });
+
+    fontRef.current = currentFont;
   }
 
   // useEffect(() => {
@@ -107,7 +88,8 @@ export default function FontChange() {
       </button>
       <div className="px-3 py-1 flex items-center">
         <input
-          onChange={(e) => changeFontSize(e.target.value)}
+          readOnly
+          // onChange={(e) => changeFontSize(e.target.value)}
           value={initialFontSize}
           className="w-4 outline-none text-sm"
         />

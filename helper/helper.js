@@ -296,16 +296,22 @@ export function getCurvedTextHTML(text = "", curve = 0) {
 }
 
 export function managePosition(
-  { idol, follower, parent, scrollParent },
+  { idol, follower, parent, scrollParent, item },
   withAction = true
 ) {
   if (!idol || !parent) return;
-
+  let dx = 0;
+  let dy = 0;
   const idolRect = idol.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
 
   const targetWidth = idol.offsetWidth;
   const targetHeight = idol.offsetHeight;
+
+  if (item && item.width && item.height) {
+    dx = item.width - targetWidth;
+    dy = item.height - targetHeight;
+  }
 
   const centerX = idolRect.left + idolRect.width / 2;
   const centerY = idolRect.top + idolRect.height / 2;
@@ -313,8 +319,13 @@ export function managePosition(
   const parentLeft = parentRect.left;
   const parentTop = parentRect.top;
 
-  const targetLeft = centerX - parentLeft - targetWidth / 2;
-  const targetTop = centerY - parentTop - targetHeight / 2;
+  let targetLeft = centerX - parentLeft - targetWidth / 2;
+  let targetTop = centerY - parentTop - targetHeight / 2;
+
+  if (item?.textAlign == "center") {
+    targetLeft = targetLeft + dx / 2;
+    // targetTop = targetTop + dy;
+  }
 
   if (scrollParent) {
     requestAnimationFrame(() => {
@@ -328,6 +339,11 @@ export function managePosition(
     follower.style.height = `${targetHeight}px`;
     follower.style.left = `${targetLeft}px`;
     follower.style.top = `${targetTop}px`;
+
+    // idol.parentNode.style.width = `${targetWidth}px`;
+    // idol.parentNode.style.height = `${targetHeight}px`;
+    // idol.parentNode.style.left = `${targetLeft}px`;
+    // idol.parentNode.style.top = `${targetTop}px`;
   }
 
   return {
@@ -348,4 +364,136 @@ export function getImageDimensions(file) {
 
     img.src = URL.createObjectURL(file);
   });
+}
+
+export function findSnapPoints({
+  draggedElement,
+  newX,
+  newY,
+  elements,
+  canvasWidth = 400,
+  canvasHeight = 550,
+}) {
+  const result = {
+    horizontal: null,
+    vertical: null,
+  };
+
+  // Calculate center points
+  const draggedCenterX = newX + draggedElement.width / 2;
+  const draggedCenterY = newY + draggedElement.height / 2;
+
+  // Calculate edge points
+  const draggedRight = newX + draggedElement.width;
+  const draggedBottom = newY + draggedElement.height;
+
+  // Check for alignment with other elements
+  elements.forEach((el) => {
+    if (el.id === draggedElement.id) return; // Skip self
+
+    // Calculate target element's reference points
+    const targetCenterX = el.x + el.width / 2;
+    const targetCenterY = el.y + el.height / 2;
+    const targetRight = el.x + el.width;
+    const targetBottom = el.y + el.height;
+
+    // Horizontal alignment checks
+
+    // Left edge alignment
+    if (Math.abs(newX - el.x) < SNAP_THRESHOLD) {
+      result.horizontal = { snapPosition: el.x, type: "left" };
+    }
+    // Right edge alignment
+    else if (Math.abs(draggedRight - targetRight) < SNAP_THRESHOLD) {
+      result.horizontal = {
+        snapPosition: targetRight - draggedElement.width,
+        type: "right",
+      };
+    }
+    // Center alignment
+    else if (Math.abs(draggedCenterX - targetCenterX) < SNAP_THRESHOLD) {
+      result.horizontal = {
+        snapPosition: targetCenterX - draggedElement.width / 2,
+        type: "center",
+      };
+    }
+    // Left to right alignment
+    else if (Math.abs(newX - targetRight) < SNAP_THRESHOLD) {
+      result.horizontal = { snapPosition: targetRight, type: "edge" };
+    }
+    // Right to left alignment
+    else if (Math.abs(draggedRight - el.x) < SNAP_THRESHOLD) {
+      result.horizontal = {
+        snapPosition: el.x - draggedElement.width,
+        type: "edge",
+      };
+    }
+
+    // Vertical alignment checks
+
+    // Top edge alignment
+    if (Math.abs(newY - el.y) < SNAP_THRESHOLD) {
+      result.vertical = { snapPosition: el.y, type: "top" };
+    }
+    // Bottom edge alignment
+    else if (Math.abs(draggedBottom - targetBottom) < SNAP_THRESHOLD) {
+      result.vertical = {
+        snapPosition: targetBottom - draggedElement.height,
+        type: "bottom",
+      };
+    }
+    // Center alignment
+    else if (Math.abs(draggedCenterY - targetCenterY) < SNAP_THRESHOLD) {
+      result.vertical = {
+        snapPosition: targetCenterY - draggedElement.height / 2,
+        type: "center",
+      };
+    }
+    // Top to bottom alignment
+    else if (Math.abs(newY - targetBottom) < SNAP_THRESHOLD) {
+      result.vertical = { snapPosition: targetBottom, type: "edge" };
+    }
+    // Bottom to top alignment
+    else if (Math.abs(draggedBottom - el.y) < SNAP_THRESHOLD) {
+      result.vertical = {
+        snapPosition: el.y - draggedElement.height,
+        type: "edge",
+      };
+    }
+  });
+
+  const canvasCenterX = canvasWidth / 2;
+  const canvasCenterY = canvasHeight / 2;
+
+  // Canvas horizontal alignments
+  if (Math.abs(newX) < SNAP_THRESHOLD) {
+    result.horizontal = { snapPosition: 0, type: "canvas-left" };
+  } else if (Math.abs(draggedRight - canvasWidth) < SNAP_THRESHOLD) {
+    result.horizontal = {
+      snapPosition: canvasWidth - draggedElement.width,
+      type: "canvas-right",
+    };
+  } else if (Math.abs(draggedCenterX - canvasCenterX) < SNAP_THRESHOLD) {
+    result.horizontal = {
+      snapPosition: canvasCenterX - draggedElement.width / 2,
+      type: "canvas-center",
+    };
+  }
+
+  // Canvas vertical alignments
+  if (Math.abs(newY) < SNAP_THRESHOLD) {
+    result.vertical = { snapPosition: 0, type: "canvas-top" };
+  } else if (Math.abs(draggedBottom - canvasHeight) < SNAP_THRESHOLD) {
+    result.vertical = {
+      snapPosition: canvasHeight - draggedElement.height,
+      type: "canvas-bottom",
+    };
+  } else if (Math.abs(draggedCenterY - canvasCenterY) < SNAP_THRESHOLD) {
+    result.vertical = {
+      snapPosition: canvasCenterY - draggedElement.height / 2,
+      type: "canvas-center",
+    };
+  }
+
+  return result;
 }

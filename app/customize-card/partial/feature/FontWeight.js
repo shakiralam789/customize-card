@@ -31,9 +31,8 @@ export default function FontWeight() {
       mainRefs.current[activeID].style.height = `auto`;
 
       requestAnimationFrame(() => {
-        updateElementDimensions((position) => {
-          updateElementState(position);
-        });
+        let newPosition = updateElementDimensions();
+        updateElementState(newPosition, activeItem?.fontSize);
       });
     }
   }

@@ -103,14 +103,14 @@ export default function Nav() {
               <button
                 onClick={undo}
                 disabled={undoStack.current.length <= 1}
-                className="disabled:opacity-50 flex items-center justify-center rounded-full size-8 hover:bg-gray-200 cursor-pointer"
+                className="disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center rounded-full size-8 hover:bg-gray-200 cursor-pointer"
               >
                 <Undo />
               </button>
               <button
                 onClick={redo}
-                disabled={undoStack.current.length <= 0}
-                className="disabled:opacity-50 flex items-center justify-center rounded-full size-8 hover:bg-gray-200 cursor-pointer"
+                disabled={redoStack.current.length <= 0}
+                className="disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center rounded-full size-8 hover:bg-gray-200 cursor-pointer"
               >
                 <Redo />
               </button>
