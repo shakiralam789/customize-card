@@ -54,16 +54,16 @@ export default function FontFamilyChange() {
   function handleFontFamily(font) {
     if (!activeID) return;
     if (mainRefs.current[activeID]) {
+
       itemsRefs.current[activeID].style.fontFamily = font;
+
       mainRefs.current[activeID].style.width = `auto`;
       mainRefs.current[activeID].style.height = `auto`;
 
-      requestAnimationFrame(() => {
-        let newPosition = updateElementDimensions(activeItem);
-        updateElementState(newPosition, {
-          fontFamily: font,
-          fontSize: activeItem?.fontSize,
-        });
+      let newPosition = updateElementDimensions(activeItem);
+      updateElementState(newPosition, {
+        fontFamily: font,
+        fontSize: activeItem?.fontSize,
       });
     }
   }

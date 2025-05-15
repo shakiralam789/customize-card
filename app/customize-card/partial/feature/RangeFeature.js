@@ -61,7 +61,7 @@ export default function RangeFeature({
         mainRefs.current[activeID].style.height = `auto`;
 
         requestAnimationFrame(() => {
-          positionRef.current = updateElementDimensions();
+          positionRef.current = updateElementDimensions(activeItem);
         });
       }
     }

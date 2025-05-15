@@ -7,32 +7,25 @@ import React, { useContext } from "react";
 export default function FontWeight() {
   const {
     allItems,
-    setAllItems,
     activeID,
     updateElementState,
     updateElementDimensions,
     mainRefs,
+    itemsRefs,
   } = useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
   function changeFontWeight() {
-    setAllItems((prev) =>
-      prev.map((item) =>
-        item.id === activeID
-          ? {
-              ...item,
-              fontWeight: item.fontWeight === "bold" ? "normal" : "bold",
-            }
-          : item
-      )
-    );
     if (mainRefs.current[activeID]) {
+      itemsRefs.current[activeID].style.fontWeight =
+        activeItem.fontWeight === "bold" ? "normal" : "bold";
       mainRefs.current[activeID].style.width = `auto`;
       mainRefs.current[activeID].style.height = `auto`;
 
-      requestAnimationFrame(() => {
-        let newPosition = updateElementDimensions();
-        updateElementState(newPosition, { fontSize: activeItem?.fontSize });
+      let newPosition = updateElementDimensions(activeItem);
+
+      updateElementState(newPosition, {
+        fontWeight: activeItem.fontWeight === "bold" ? "normal" : "bold",
       });
     }
   }

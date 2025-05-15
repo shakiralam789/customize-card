@@ -7,7 +7,7 @@ import React, { useContext } from "react";
 export default function TextTransform() {
   const {
     allItems,
-    setAllItems,
+    itemsRefs,
     activeID,
     mainRefs,
     updateElementState,
@@ -18,24 +18,15 @@ export default function TextTransform() {
   function changeTextTransform(value) {
     if (activeID === null) return;
 
-    setAllItems((prev) =>
-      prev.map((item) =>
-        item.id === activeID
-          ? {
-              ...item,
-              textTransform: item.textTransform === "none" ? value : "none",
-            }
-          : item
-      )
-    );
-
     if (mainRefs.current[activeID]) {
+      itemsRefs.current[activeID].style.textTransform =
+        activeItem.textTransform === "none" ? value : "none";
       mainRefs.current[activeID].style.width = `auto`;
       mainRefs.current[activeID].style.height = `auto`;
 
-      requestAnimationFrame(() => {
-        let newPosition = updateElementDimensions();
-        updateElementState(newPosition, { fontSize: activeItem?.fontSize });
+      let newPosition = updateElementDimensions(activeItem);
+      updateElementState(newPosition, {
+        textTransform: activeItem.textTransform === "none" ? value : "none",
       });
     }
   }
