@@ -148,7 +148,9 @@ export default function useDraggable({
 
       newAngle = (initialRotate.current + angleDiff + 360) % 360;
 
-      newAngle = Math.round(newAngle);
+      console.log(newAngle);
+      
+      newAngle = Math.floor(newAngle);
 
       angleRef.current = newAngle;
     }

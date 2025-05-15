@@ -1,5 +1,6 @@
 import HandleBtn from "@/components/HandleBtn";
 import ResizeCircle from "@/components/ResizeCircle";
+import cn from "@/helper/cn";
 import withDraggable from "@/HOC/withDraggable";
 import { Move, RotateCcw } from "lucide-react";
 import React, { useEffect } from "react";
@@ -91,7 +92,7 @@ const HandlerCom = ({
         }}
         className="absolute top-0 left-0 w-full h-full"
       ></div>
-      {item.active && !item?.locked && (
+      {item.active && !item?.locked ? (
         <>
           <div className="pointer-events-auto absolute -top-3 -translate-y-full left-1/2 -translate-x-1/2 flex gap-1.5 items-center justify-center">
             {dragType == "resize" && isDragging ? null : (
@@ -130,54 +131,88 @@ const HandlerCom = ({
 
           {/* Corner resize handlers */}
 
-          {item.width && item.width && item.height > 60 && (
+          {item.width && item.width && item.height > 60 ? (
             <>
               <ResizeCircle
                 onMouseDown={(e) =>
                   startDrag({ e, type: "resize", dir: tlRotate })
                 }
-                className={`${
-                  isDragging && dragType == "resize" && dir && dir == tlRotate
-                    ? "active"
-                    : ""
-                } pointer-events-auto cursor-nwse-resize size-handler absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2`}
+                className={cn(
+                  "pointer-events-auto cursor-nwse-resize size-handler absolute top-0 left-0 -translate-x-1/2 -translate-y-1/2",
+                  {
+                    active:
+                      isDragging &&
+                      dragType == "resize" &&
+                      dir &&
+                      dir == tlRotate,
+                    hidden:
+                      isDragging &&
+                      dragType == "resize" &&
+                      dir &&
+                      dir != tlRotate,
+                  }
+                )}
               ></ResizeCircle>
 
               <ResizeCircle
                 onMouseDown={(e) =>
                   startDrag({ e, type: "resize", dir: trRotate })
                 }
-                className={`${
-                  isDragging && dragType == "resize" && dir && dir == trRotate
-                    ? "active"
-                    : ""
-                } pointer-events-auto cursor-nesw-resize size-handler absolute top-0 right-0 translate-x-1/2 -translate-y-1/2`}
+                className={cn(
+                  "pointer-events-auto cursor-nesw-resize size-handler absolute top-0 right-0 translate-x-1/2 -translate-y-1/2",
+                  {
+                    active:
+                      isDragging &&
+                      dragType == "resize" &&
+                      dir &&
+                      dir == trRotate,
+                    hidden:
+                      isDragging &&
+                      dragType == "resize" &&
+                      dir &&
+                      dir != trRotate,
+                  }
+                )}
               ></ResizeCircle>
             </>
-          )}
-          {item?.width > 60 && (
+          ) : null}
+          {item?.width > 60 ? (
             <ResizeCircle
               onMouseDown={(e) =>
                 startDrag({ e, type: "resize", dir: blRotate })
               }
-              className={`${
-                isDragging && dragType == "resize" && dir && dir == blRotate
-                  ? "active"
-                  : ""
-              } pointer-events-auto cursor-nesw-resize size-handler absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2`}
+              className={cn(
+                "pointer-events-auto cursor-nesw-resize size-handler absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2",
+                {
+                  active:
+                    isDragging &&
+                    dragType == "resize" &&
+                    dir &&
+                    dir == blRotate,
+                  hidden:
+                    isDragging &&
+                    dragType == "resize" &&
+                    dir &&
+                    dir != blRotate,
+                }
+              )}
             ></ResizeCircle>
-          )}
+          ) : null}
 
           <ResizeCircle
             onMouseDown={(e) => startDrag({ e, type: "resize", dir: brRotate })}
-            className={`${
-              isDragging && dragType == "resize" && dir && dir == brRotate
-                ? "active"
-                : ""
-            } pointer-events-auto cursor-nwse-resize size-handler absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2`}
+            className={cn(
+              "pointer-events-auto cursor-nwse-resize size-handler absolute bottom-0 right-0 translate-x-1/2 translate-y-1/2",
+              {
+                active:
+                  isDragging && dragType == "resize" && dir && dir == brRotate,
+                hidden:
+                  isDragging && dragType == "resize" && dir && dir != brRotate,
+              }
+            )}
           ></ResizeCircle>
         </>
-      )}
+      ) : null}
     </div>
   );
 };

@@ -51,7 +51,7 @@ export default function MainContentCom({
           }}
           contentEditable={item.contentEditable}
           suppressContentEditableWarning
-          className={`focus:outline-none whitespace-nowrap carent-color editable-div`}
+          className={`px-1 focus:outline-none whitespace-nowrap carent-color editable-div`}
           style={{
             textAlign: `${item?.textAlign || defText.textAlign}`,
             color: `${item?.color || defText.color}`,
@@ -65,6 +65,7 @@ export default function MainContentCom({
             letterSpacing: `${item?.letterSpacing || defText.letterSpacing}em`,
             textTransform: `${item?.textTransform || defText.textTransform}`,
             fontFamily: getFontFamily(item?.fontFamily || defText.fontFamily),
+            caretColor: item?.color || defText.color,
           }}
           onInput={(e) => {
             handleContentChange({ e });

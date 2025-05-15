@@ -7,7 +7,7 @@ export default function RotateShape() {
       propertyName="rotate"
       title="Rotate"
       min={0}
-      max={360}
+      max={359}
       step={1}
       defValue={0}
       unit="deg"

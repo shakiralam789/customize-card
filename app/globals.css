@@ -51,11 +51,9 @@ body.resizing {
 .movable-handle {
   cursor: pointer;
   outline: 2px solid transparent;
-  caret-color: #1BC47D
 }
 
 .editable-div{
-  caret-color: #1BC47D;
   white-space:pre;
 }
 

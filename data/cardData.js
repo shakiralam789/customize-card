@@ -26,7 +26,7 @@ const cardData = [
           rotate: "0",
           zIndex: 10,
           fontFamily: "Times New Roman",
-          width: 160,
+          width: 168,
           height: 40,
         },
         {
@@ -53,7 +53,7 @@ const cardData = [
           rotate: 359,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 170,
+          width: 178,
           height: 54,
         },
         {
@@ -80,7 +80,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 205,
+          width: 213,
           height: 54,
         },
         {
@@ -107,7 +107,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 181,
+          width: 189,
           height: 83,
         },
         {
@@ -164,7 +164,7 @@ const cardData = [
           zIndex: 10,
           fontFamily: "Times New Roman",
           textCurve: 0,
-          width: 159,
+          width: 157,
           height: 18,
         },
         {
@@ -191,7 +191,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 170,
+          width: 178,
           height: 65,
         },
         {
@@ -218,7 +218,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 205,
+          width: 2013,
           height: 68,
         },
         {
@@ -245,7 +245,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 181,
+          width: 189,
           height: 79,
         },
         {
@@ -272,7 +272,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Dancing Script",
-          width: 29,
+          width: 37,
           height: 27,
         },
       ],
@@ -310,7 +310,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 186,
+          width: 194,
           height: 121,
         },
         {
@@ -337,7 +337,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 107,
+          width: 115,
           height: 28,
         },
         {
@@ -364,9 +364,9 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 266,
+          width: 274,
           height: 33,
-          textAlign: "left",
+          textAlign: "center",
         },
         {
           id: "baabeac7-ad23-46a7-802c-4fca4793e900",
@@ -392,7 +392,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 129,
+          width: 137,
           height: 20,
         },
         {
@@ -419,7 +419,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 208,
+          width: 216,
           height: 41,
         },
       ],

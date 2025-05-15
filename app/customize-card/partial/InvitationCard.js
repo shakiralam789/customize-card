@@ -160,13 +160,13 @@ export default function InvitationCard(props) {
         item: activeItem || {},
       });
 
-      // Now update state with debounce
+      let innerHTML = e.target.innerHTML == "<br>" ? "" : e.target.innerHTML;
+
       debouncedSetAllItems((prev) => {
         return prev.map((s) => {
-          // console.log(s.text,s.name);
           return {
             ...s,
-            text: s.id === activeID ? e.target.innerHTML || "" : s.text || "",
+            text: s.id === activeID ? innerHTML : s.text,
             width: s.id === activeID ? width : s.width,
             height: s.id === activeID ? height : s.height,
             position: s.id === activeID ? { x: left, y: top } : s.position,
