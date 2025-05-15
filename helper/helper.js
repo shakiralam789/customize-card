@@ -300,50 +300,53 @@ export function managePosition(
   withAction = true
 ) {
   if (!idol || !parent) return;
-  let dx = 0;
-  let dy = 0;
+
   const idolRect = idol.getBoundingClientRect();
   const parentRect = parent.getBoundingClientRect();
+
+  const parentLeft = parentRect.left;
+  const parentTop = parentRect.left;
+  const parentCenterX = parentRect.width / 2;
+  const parentCenterY = parentRect.height / 2;
 
   const targetWidth = idol.offsetWidth;
   const targetHeight = idol.offsetHeight;
 
-  if (item && item.width && item.height) {
-    dx = item.width - targetWidth;
-    dy = item.height - targetHeight;
-  }
+  const idolX = idolRect.left - parentLeft;
+  const idolY = idolRect.top - parentTop;
 
-  const centerX = idolRect.left + idolRect.width / 2;
-  const centerY = idolRect.top + idolRect.height / 2;
+  const idolCenterX = idolX + targetWidth / 2;
+  const idolCenterY = idolY + targetHeight / 2;
 
-  const parentLeft = parentRect.left;
-  const parentTop = parentRect.top;
+  let prevWidth = item.width;
+  let prevHeight = item.height;
 
-  let targetLeft = centerX - parentLeft - targetWidth / 2;
-  let targetTop = centerY - parentTop - targetHeight / 2;
+  let dx = targetWidth - prevWidth;
+  let dy = targetHeight - prevHeight;
 
-  if (item?.textAlign == "center") {
-    targetLeft = targetLeft + dx / 2;
-    // targetTop = targetTop + dy;
+  let targetLeft = item?.position?.x;
+
+  let targetTop = item?.position?.y;
+
+  if (item.textAlign == "center") {
+    targetLeft = targetLeft - dx / 2;
+  } else if (item?.textAlign == "right") {
+    targetLeft = targetLeft - dx;
   }
 
   if (scrollParent) {
-    requestAnimationFrame(() => {
-      scrollParent.scrollLeft = 0;
-      scrollParent.scrollTop = 0;
-    });
+    scrollParent.scrollLeft = 0;
+    scrollParent.scrollTop = 0;
   }
 
   if (follower && withAction) {
     follower.style.width = `${targetWidth}px`;
     follower.style.height = `${targetHeight}px`;
     follower.style.left = `${targetLeft}px`;
-    follower.style.top = `${targetTop}px`;
 
-    // idol.parentNode.style.width = `${targetWidth}px`;
-    // idol.parentNode.style.height = `${targetHeight}px`;
-    // idol.parentNode.style.left = `${targetLeft}px`;
-    // idol.parentNode.style.top = `${targetTop}px`;
+    if (idol) {
+      idol.parentElement.style.left = `${targetLeft}px`;
+    }
   }
 
   return {

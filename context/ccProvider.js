@@ -85,7 +85,6 @@ const CcProvider = ({ children }) => {
       }
     };
   }, []);
-
   function addNewItem(newData) {
     const id = uuid4();
     setAllItems((prevItems) => {
@@ -450,6 +449,7 @@ const CcProvider = ({ children }) => {
         fontsLoaded,
         debouncedSetAllItems,
         updateElementDimensionsByFont,
+        debounceTimerRef,
       }}
     >
       {children}

@@ -366,6 +366,7 @@ const cardData = [
           fontFamily: "Times New Roman",
           width: 266,
           height: 33,
+          textAlign: "center",
         },
         {
           id: "baabeac7-ad23-46a7-802c-4fca4793e900",

@@ -1,8 +1,9 @@
 "use client";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { getCurvedTextHTML, managePosition } from "@/helper/helper";
 import MainContentCom from "./MainContentCom";
 import HandlerCom from "./HandlerCom";
+import useItemsMap from "@/hook/useItemMap";
 
 export default function InvitationCard(props) {
   let contextProps = props.contextProps;
@@ -20,7 +21,11 @@ export default function InvitationCard(props) {
     mainRefs,
     scrollRef,
     debouncedSetAllItems,
+    debounceTimerRef,
   } = contextProps;
+
+  const itemsMap = useItemsMap(allItems);
+  const activeItem = itemsMap.get(activeID);
 
   function handlePrevItem(crrItem) {
     let position;
@@ -132,7 +137,7 @@ export default function InvitationCard(props) {
     }
   };
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const handleClickOutside = (e) => {
       if (e.target.closest(".prevent-customize-card-blur") || activeID == null)
         return;
@@ -165,22 +170,32 @@ export default function InvitationCard(props) {
     if (!activeID) return;
     let currentHandler = handlerRefs.current[activeID];
     let currentElement = itemsRefs.current[activeID];
+    let currentMain = mainRefs.current[activeID];
     const parent = parentRef.current;
 
-    let { width, height } = managePosition({
-      idol: currentElement,
-      follower: currentHandler,
-      parent,
-      scrollParent: scrollRef.current,
-    });
+    // First, update the content size
+    currentMain.style.width = `auto`;
+    currentMain.style.height = `auto`;
 
-    debouncedSetAllItems((prev) => {
-      return prev.map((s) => ({
-        ...s,
-        text: s.id === activeID ? e.target.innerHTML : s.text,
-        width: s.id === activeID ? width : s.width,
-        height: s.id === activeID ? height : s.height,
-      }));
+    requestAnimationFrame(() => {
+      const { width, height, left, top } = managePosition({
+        idol: currentElement,
+        follower: currentHandler,
+        parent,
+        scrollParent: scrollRef.current,
+        item: activeItem || {},
+      });
+
+      // Now update state with debounce
+      debouncedSetAllItems((prev) => {
+        return prev.map((s) => ({
+          ...s,
+          text: s.id === activeID ? e.target.innerHTML : s.text,
+          width: s.id === activeID ? width : s.width,
+          height: s.id === activeID ? height : s.height,
+          position: s.id === activeID ? { x: left, y: top } : s.position,
+        }));
+      });
     });
   }
 
