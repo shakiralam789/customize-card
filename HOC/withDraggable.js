@@ -74,13 +74,11 @@ export default function withDraggable(Component) {
 
         if (data?.type !== "move") {
           if (data?.type === "resize") {
-            // Store exact values without rounding
             const newWidth = initialWidth * data?.scale;
             const newHeight = initialHeight * data?.scale;
             const newFontSize =
               item?.itemType === "text" ? initialFontSize * data?.scale : null;
 
-            // Update the current values with precise calculations
             currentValues.current.width = newWidth;
             currentValues.current.height = newHeight;
             currentValues.current.fontSize = newFontSize;
@@ -88,7 +86,6 @@ export default function withDraggable(Component) {
             requestAnimationFrame(() => {
               if (!follower && !handler) return;
 
-              // Apply the same exact values to both elements
               [follower, handler].forEach((el) => {
                 if (!el) return;
 
@@ -96,7 +93,6 @@ export default function withDraggable(Component) {
                   el.style.fontSize = `${newFontSize}px`;
                 }
 
-                // Use explicit pixel dimensions during resize
                 el.style.width = `${newWidth}px`;
                 el.style.height = `${newHeight}px`;
                 el.style.left = `${data.position.x}px`;
@@ -116,7 +112,6 @@ export default function withDraggable(Component) {
             });
           }
         } else {
-          // For move operations
           requestAnimationFrame(() => {
             if (follower) {
               follower.style.left = `${data.position.x}px`;

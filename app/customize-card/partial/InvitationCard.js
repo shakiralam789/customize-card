@@ -28,37 +28,11 @@ export default function InvitationCard(props) {
   const activeItem = itemsMap.get(activeID);
 
   function handlePrevItem(crrItem) {
-    let position;
-
-    // if (activeID) {
-    //   let prevHandler = handlerRefs.current[activeID];
-    //   const parent = parentRef.current;
-    //   position = managePosition({ idol: prevHandler, parent }, false);
-    // }
-
     setAllItems((prevItems) => {
       const newItems = prevItems.map((s) => {
         const updated = {
           ...s,
           active: s.id === crrItem?.id,
-          // position: {
-          //   x:
-          //     s.id == activeID && s.itemType === "text" && position
-          //       ? position?.left
-          //       : s.position.x,
-          //   y:
-          //     s.id == activeID && s.itemType === "text" && position
-          //       ? position?.top
-          //       : s.position.y,
-          // },
-          // width:
-          //   s.id == activeID && s.itemType === "text" && position
-          //     ? position?.width
-          //     : s.width || "auto",
-          // height:
-          //   s.id == activeID && s.itemType === "text" && position
-          //     ? position?.height
-          //     : s.height || "auto",
         };
 
         if (s.itemType === "text") {
@@ -188,13 +162,16 @@ export default function InvitationCard(props) {
 
       // Now update state with debounce
       debouncedSetAllItems((prev) => {
-        return prev.map((s) => ({
-          ...s,
-          text: s.id === activeID ? e.target.innerHTML : s.text,
-          width: s.id === activeID ? width : s.width,
-          height: s.id === activeID ? height : s.height,
-          position: s.id === activeID ? { x: left, y: top } : s.position,
-        }));
+        return prev.map((s) => {
+          // console.log(s.text,s.name);
+          return {
+            ...s,
+            text: s.id === activeID ? e.target.innerHTML || "" : s.text || "",
+            width: s.id === activeID ? width : s.width,
+            height: s.id === activeID ? height : s.height,
+            position: s.id === activeID ? { x: left, y: top } : s.position,
+          };
+        });
       });
     });
   }

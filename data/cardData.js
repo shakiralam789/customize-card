@@ -342,7 +342,7 @@ const cardData = [
         },
         {
           id: "df4a0e4f-8da3-4e6c-b389-ed06701fb2ae",
-          name: "Text",
+          name: "winano",
           itemType: "text",
           text: "winano james",
           active: false,
@@ -366,7 +366,7 @@ const cardData = [
           fontFamily: "Times New Roman",
           width: 266,
           height: 33,
-          textAlign: "center",
+          textAlign: "left",
         },
         {
           id: "baabeac7-ad23-46a7-802c-4fca4793e900",

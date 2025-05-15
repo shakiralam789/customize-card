@@ -236,7 +236,7 @@ const CcProvider = ({ children }) => {
     return position;
   }
 
-  function updateElementState(position, fontSize) {
+  function updateElementState(position, rest = {}) {
     setAllItems((prevItems) =>
       prevItems.map((item) =>
         item.id === activeID
@@ -245,7 +245,7 @@ const CcProvider = ({ children }) => {
               width: position.width,
               height: position.height,
               position: { y: position.top, x: position.left },
-              fontSize: fontSize || item.fontSize,
+              ...rest,
             }
           : item
       )
@@ -260,12 +260,12 @@ const CcProvider = ({ children }) => {
     let fontIncrement = currentFont / prevFont;
     let width = activeItem.width * fontIncrement;
     let height = activeItem.height * fontIncrement;
+    let dw = 0;
+    dw = activeItem.width - width;
 
-    let dw = activeItem.width - width;
-
-    if (activeItem.textAlign == "center") {
+    if (activeItem && activeItem.textAlign == "center") {
       activeItem.position.x += dw / 2;
-    } else if (activeItem.textAlign == "right") {
+    } else if (activeItem && activeItem.textAlign == "right") {
       activeItem.position.x += dw;
     }
 

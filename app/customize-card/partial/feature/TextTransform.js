@@ -35,7 +35,7 @@ export default function TextTransform() {
 
       requestAnimationFrame(() => {
         let newPosition = updateElementDimensions();
-        updateElementState(newPosition, activeItem?.fontSize);
+        updateElementState(newPosition, { fontSize: activeItem?.fontSize });
       });
     }
   }

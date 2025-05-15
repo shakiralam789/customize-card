@@ -50,13 +50,6 @@ export default function FontChange() {
     fontRef.current = currentFont;
   }
 
-  // useEffect(() => {
-  //   if (!activeID || fontChangeInProgress.current) return;
-  //   updateElementDimensions((position) => {
-  //     updateElementState(position, fontRef.current);
-  //   });
-  // }, [initialFontSize]);
-
   useEffect(() => {
     if (activeItem?.fontSize) {
       setInitialFontSize(activeItem.fontSize);

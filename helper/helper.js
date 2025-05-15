@@ -300,23 +300,10 @@ export function managePosition(
   withAction = true
 ) {
   if (!idol || !parent) return;
-
-  const idolRect = idol.getBoundingClientRect();
-  const parentRect = parent.getBoundingClientRect();
-
-  const parentLeft = parentRect.left;
-  const parentTop = parentRect.left;
-  const parentCenterX = parentRect.width / 2;
-  const parentCenterY = parentRect.height / 2;
+  const rotate = item?.rotate || 0;
 
   const targetWidth = idol.offsetWidth;
   const targetHeight = idol.offsetHeight;
-
-  const idolX = idolRect.left - parentLeft;
-  const idolY = idolRect.top - parentTop;
-
-  const idolCenterX = idolX + targetWidth / 2;
-  const idolCenterY = idolY + targetHeight / 2;
 
   let prevWidth = item.width;
   let prevHeight = item.height;
@@ -325,13 +312,14 @@ export function managePosition(
   let dy = targetHeight - prevHeight;
 
   let targetLeft = item?.position?.x;
-
   let targetTop = item?.position?.y;
 
   if (item.textAlign == "center") {
     targetLeft = targetLeft - dx / 2;
+    targetTop = targetTop - dy / 2;
   } else if (item?.textAlign == "right") {
     targetLeft = targetLeft - dx;
+    targetTop = targetTop - dy;
   }
 
   if (scrollParent) {
@@ -343,9 +331,12 @@ export function managePosition(
     follower.style.width = `${targetWidth}px`;
     follower.style.height = `${targetHeight}px`;
     follower.style.left = `${targetLeft}px`;
+    follower.style.top = `${targetTop}px`;
 
     if (idol) {
       idol.parentElement.style.left = `${targetLeft}px`;
+      idol.parentElement.style.top = `${targetTop}px`;
+
     }
   }
 
@@ -354,6 +345,7 @@ export function managePosition(
     height: targetHeight,
     left: targetLeft,
     top: targetTop,
+    rotate: rotate,
   };
 }
 

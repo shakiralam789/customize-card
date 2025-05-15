@@ -32,7 +32,7 @@ export default function FontWeight() {
 
       requestAnimationFrame(() => {
         let newPosition = updateElementDimensions();
-        updateElementState(newPosition, activeItem?.fontSize);
+        updateElementState(newPosition, { fontSize: activeItem?.fontSize });
       });
     }
   }

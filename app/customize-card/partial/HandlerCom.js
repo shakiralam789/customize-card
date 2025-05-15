@@ -98,7 +98,7 @@ const HandlerCom = ({
               <>
                 <HandleBtn
                   onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-                  className={`cursor-alias ${
+                  className={`cursor-alias relative ${
                     isDragging && dragType == "rotate" ? "active" : ""
                   }`}
                 >
@@ -108,7 +108,7 @@ const HandlerCom = ({
                       style={{
                         transform: `rotate(-${angle}deg)`,
                       }}
-                      className="text-white text-xs font-medium rounded-md bg-opacity-80 bg-black px-2 py-1 absolute top-[-50px] left-[50px] -translate-x-1/2"
+                      className="text-white text-xs font-medium rounded-md bg-opacity-80 bg-black px-2 py-1 absolute top-[-50px] left-1/2 -translate-x-1/2"
                     >
                       {angle}&deg;
                     </div>

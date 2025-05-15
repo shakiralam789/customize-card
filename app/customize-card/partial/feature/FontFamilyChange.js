@@ -9,12 +9,12 @@ import React, { useContext, useEffect, useState } from "react";
 export default function FontFamilyChange() {
   const {
     allItems,
-    setAllItems,
     activeID,
     mainRefs,
     updateElementDimensions,
     updateElementState,
-    fontsLoaded
+    itemsRefs,
+    fontsLoaded,
   } = useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
@@ -53,18 +53,17 @@ export default function FontFamilyChange() {
 
   function handleFontFamily(font) {
     if (!activeID) return;
-    setAllItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === activeID ? { ...item, fontFamily: font } : item
-      )
-    );
     if (mainRefs.current[activeID]) {
+      itemsRefs.current[activeID].style.fontFamily = font;
       mainRefs.current[activeID].style.width = `auto`;
       mainRefs.current[activeID].style.height = `auto`;
 
       requestAnimationFrame(() => {
-        let newPosition = updateElementDimensions();
-        updateElementState(newPosition, activeItem?.fontSize);
+        let newPosition = updateElementDimensions(activeItem);
+        updateElementState(newPosition, {
+          fontFamily: font,
+          fontSize: activeItem?.fontSize,
+        });
       });
     }
   }
@@ -83,7 +82,7 @@ export default function FontFamilyChange() {
           >
             <span
               style={{
-                fontFamily: getFontFamily(activeItem?.fontFamily),
+                fontFamily: getFontFamily(activeItem),
                 opacity: fontsLoaded ? 1 : 0,
               }}
             >

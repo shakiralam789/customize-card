@@ -26,6 +26,7 @@ export default function useDraggable({
   const initialWidth = useRef(null);
   const initialHeight = useRef(null);
   const initialFontSize = useRef(null);
+  const initialRotate = useRef(rotate || 0);
 
   const startDrag = useCallback(
     ({ e, type, dir }) => {
@@ -40,6 +41,7 @@ export default function useDraggable({
       initialFontSize.current = element.offsetHeight;
       initialWidth.current = element.offsetWidth;
       initialHeight.current = element.offsetHeight;
+      initialRotate.current = angleRef.current;
 
       setType(type || null);
       setDir(dir || null);
@@ -67,7 +69,8 @@ export default function useDraggable({
 
     let newPos = { ...positionRef.current };
     let newScale = 1;
-    let newAngle = 0;
+    
+    let newAngle = initialRotate.current;
 
     if (type === "move") {
       const dx = (e.clientX - startMousePos.x) / zoomLevel;
@@ -121,9 +124,6 @@ export default function useDraggable({
       const dy = e.clientY - centerY;
       newAngle =
         Math.round((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
-      if(newAngle ){
-
-      }
       angleRef.current = newAngle;
     }
 
