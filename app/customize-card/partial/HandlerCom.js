@@ -98,21 +98,23 @@ const HandlerCom = ({
               <>
                 <HandleBtn
                   onMouseDown={(e) => startDrag({ e, type: "rotate" })}
-                  className={`cursor-alias relative ${
+                  className={`group/handle cursor-alias relative ${
                     isDragging && dragType == "rotate" ? "active" : ""
                   }`}
                 >
                   <RotateCcw />
-                  {isDragging && dragType == "rotate" && (
-                    <div
-                      style={{
-                        transform: `rotate(-${angle}deg)`,
-                      }}
-                      className="text-white text-xs font-medium rounded-md bg-opacity-80 bg-black px-2 py-1 absolute top-[-50px] left-1/2 -translate-x-1/2"
-                    >
-                      {angle}&deg;
-                    </div>
-                  )}
+                  <div
+                    style={{
+                      transform: `rotate(-${angle}deg)`,
+                    }}
+                    className={`${
+                      isDragging && dragType == "rotate"
+                        ? "opacity-100"
+                        : "group-hover/handle:opacity-100 opacity-0"
+                    } text-white text-xs pointer-events-none font-medium rounded-md bg-opacity-80 bg-black px-2 py-1 absolute top-[-50px] left-1/2 -translate-x-1/2`}
+                  >
+                    {angle}&deg;
+                  </div>
                 </HandleBtn>
                 <HandleBtn
                   onMouseDown={(e) => startDrag({ e, type: "move" })}

@@ -23,8 +23,63 @@ export default function DrawerContent() {
     },
     {
       id: uuid4(),
-      src: "/images/stickers/and.png",
-      alt: "and",
+      src: "/images/stickers/heart.png",
+      alt: "heart",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/heart-light.png",
+      alt: "heart light",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/fireworks.png",
+      alt: "fire-worksht",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/light-luminous.png",
+      alt: "light-luminous",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/light-halo-special.png",
+      alt: "light-halo-special",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/speech-balloon.png",
+      alt: "speech-balloon",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/light-fantasy.png",
+      alt: "light-fantasy",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/explosion-color.png",
+      alt: "explosion-color",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/lion-leopard.png",
+      alt: "lion-leopard.png",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/earth-travel.png",
+      alt: "earth-travel",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/package-tour.png",
+      alt: "package-tour",
+    },
+    {
+      id: uuid4(),
+      src: "/images/stickers/astronaut-spacecraft.png",
+      alt: "astronaut-spacecraft",
     },
   ];
 
@@ -48,10 +103,10 @@ export default function DrawerContent() {
                 };
               }}
               key={item.id}
-              className="w-full shadow hover:shadow-xl"
+              className="w-full aspect-square hover:shadow"
             >
               <Image
-                className="w-full object-contain cursor-pointer"
+                className="w-full h-full object-contain cursor-pointer"
                 src={item.src}
                 alt={item.alt}
                 width={100}

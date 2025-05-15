@@ -26,6 +26,8 @@ export default function useDraggable({
   const initialWidth = useRef(null);
   const initialHeight = useRef(null);
   const initialFontSize = useRef(null);
+
+  const startMouseAngleRef = useRef(0);
   const initialRotate = useRef(rotate || 0);
 
   const startDrag = useCallback(
@@ -41,7 +43,6 @@ export default function useDraggable({
       initialFontSize.current = element.offsetHeight;
       initialWidth.current = element.offsetWidth;
       initialHeight.current = element.offsetHeight;
-      initialRotate.current = angleRef.current;
 
       setType(type || null);
       setDir(dir || null);
@@ -50,6 +51,19 @@ export default function useDraggable({
 
       setStartElementPos(initialPosition);
       positionRef.current = initialPosition;
+
+      if (type === "rotate") {
+        const rect = element.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const dx = e.clientX - centerX;
+        const dy = e.clientY - centerY;
+
+        const mouseAngle = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
+        startMouseAngleRef.current = (mouseAngle + 360) % 360;
+
+        initialRotate.current = angleRef.current;
+      }
 
       onDragStart?.({ e, position: initialPosition, type, element });
     },
@@ -69,8 +83,8 @@ export default function useDraggable({
 
     let newPos = { ...positionRef.current };
     let newScale = 1;
-    
-    let newAngle = initialRotate.current;
+
+    let newAngle;
 
     if (type === "move") {
       const dx = (e.clientX - startMousePos.x) / zoomLevel;
@@ -106,7 +120,7 @@ export default function useDraggable({
         (item?.itemType == "text" && item?.textAlign != "center")
       ) {
         if (dir === "tl" || dir === "bl") {
-          newPos.x = startElementPos.x - deltaWidth; // ok for shape
+          newPos.x = startElementPos.x - deltaWidth;
         } else if (dir === "tr" || dir === "br") {
           newPos.x = startElementPos.x;
         }
@@ -122,8 +136,20 @@ export default function useDraggable({
       const centerY = rect.top + height / 2;
       const dx = e.clientX - centerX;
       const dy = e.clientY - centerY;
-      newAngle =
-        Math.round((Math.atan2(dy, dx) * 180) / Math.PI + 90 + 360) % 360;
+
+      // Calculate the current mouse angle
+      const mouseAngle = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
+      const currentMouseAngle = (mouseAngle + 360) % 360;
+
+      let angleDiff = currentMouseAngle - startMouseAngleRef.current;
+
+      if (angleDiff > 180) angleDiff -= 360;
+      if (angleDiff < -180) angleDiff += 360;
+
+      newAngle = (initialRotate.current + angleDiff + 360) % 360;
+
+      newAngle = Math.round(newAngle);
+
       angleRef.current = newAngle;
     }
 
@@ -208,6 +234,6 @@ export default function useDraggable({
     position,
     isDragging,
     startDrag,
-    dir
+    dir,
   };
 }
