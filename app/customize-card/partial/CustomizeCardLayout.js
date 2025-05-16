@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Head from "next/head";
 import Nav from "./Nav";
 import EditPanelBar from "./EditorPanel/EditPanelBar";
+import ElementEditDrawer from "./EditorPanel/elementEdit/ElementEditDrawer";
 
 export default function CustomizeCardLayout({ zoom, setZoom, children }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -67,7 +68,7 @@ export default function CustomizeCardLayout({ zoom, setZoom, children }) {
     setZoom(100);
     setPosition({ x: 0, y: 0 });
   };
- 
+
   return (
     <div className="overflow-hidden h-screen">
       <Head>
@@ -86,6 +87,7 @@ export default function CustomizeCardLayout({ zoom, setZoom, children }) {
       {/* Top Navigation Bar */}
       <Nav />
       <EditPanelBar />
+      <ElementEditDrawer />
       {/* Main Content Area */}
       <div>
         <div

@@ -15,7 +15,7 @@ export default function EditorPanelIcon({
         className
       )}
     >
-      {children}
+      <div className="size-5 mb-1">{children}</div>
       <span>{title}</span>
     </div>
   );

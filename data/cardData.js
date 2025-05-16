@@ -218,7 +218,7 @@ const cardData = [
           rotate: 0,
           isPlaceholder: false,
           fontFamily: "Times New Roman",
-          width: 2013,
+          width: 213,
           height: 68,
         },
         {

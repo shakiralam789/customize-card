@@ -137,7 +137,6 @@ export default function useDraggable({
       const dx = e.clientX - centerX;
       const dy = e.clientY - centerY;
 
-      // Calculate the current mouse angle
       const mouseAngle = (Math.atan2(dy, dx) * 180) / Math.PI + 90;
       const currentMouseAngle = (mouseAngle + 360) % 360;
 
@@ -148,8 +147,6 @@ export default function useDraggable({
 
       newAngle = (initialRotate.current + angleDiff + 360) % 360;
 
-      console.log(newAngle);
-      
       newAngle = Math.floor(newAngle);
 
       angleRef.current = newAngle;

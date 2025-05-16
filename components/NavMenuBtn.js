@@ -9,7 +9,7 @@ export default function NavMenuBtn({
   return (
     <button
       {...props}
-      className="cursor-pointer px-2 py-1 gap-1 flex items-center text-gray-700 font-semibold hover:bg-gray-100 rounded"
+      className="cursor-pointer text-sm px-2 py-1 gap-1 flex items-center text-gray-700 font-semibold hover:bg-gray-100 rounded"
     >
       {children}
       {label}

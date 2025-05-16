@@ -1,13 +1,9 @@
-import React, { useContext, useRef } from "react";
-import { ImageIcon } from "lucide-react";
+import React, { useRef } from "react";
+import { UploadIcon } from "lucide-react";
 import uuid4 from "uuid4";
-import NavMenuBtn from "@/components/NavMenuBtn";
-import CcContext from "@/context/ccContext";
 import { getImageDimensions } from "@/helper/helper";
 
-export default function UploadImage() {
-  const { addNewSticker } = useContext(CcContext);
-
+export default function UploadImage({ addNewSticker }) {
   const fileInputRef = useRef(null);
 
   const handleClick = () => {
@@ -54,7 +50,7 @@ export default function UploadImage() {
   };
 
   return (
-    <>
+    <div className="absolute bottom-4 left-0 right-0 w-full bg-white px-4">
       <input
         type="file"
         accept="image/*"
@@ -62,9 +58,14 @@ export default function UploadImage() {
         ref={fileInputRef}
         onChange={handleFileChange}
       />
-      <NavMenuBtn label="Image" onClick={handleClick}>
-        <ImageIcon className="size-5" />
-      </NavMenuBtn>
-    </>
+      <button
+        className="w-full px-3 text-sm font-semibold py-1.5 mt-4 duration-300 bg-primary hover:bg-primary text-white rounded-md flex items-center justify-center gap-2"
+        label={"Upload Image"}
+        onClick={handleClick}
+      >
+        <UploadIcon className="shrink-0 size-4" />
+        <span>Upload Image</span>
+      </button>
+    </div>
   );
 }

@@ -3,19 +3,18 @@ import { useState } from "react";
 import EditorPanelIcon from "../../Icon";
 import LayerPanel from "./LayerPanel";
 
-export default function Layer() {
-  const [show, setOpen] = useState(false);
+export default function Layer({ isOpen, setOpen }) {
   return (
     <>
       <EditorPanelIcon
-        className={show ? "active" : ""}
-        onClick={() => setOpen(true)}
+        className={(isOpen == "layers" ? "active" : "")}
+        onClick={() => setOpen("layers")}
         title="Layers"
       >
-        <Layers />
+        <Layers className="w-full h-full" />
       </EditorPanelIcon>
-      
-      <LayerPanel show={show} onClose={() => setOpen(false)} />
+
+      <LayerPanel show={isOpen} onClose={() => setOpen("")} />
     </>
   );
 }

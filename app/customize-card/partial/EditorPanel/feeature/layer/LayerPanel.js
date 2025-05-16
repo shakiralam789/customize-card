@@ -18,18 +18,11 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { motion } from "framer-motion";
 import CcContext from "@/context/ccContext";
-import {
-  Check,
-  Eye,
-  EyeClosed,
-  GripVertical,
-  LockIcon,
-  LockOpen,
-} from "lucide-react";
+import { Eye, EyeClosed, GripVertical, LockIcon, LockOpen } from "lucide-react";
 
 export default function LayerPanel({ show, onClose }) {
   return (
-    <PanelDrawer title={"Layer"} show={show} onClose={onClose}>
+    <PanelDrawer title={"Layer"} show={show == "layers"} onClose={onClose}>
       <DraggableList />
     </PanelDrawer>
   );
@@ -115,7 +108,7 @@ const SortableItem = ({ item, index, activeID }) => {
         onClick={handleCheck}
         className={`${
           item?.id === activeID ? "active" : ""
-        } cursor-pointer flex-1 flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-emerald-50 hover:bg-emerald-50 border border-gray-200 rounded-md p-2 pl-1`}
+        } cursor-pointer flex-1 flex items-center gap-2 text-gray-600 bg-white text-xs [&.active]:border-gray-300 [&.active]:bg-primary/10 hover:bg-primary/10 border border-gray-200 rounded-md p-2 pl-1`}
       >
         <GripVertical
           {...attributes}
@@ -203,7 +196,7 @@ function DraggableList() {
       return newOrder;
     });
   };
-  
+
   return (
     <DndContext
       sensors={sensors}

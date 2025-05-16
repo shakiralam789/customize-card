@@ -9,7 +9,7 @@ export default function IconBtn({
   ...props
 }) {
   const baseClass =
-    "size-7 *:size-5 [&.active]:bg-emerald-400 [&.active]:text-white flex items-center justify-center rounded-md hover:bg-gray-100";
+    "text-secondary-text border border-light-gray size-7 *:size-4 [&.active]:bg-primary [&.active]:text-white flex items-center justify-center rounded-md bg-very-light-gray hover:bg-slate-200";
   if (href) {
     return (
       <Link href={href} className={cn(baseClass, className)} {...props}>
@@ -18,7 +18,13 @@ export default function IconBtn({
     );
   }
   return (
-    <button className={cn(baseClass, className)} {...props}>
+    <button
+      className={cn(
+        "text-secondary-text border border-light-gray w-9 aspect-square *:size-5 [&.active]:bg-primary [&.active]:text-white flex items-center justify-center rounded-md bg-very-light-gray hover:bg-slate-200",
+        className
+      )}
+      {...props}
+    >
       {children}
     </button>
   );

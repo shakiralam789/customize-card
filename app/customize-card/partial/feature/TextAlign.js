@@ -21,19 +21,19 @@ export default function TextAlign() {
     <>
       <IconBtn
         onClick={() => changeTextAlign("left")}
-        className={`${activeItem?.textAlign === "left" ? "active" : ""}`}
+        className={`flex-1 ${activeItem?.textAlign === "left" ? "active" : ""}`}
       >
         <AlignLeft />
       </IconBtn>
       <IconBtn
         onClick={() => changeTextAlign("center")}
-        className={`${activeItem?.textAlign === "center" ? "active" : ""}`}
+        className={`flex-1 ${activeItem?.textAlign === "center" ? "active" : ""}`}
       >
         <AlignCenter />
       </IconBtn>
       <IconBtn
         onClick={() => changeTextAlign("right")}
-        className={`${activeItem?.textAlign === "right" ? "active" : ""} `}
+        className={`flex-1 ${activeItem?.textAlign === "right" ? "active" : ""} `}
       >
         <AlignRight />
       </IconBtn>

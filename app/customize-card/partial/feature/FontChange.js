@@ -58,10 +58,10 @@ export default function FontChange() {
   }, [activeID, activeItem?.fontSize]);
 
   return (
-    <div className="flex items-center border border-gray-200 divide-gray-200 rounded divide-x">
+    <div className="h-full flex border border-gray-200 divide-gray-200 rounded divide-x">
       <button
         onClick={() => handleSizeWithClick(-1)}
-        className="cursor-pointer px-2 py-1.5 hover:bg-gray-100"
+        className="cursor-pointer flex-1 flex items-center justify-center h-full hover:bg-gray-100"
       >
         <svg
           width="16"
@@ -79,17 +79,17 @@ export default function FontChange() {
           />
         </svg>
       </button>
-      <div className="px-3 py-1 flex items-center">
+      <div className="text-center flex-1 flex items-center">
         <input
           readOnly
           // onChange={(e) => changeFontSize(e.target.value)}
-          value={initialFontSize}
-          className="w-4 outline-none text-sm"
+          value={Math.round(initialFontSize)}
+          className="text-center w-full outline-none text-sm"
         />
       </div>
       <button
         onClick={() => handleSizeWithClick(1)}
-        className="cursor-pointer px-2 py-1.5 hover:bg-gray-100"
+        className="flex-1 cursor-pointer flex items-center justify-center h-full hover:bg-gray-100"
       >
         <svg
           width="16"

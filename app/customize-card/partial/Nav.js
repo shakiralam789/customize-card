@@ -1,43 +1,10 @@
 import CcContext from "@/context/ccContext";
 import React, { useContext } from "react";
-import FontChange from "./feature/FontChange";
-import ColorChange from "./feature/ColorChange";
-import TextAlign from "./feature/TextAlign";
-import FontWeight from "./feature/FontWeight";
-import FontStyle from "./feature/FontStyle";
-import TextTransform from "./feature/TextTransform";
-import LineHeightChange from "./feature/LineHeightChange";
-import LetterSpacingChange from "./feature/LetterSpacingChange";
-import { Languages, Redo, Sticker, Undo } from "lucide-react";
-import TextCurveChange from "./feature/TextCurveChange";
-import Drawer from "@/components/Drawer";
-import DrawerContent from "./StickerDrawerContent";
-import FlipShape from "./feature/FlipShape";
-import FlipVerticalShape from "./feature/FlipVertiacalShape";
-import RotateShape from "./feature/RotateShape";
-import DeleteItem from "./feature/DeleteItem";
-import useItemsMap from "@/hook/useItemMap";
-import FontFamilyChange from "./feature/FontFamilyChange";
+import { Redo, Undo } from "lucide-react";
 import Link from "next/link";
-import Duplicate from "./feature/Duplicate";
-import NavMenuBtn from "@/components/NavMenuBtn";
-import UploadImage from "./feature/UploadImage";
 
 export default function Nav() {
-  const {
-    addNewText,
-    activeID,
-    allItems,
-    isStickerDrawerOpen,
-    setIsStickerDrawerOpen,
-    undo,
-    redo,
-    undoStack,
-    redoStack,
-  } = useContext(CcContext);
-
-  const itemsMap = useItemsMap(allItems);
-  const activeItem = itemsMap.get(activeID);
+  const { undo, redo, undoStack, redoStack } = useContext(CcContext);
 
   return (
     <nav className="customize-card-navbar prevent-customize-card-blur h-[54px] flex items-center relative text-sm bg-white shadow-sm border-b border-gray-200 px-2 py-1.5">
@@ -53,25 +20,6 @@ export default function Nav() {
           </div>
 
           <div className="flex space-x-4">
-            <NavMenuBtn onClick={addNewText} label={"Text"}>
-              <Languages className="size-5" />
-            </NavMenuBtn>
-
-            <Drawer
-              isOpen={isStickerDrawerOpen}
-              setIsOpen={setIsStickerDrawerOpen}
-              title="Sticker"
-              trigger={
-                <NavMenuBtn label={"Sticker"}>
-                  <Sticker className="size-5" />
-                </NavMenuBtn>
-              }
-            >
-              <DrawerContent />
-            </Drawer>
-
-            <UploadImage />
-
             {/* <button onClick={() => {
               console.log(allItems)
             }} className="cursor-pointer px-2 py-1 flex items-center text-gray-700 font-bold hover:bg-gray-100 rounded">
@@ -116,10 +64,10 @@ export default function Nav() {
               </button>
             </div>
             <div className="flex space-x-2">
-              <button className="hover:bg-gray-100 cursor-pointer text-emerald-500 font-semibold px-2 py-1 rounded">
+              <button className="hover:bg-gray-100 cursor-pointer text-primary font-semibold px-2 py-1 rounded">
                 Save draft
               </button>
-              <button className="cursor-pointer bg-emerald-500 font-semibold text-white px-4 py-1.5 rounded hover:bg-emerald-600 flex items-center">
+              <button className="cursor-pointer bg-primary font-semibold text-white px-4 py-1.5 rounded hover:bg-primary flex items-center">
                 Next
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -139,40 +87,6 @@ export default function Nav() {
             </div>
           </div>
         </div>
-        {activeID != null && !activeItem?.locked && (
-          <>
-            {activeItem?.itemType === "text" && (
-              <div
-                className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-700 py-2 px-4 flex items-center justify-center`}
-              >
-                <DeleteItem />
-                <FontFamilyChange />
-                <FontChange />
-                <ColorChange />
-                <TextTransform />
-                <TextAlign />
-                <FontWeight />
-                <FontStyle />
-                <LineHeightChange />
-                <LetterSpacingChange />
-                <TextCurveChange />
-                <RotateShape />
-                <Duplicate />
-              </div>
-            )}
-            {activeItem?.itemType === "sticker" && (
-              <div
-                className={`min-h-[47px] space-x-4 border-t border-t-gray-200 bg-white shadow-sm z-50 absolute top-full left-0 w-full text-gray-700 py-2 px-4 flex items-center justify-center`}
-              >
-                <DeleteItem />
-                <FlipShape />
-                <FlipVerticalShape />
-                <RotateShape />
-                <Duplicate />
-              </div>
-            )}
-          </>
-        )}
       </div>
     </nav>
   );

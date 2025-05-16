@@ -4,7 +4,7 @@ import { getFontFamily } from "@/helper/helper";
 import useItemsMap from "@/hook/useItemMap";
 import { Menu, MenuButton } from "@szhsin/react-menu";
 import { ChevronDown } from "lucide-react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 
 export default function FontFamilyChange() {
   const {
@@ -54,7 +54,6 @@ export default function FontFamilyChange() {
   function handleFontFamily(font) {
     if (!activeID) return;
     if (mainRefs.current[activeID]) {
-
       itemsRefs.current[activeID].style.fontFamily = font;
 
       mainRefs.current[activeID].style.width = `auto`;
@@ -77,12 +76,12 @@ export default function FontFamilyChange() {
         menuButton={
           <MenuButton
             className={
-              "min-w-[150px] px-2 flex items-center justify-between gap-2 h-[28px] whitespace-nowrap rounded border border-gray-200 hover:bg-gray-100 [&.szh-menu-button--open]:bg-gray-100"
+              "border border-light-gray text-xs w-full px-3 py-1.5 flex items-center justify-between gap-2 whitespace-nowrap rounded-md bg-gray-100 [&.szh-menu-button--open]:bg-gray-100"
             }
           >
             <span
               style={{
-                fontFamily: getFontFamily(activeItem),
+                fontFamily: getFontFamily(activeItem.fontFamily),
                 opacity: fontsLoaded ? 1 : 0,
               }}
             >

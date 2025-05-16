@@ -117,7 +117,7 @@ export default function RangeFeature({
   }
 
   return (
-    <div className="relative">
+    <div className="relative aspect-square">
       <IconBtn onClick={togglePopup} className={`${showPopup ? "active" : ""}`}>
         {children}
       </IconBtn>
@@ -125,7 +125,7 @@ export default function RangeFeature({
       {showPopup && (
         <div
           ref={popupRef}
-          className="absolute top-full mt-1 left-0 bg-white shadow-md rounded border border-gray-200 p-3 z-50 flex flex-col"
+          className="absolute top-full mt-1 right-0 bg-white shadow-md rounded border border-gray-200 p-3 z-50 flex flex-col"
           style={{ width: "200px" }}
         >
           <div className="flex justify-between mb-1">

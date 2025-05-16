@@ -47,7 +47,6 @@ const CcProvider = ({ children }) => {
   const fontChangeInProgress = useRef(false);
 
   const parentRef = useRef(null);
-  const [isStickerDrawerOpen, setIsStickerDrawerOpen] = useState(false);
 
   const shouldBeSelected = useRef(true);
 
@@ -85,7 +84,8 @@ const CcProvider = ({ children }) => {
       }
     };
   }, []);
-  function addNewItem(newData) {
+
+  const addNewItem = useCallback((newData) => {
     const id = uuid4();
     setAllItems((prevItems) => {
       const updatedItems = prevItems.map((item, index) => ({
@@ -96,38 +96,40 @@ const CcProvider = ({ children }) => {
       if (newData.itemType === "text") {
         updatedItems.contentEditable = false;
       }
-      return [...updatedItems, { ...newData, id }];
+      return [
+        ...updatedItems,
+        { ...newData, zIndex: prevItems.length + 1 + 10, id },
+      ];
     });
 
     setActiveID(id);
-  }
+  }, []);
 
-  function addNewText() {
+  const addNewText = useCallback(() => {
     addNewItem({
       text: "",
       active: true,
       contentEditable: true,
-      zIndex: 10 + allItems.length,
-      width: 122,
+      width: 130,
       height: 36,
       name: "Text",
       ...defText,
     });
 
     shouldBeSelected.current = true;
-  }
+  }, []);
 
-  function addNewSticker(item) {
-    addNewItem({
-      ...defSticker,
-      ...item,
-      active: true,
-      zIndex: 10 + allItems.length,
-      name: "Sticker",
-    });
-
-    setIsStickerDrawerOpen(false);
-  }
+  const addNewSticker = useCallback(
+    (item) => {
+      addNewItem({
+        ...defSticker,
+        ...item,
+        active: true,
+        name: "Sticker",
+      });
+    },
+    [addNewItem]
+  );
   function deleteField() {
     if (!activeID) return;
 
@@ -417,8 +419,6 @@ const CcProvider = ({ children }) => {
         activeID,
         setActiveID,
         itemsRefs,
-        isStickerDrawerOpen,
-        setIsStickerDrawerOpen,
         shouldBeSelected,
         defText,
         defSticker,
