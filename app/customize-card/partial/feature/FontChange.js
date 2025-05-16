@@ -3,7 +3,7 @@ import useItemsMap from "@/hook/useItemMap";
 import React, { useContext, useEffect, useRef, useState } from "react";
 
 export default function FontChange() {
-  const { allItems, activeID, updateElementDimensionsByFont } =
+  const { allItems, activeID, updateElementDimensionsByFont, setAllItems } =
     useContext(CcContext);
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
@@ -13,6 +13,39 @@ export default function FontChange() {
   );
 
   const fontRef = useRef(activeItem?.fontSize);
+
+  function handleChange(value) {
+    if (!activeID) return;
+    
+    let prevFont = fontRef.current;
+    
+    let currentFont = parseFloat(value);
+    
+    if (isNaN(currentFont)) return;
+    
+    currentFont = Math.round(currentFont);
+    
+    setInitialFontSize(currentFont);
+    
+    updateElementDimensionsByFont({
+      prevFont,
+      currentFont,
+      activeItem,
+    });
+    
+    fontRef.current = currentFont;
+    
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID
+          ? {
+              ...item,
+              fontSize: currentFont,
+            }
+          : item
+      )
+    );
+  }
 
   function handleSizeWithClick(dir) {
     if (!activeID) return;
@@ -32,6 +65,40 @@ export default function FontChange() {
     });
 
     fontRef.current = currentFont;
+    
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID
+          ? {
+              ...item,
+              fontSize: currentFont,
+            }
+          : item
+      )
+    );
+  }
+
+  function handleInputKeyDown(e) {
+    if (!activeID) return;
+    
+    let newValue = parseFloat(initialFontSize);
+
+    const allowedKeys = ["ArrowUp", "ArrowDown", "Tab"];
+
+    if (!allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      newValue = newValue + 1;
+      handleChange(newValue);
+    } else if (e.key === "ArrowDown") {
+      e.preventDefault();
+      newValue = newValue - 1;
+      handleChange(newValue);
+    }
   }
 
   useEffect(() => {
@@ -66,7 +133,7 @@ export default function FontChange() {
       <div className="text-center flex-1 flex items-center">
         <input
           readOnly
-          // onChange={(e) => changeFontSize(e.target.value)}
+          onKeyDown={handleInputKeyDown}
           value={Math.round(initialFontSize)}
           className="text-center w-full outline-none text-sm"
         />

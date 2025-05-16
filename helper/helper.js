@@ -507,3 +507,12 @@ export function formatNumberWithMaxDecimals(text, maxDecimals = 3) {
     return match;
   });
 }
+
+export function limitDecimalPlaces(value) {
+  if (value === "" || value === null || value === undefined) return value;
+
+  const parsed = parseFloat(value);
+  if (isNaN(parsed)) return value;
+
+  return Math.round(parsed * 1000) / 1000;
+}

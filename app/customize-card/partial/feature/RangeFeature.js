@@ -1,6 +1,7 @@
 import IconBtn from "@/components/IconBtn";
 import MenuItemCom from "@/components/MenuListCom";
 import CcContext from "@/context/ccContext";
+import { limitDecimalPlaces } from "@/helper/helper";
 import useItemsMap from "@/hook/useItemMap";
 import { Menu } from "@szhsin/react-menu";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -36,16 +37,6 @@ export default function RangeFeature({
 
   const percentage = ((initialValue - min) / (max - min)) * 100;
 
-  // Helper function to limit decimal places to 3
-  function limitDecimalPlaces(value) {
-    if (value === "" || value === null || value === undefined) return value;
-
-    const parsed = parseFloat(value);
-    if (isNaN(parsed)) return value;
-
-    // Limit to 3 decimal places
-    return Math.round(parsed * 1000) / 1000;
-  }
 
   function handleChange(value) {
     if (!activeID || !value) return;
@@ -202,16 +193,13 @@ export default function RangeFeature({
           </div>
 
           <div className="relative h-8 px-2">
-            {/* Track background */}
             <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 rounded-full transform -translate-y-1/2"></div>
 
-            {/* Filled track */}
             <div
               className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full transform -translate-y-1/2"
               style={{ width: `${percentage}%` }}
             ></div>
 
-            {/* Custom thumb */}
             <div
               className="absolute w-4 h-4 rounded-full bg-white border-2 border-indigo-600 shadow-md transform -translate-y-1/2"
               style={{
@@ -221,7 +209,6 @@ export default function RangeFeature({
               }}
             ></div>
 
-            {/* Actual range input - separated from other elements */}
             <input
               ref={rangeRef}
               type="range"
