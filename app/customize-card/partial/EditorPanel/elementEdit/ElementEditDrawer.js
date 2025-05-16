@@ -13,10 +13,10 @@ import FontStyle from "../../feature/FontStyle";
 import LineHeightChange from "../../feature/LineHeightChange";
 import LetterSpacingChange from "../../feature/LetterSpacingChange";
 import TextCurveChange from "../../feature/TextCurveChange";
-import RotateShape from "../../feature/RotateShape";
 import Duplicate from "../../feature/Duplicate";
 import FlipShape from "../../feature/FlipShape";
 import FlipVerticalShape from "../../feature/FlipVertiacalShape";
+import OpacityRange from "../../feature/OpacityRange";
 
 export default function ElementEditDrawer({ className = "" }) {
   const { activeID, allItems } = useContext(CcContext);
@@ -41,12 +41,16 @@ export default function ElementEditDrawer({ className = "" }) {
           </div>
         </div>
         <div className="p-4 text-gray-800">
-          <>
+          <div className="space-y-4">
             {activeItem?.itemType === "text" && (
-              <div className="space-y-4">
+              <>
                 <div>
                   <label className="def-label">Color</label>
                   <ColorChange />
+                </div>
+                <div>
+                  {/* <label className="def-label">Opacity</label> */}
+                  <OpacityRange />
                 </div>
                 <div>
                   <label className="def-label">Typography</label>
@@ -68,18 +72,24 @@ export default function ElementEditDrawer({ className = "" }) {
                     </div>
                   </div>
                 </div>
-              </div>
+              </>
             )}
             {activeItem?.itemType === "sticker" && (
-              <div>
-                <label className="def-label">Flip Shape</label>
-                <div className="grid grid-cols-6 gap-1.5">
-                  <FlipShape />
-                  <FlipVerticalShape />
+              <>
+                <div>
+                  <label className="def-label">Flip Shape</label>
+                  <div className="grid grid-cols-6 gap-1.5">
+                    <FlipShape />
+                    <FlipVerticalShape />
+                  </div>
                 </div>
-              </div>
+                <div>
+                  {/* <label className="def-label">Opacity</label> */}
+                  <OpacityRange />
+                </div>
+              </>
             )}
-          </>
+          </div>
         </div>
       </div>
     )

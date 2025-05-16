@@ -48,7 +48,7 @@ export default function MainContentCom({
             ? "auto"
             : item.height + "px" || "auto",
         fontSize: `${item.fontSize || defText.fontSize}px`,
-        opacity: `${item?.opacity || 1}`,
+        opacity: item?.opacity ?? 1,
       }}
     >
       {item.itemType === "text" && (
