@@ -15,7 +15,7 @@ export default function Page() {
     if (id) {
       contextProps.getDataOnLoad(id);
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     if (!id) return;
@@ -31,7 +31,7 @@ export default function Page() {
     if (!hasMounted.current && contextProps.allItems.length > 0) {
       hasMounted.current = true;
     }
-  }, [contextProps.activeID]);
+  }, [contextProps?.allItems]);
 
   return (
     <CustomizeCardLayout

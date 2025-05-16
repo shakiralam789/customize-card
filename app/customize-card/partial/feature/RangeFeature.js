@@ -34,13 +34,23 @@ export default function RangeFeature({
   const rangeRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Calculate the percentage for visual styling
   const percentage = ((initialValue - min) / (max - min)) * 100;
+
+  // Helper function to limit decimal places to 3
+  function limitDecimalPlaces(value) {
+    if (value === "" || value === null || value === undefined) return value;
+
+    const parsed = parseFloat(value);
+    if (isNaN(parsed)) return value;
+
+    // Limit to 3 decimal places
+    return Math.round(parsed * 1000) / 1000;
+  }
 
   function handleChange(value) {
     if (!activeID || !value) return;
 
-    const newValue = parseFloat(value);
+    const newValue = limitDecimalPlaces(parseFloat(value));
     if (isNaN(newValue)) return;
 
     setInitialValue(newValue);
@@ -76,12 +86,14 @@ export default function RangeFeature({
   }
 
   function handleDragEnd(value) {
+    const limitedValue = limitDecimalPlaces(parseFloat(value));
+
     setAllItems((prevItems) =>
       prevItems.map((item) =>
         item.id === activeID
           ? {
               ...item,
-              [propertyName]: parseFloat(value),
+              [propertyName]: limitedValue,
               width: positionRef.current?.width || activeItem?.width,
               height: positionRef.current.height || activeItem?.height,
             }
@@ -93,25 +105,10 @@ export default function RangeFeature({
   function handleInputKeyDown(e) {
     let newValue = parseFloat(initialValue);
 
-    // Only allow numeric input, arrows, backspace, delete, and tab
     const allowedKeys = [
       "ArrowUp",
       "ArrowDown",
-      "Backspace",
-      "Delete",
       "Tab",
-      "0",
-      "1",
-      "2",
-      "3",
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      ".",
-      "-",
     ];
 
     if (!allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
@@ -122,11 +119,13 @@ export default function RangeFeature({
     if (e.key === "ArrowUp") {
       e.preventDefault();
       newValue = Math.min(max, newValue + parseFloat(step));
+      newValue = limitDecimalPlaces(newValue);
       handleChange(newValue);
       handleDragEnd(newValue);
     } else if (e.key === "ArrowDown") {
       e.preventDefault();
       newValue = Math.max(min, newValue - parseFloat(step));
+      newValue = limitDecimalPlaces(newValue);
       handleChange(newValue);
       handleDragEnd(newValue);
     }
@@ -134,21 +133,22 @@ export default function RangeFeature({
 
   useEffect(() => {
     if (activeItem?.[propertyName] != null) {
-      const value = activeItem[propertyName];
+      const value = limitDecimalPlaces(activeItem[propertyName]);
       setInitialValue(value);
     }
   }, [activeID, activeItem?.[propertyName]]);
 
   function getCurrent() {
     if (activeID === null || !propertyName) return defValue;
-    return activeItem?.[propertyName] ?? defValue;
+    const value = activeItem?.[propertyName] ?? defValue;
+    return limitDecimalPlaces(value);
   }
 
   return (
     <div className="relative">
       <Menu
         menuClassName={
-          "w-56 bg-very-light-gray rounded-md border border-gray-200 px-3 pt-2"
+          "w-56 bg-very-light-gray rounded-md border border-gray-200 px-2 pt-2"
         }
         align="center"
         gap={6}
@@ -163,33 +163,40 @@ export default function RangeFeature({
           }}
         >
           <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-medium text-gray-700">{title}</span>
+            <span className="text-[11px] font-medium text-gray-700">{title}</span>
             <div className="flex items-center">
-              <input
-                ref={inputRef}
-                type="number"
-                min={min}
-                max={max}
-                step={step}
-                value={initialValue}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (
-                    value === "" ||
-                    (parseFloat(value) >= min && parseFloat(value) <= max)
-                  ) {
-                    handleChange(value || min);
-                  }
-                }}
-                onBlur={(e) => {
-                  const value =
-                    e.target.value === "" ? min : parseFloat(e.target.value);
-                  handleChange(value);
-                  handleDragEnd(value);
-                }}
-                onKeyDown={handleInputKeyDown}
-                className="w-14 h-6 text-xs text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+              <div className="flex items-center">
+                <button
+                  className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded-l focus:outline-none hover:bg-gray-100"
+                  onClick={() => {
+                    const newValue = Math.max(min, parseFloat(initialValue) - parseFloat(step));
+                    const limitedValue = limitDecimalPlaces(newValue);
+                    handleChange(limitedValue);
+                    handleDragEnd(limitedValue);
+                  }}
+                >
+                  <span className="text-xs">−</span>
+                </button>
+                <input
+                  ref={inputRef}
+                  type="text"
+                  readOnly
+                  value={initialValue}
+                  onKeyDown={handleInputKeyDown}
+                  className="w-10 h-6 text-[11px] text-center border-t border-b border-gray-300 focus:outline-none"
+                />
+                <button
+                  className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded-r focus:outline-none hover:bg-gray-100"
+                  onClick={() => {
+                    const newValue = Math.min(max, parseFloat(initialValue) + parseFloat(step));
+                    const limitedValue = limitDecimalPlaces(newValue);
+                    handleChange(limitedValue);
+                    handleDragEnd(limitedValue);
+                  }}
+                >
+                  <span className="text-xs">+</span>
+                </button>
+              </div>
               <span className="text-xs ml-1">{unit}</span>
             </div>
           </div>

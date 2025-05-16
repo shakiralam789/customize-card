@@ -176,6 +176,14 @@ const CcProvider = ({ children }) => {
           name: item.name ? item.name : `Layer ${index + 1}`,
           active: false,
         };
+
+        if (item.itemType === "text") {
+          newItem = {
+            ...newItem,
+            contentEditable: false,
+          };
+        }
+
         if (!newItem.position) {
           return { ...newItem, position: { x: 0, y: 0 } };
         }
@@ -186,20 +194,6 @@ const CcProvider = ({ children }) => {
 
       undoStack.current = [_cloneDeep(updatedItem)];
       redoStack.current = [];
-
-      setTimeout(() => {
-        updatedItem.forEach((item) => {
-          if (item.itemType === "text") {
-            const element = itemsRefs.current[item.id];
-
-            if (element) {
-              element.innerHTML = item.isPlaceholder
-                ? "Enter text..."
-                : getCurvedTextHTML(item?.text, item?.textCurve || 0);
-            }
-          }
-        });
-      }, 0);
     }
 
     setFrame(frameData);
@@ -290,8 +284,6 @@ const CcProvider = ({ children }) => {
   const timerRef = useRef(null);
 
   useEffect(() => {
-    // console.log('render allitems');
-
     if (isUndoingOrRedoing.current) {
       isUndoingOrRedoing.current = false;
       return;

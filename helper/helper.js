@@ -336,7 +336,6 @@ export function managePosition(
     if (idol) {
       idol.parentElement.style.left = `${targetLeft}px`;
       idol.parentElement.style.top = `${targetTop}px`;
-
     }
   }
 
@@ -491,4 +490,20 @@ export function findSnapPoints({
   }
 
   return result;
+}
+
+export function formatNumberWithMaxDecimals(text, maxDecimals = 3) {
+  if (!text) return text;
+
+  return text.replace(/\d+\.\d+/g, (match) => {
+    const num = parseFloat(match);
+    if (!isNaN(num) && match.includes(".")) {
+      const formatted = num.toString();
+      const parts = formatted.split(".");
+      if (parts.length === 2 && parts[1].length > maxDecimals) {
+        return `${parts[0]}.${parts[1].substring(0, maxDecimals)}`;
+      }
+    }
+    return match;
+  });
 }

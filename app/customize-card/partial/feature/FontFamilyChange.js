@@ -68,42 +68,40 @@ export default function FontFamilyChange() {
   }
 
   return (
-    <div className="relative">
-      <Menu
-        menuClassName={"menu h-[calc(100vh-101px)] !w-[300px]"}
-        align="end"
-        gap={4}
-        menuButton={
-          <MenuButton
-            className={
-              "border border-light-gray text-xs w-full px-3 py-1.5 flex items-center justify-between gap-2 whitespace-nowrap rounded-md bg-gray-100 [&.szh-menu-button--open]:bg-gray-100"
-            }
-          >
-            <span
-              style={{
-                fontFamily: getFontFamily(activeItem.fontFamily),
-                opacity: fontsLoaded ? 1 : 0,
-              }}
-            >
-              {activeItem?.fontFamily || "Arial"}
-            </span>
-            <ChevronDown className="size-5" />
-          </MenuButton>
-        }
-      >
-        {fonts.map((font, index) => (
-          <MenuItemCom
-            className="font-list"
-            key={index}
+    <Menu
+      menuClassName={"menu w-[250px] max-h-[300px] overflow-y-auto"}
+      align="right"
+      gap={4}
+      menuButton={
+        <MenuButton
+          className={
+            "border border-light-gray text-xs w-full px-3 py-1.5 flex items-center justify-between gap-2 whitespace-nowrap rounded-md bg-gray-100 [&.szh-menu-button--open]:bg-gray-100"
+          }
+        >
+          <span
             style={{
-              fontFamily: getFontFamily(font),
+              fontFamily: getFontFamily(activeItem.fontFamily),
+              opacity: fontsLoaded ? 1 : 0,
             }}
-            onClick={() => handleFontFamily(font)}
           >
-            {font}
-          </MenuItemCom>
-        ))}
-      </Menu>
-    </div>
+            {activeItem?.fontFamily || "Arial"}
+          </span>
+          <ChevronDown className="size-5" />
+        </MenuButton>
+      }
+    >
+      {fonts.map((font, index) => (
+        <MenuItemCom
+          className="font-list"
+          key={index}
+          style={{
+            fontFamily: getFontFamily(font),
+          }}
+          onClick={() => handleFontFamily(font)}
+        >
+          {font}
+        </MenuItemCom>
+      ))}
+    </Menu>
   );
 }

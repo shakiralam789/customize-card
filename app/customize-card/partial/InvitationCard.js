@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { getCurvedTextHTML, managePosition } from "@/helper/helper";
 import MainContentCom from "./MainContentCom";
 import HandlerCom from "./HandlerCom";

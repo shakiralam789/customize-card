@@ -1,6 +1,6 @@
-import { getFontFamily } from "@/helper/helper";
+import { getCurvedTextHTML, getFontFamily } from "@/helper/helper";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function MainContentCom({
   zIndex,
@@ -11,6 +11,16 @@ export default function MainContentCom({
   ...rest
 }) {
   const { itemsRefs = {}, defText = {}, mainRefs = {} } = contextProps;
+
+  useEffect(() => {
+    const element = itemsRefs.current[item.id];
+    if (element) {
+      element.innerHTML = item.isPlaceholder
+        ? "Enter text..."
+        : getCurvedTextHTML(item?.text, item?.textCurve || 0);
+    }
+  }, []);
+
   return (
     <div
       {...rest}
@@ -38,6 +48,7 @@ export default function MainContentCom({
             ? "auto"
             : item.height + "px" || "auto",
         fontSize: `${item.fontSize || defText.fontSize}px`,
+        opacity: `${item?.opacity || 1}`,
       }}
     >
       {item.itemType === "text" && (

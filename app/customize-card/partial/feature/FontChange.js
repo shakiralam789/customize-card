@@ -14,22 +14,6 @@ export default function FontChange() {
 
   const fontRef = useRef(activeItem?.fontSize);
 
-  // function changeFontSize(value) {
-  //   if (!activeID || !value) return;
-
-  //   const newSize = parseInt(value, 10);
-  //   if (isNaN(newSize)) return;
-
-  //   setInitialFontSize(newSize);
-  //   updateElementDimensionsByFont({
-  //     prevFont,
-  //     newSize,
-  //     activeItem,
-  //   });
-
-  //   fontRef.current = newSize;
-  // }
-
   function handleSizeWithClick(dir) {
     if (!activeID) return;
 
