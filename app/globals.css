@@ -31,6 +31,10 @@ body {
   color: var(--foreground);
 }
 
+.def-label{
+  @apply text-gray-900 text-sm font-semibold mb-2 block
+}
+
 button {
   cursor: pointer;
 }
@@ -114,4 +118,42 @@ body.resizing {
 [data-draggable] {
   will-change: transform;
   cursor: move;
+}
+
+/* custom range */
+/* Add this to your global CSS file */
+.custom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: 50%;
+  background: var(--thumb-color);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.custom-range::-moz-range-thumb {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: 50%;
+  background: var(--thumb-color);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.custom-range:focus {
+  outline: none;
+}
+
+.custom-range::-webkit-slider-runnable-track {
+  appearance: none;
+  height: 6px;
+  border-radius: 4px;
+}
+
+.custom-range::-moz-range-track {
+  height: 6px;
+  border-radius: 4px;
 }

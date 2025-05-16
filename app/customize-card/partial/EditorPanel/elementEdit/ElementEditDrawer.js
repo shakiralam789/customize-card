@@ -45,15 +45,11 @@ export default function ElementEditDrawer({ className = "" }) {
             {activeItem?.itemType === "text" && (
               <div className="space-y-4">
                 <div>
-                  <label className="text-gray-900 text-sm font-semibold mb-2 block">
-                    Color
-                  </label>
+                  <label className="def-label">Color</label>
                   <ColorChange />
                 </div>
                 <div>
-                  <label className="text-gray-900 text-sm font-semibold mb-2 block">
-                    Typography
-                  </label>
+                  <label className="def-label">Typography</label>
                   <div className="space-y-2">
                     <FontFamilyChange />
                     <div className="grid grid-cols-6 gap-1.5">
@@ -76,9 +72,11 @@ export default function ElementEditDrawer({ className = "" }) {
             )}
             {activeItem?.itemType === "sticker" && (
               <div>
-                <FlipShape />
-                <FlipVerticalShape />
-                <RotateShape />
+                <label className="def-label">Flip Shape</label>
+                <div className="grid grid-cols-6 gap-1.5">
+                  <FlipShape />
+                  <FlipVerticalShape />
+                </div>
               </div>
             )}
           </>

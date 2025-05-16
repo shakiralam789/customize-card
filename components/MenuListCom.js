@@ -22,7 +22,7 @@ export default function MenuItemCom({
             Router.push(href);
           }
         }}
-        className={cn("block", className)}
+        className={cn("block outline-none", className)}
         {...props}
       >
         {children}
@@ -31,7 +31,7 @@ export default function MenuItemCom({
   }
 
   return (
-    <MenuItem className={cn("block", className)} {...props}>
+    <MenuItem className={cn("block outline-none", className)} {...props}>
       {children}
     </MenuItem>
   );
