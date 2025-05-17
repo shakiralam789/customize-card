@@ -152,7 +152,7 @@ export default function OpacityRange() {
         </div>
       </div>
 
-      <div className="relative h-8 mx-2">
+      <div className="relative h-6 mx-2">
         <div className="absolute inset-0 px-4">
           <div 
             className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 rounded-full transform -translate-y-1/2"
@@ -185,7 +185,7 @@ export default function OpacityRange() {
           onChange={handleSliderChange}
           onMouseUp={handleSliderDragEnd}
           onTouchEnd={handleSliderDragEnd}
-          className="w-full h-8 absolute top-0 left-0 opacity-0 cursor-pointer z-10"
+          className="w-full h-6 absolute top-0 left-0 opacity-0 cursor-pointer z-10"
         />
       </div>
 

@@ -27,7 +27,7 @@ const HandlerCom = ({
     isAnyItemDragging,
     shouldBeSelected,
   } = contextProps;
-
+  
   useEffect(() => {
     if (isDragging) {
       if (dragType === "move") {
@@ -73,10 +73,11 @@ const HandlerCom = ({
         top: `${item?.position?.y}px`,
         transform: `rotate(${item.rotate || 0}deg)`,
         zIndex: isDragging || item.active ? 99999 : item?.zIndex,
-        width: item.width + "px" || "auto",
-        height: item.height + "px" || "auto",
+        width: item.width + "px",
+        height: item.height + "px",
       }}
     >
+      
       <div
         onMouseDown={(e) => {
           if (item?.itemType == "text" && item.active && item?.contentEditable)

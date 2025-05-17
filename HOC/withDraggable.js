@@ -1,9 +1,8 @@
-// withDraggable.js - Modified version
 import {
   tlRotation,
   trRotation,
   blRotation,
-  brRotation,
+  brRotation
 } from "@/helper/helper";
 import useDraggable from "@/hook/useDraggable";
 import React, { useEffect, useRef, useState } from "react";
@@ -18,13 +17,9 @@ export default function withDraggable(Component) {
       setAllItems,
       zoomLevel,
       setIsAnyItemDragging,
-      itemsRefs,
       mainRefs,
-      activeID,
       handlerRefs,
     } = contextProps;
-
-    // const {}  = useNestedHistory()
 
     const hasMounted = useRef(true);
     const [angle, setAngle] = useState(item?.rotate || 0);
@@ -209,18 +204,6 @@ export default function withDraggable(Component) {
       // item?.position?.x,
       // item?.position?.y,
     ]);
-
-    useEffect(() => {
-      let referItem = itemsRefs.current[activeID];
-      if (referItem && item?.contentEditable && item.itemType === "text") {
-        const range = document.createRange();
-        range.selectNodeContents(referItem);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-        item.isPlaceholder = false;
-      }
-    }, [item.contentEditable, activeID]);
 
     const { dragType, tlRotate, trRotate, blRotate, brRotate } = itemState;
 

@@ -6,10 +6,10 @@ import { getCurvedTextHTML } from "@/helper/helper";
 export default function TextCurveChange() {
   const { allItems, setAllItems, activeID, itemsRefs } = useContext(CcContext);
   function handleCurve({ value, activeItem }) {
-    itemsRefs.current[activeID].innerHTML = getCurvedTextHTML(
-      activeItem?.text,
-      Number(value) || 0
-    );
+    // itemsRefs.current[activeID].innerHTML = getCurvedTextHTML(
+    //   activeItem?.text,
+    //   Number(value) || 0
+    // );
   }
 
   return (

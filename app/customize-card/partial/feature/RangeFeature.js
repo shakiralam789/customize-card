@@ -16,6 +16,7 @@ export default function RangeFeature({
   defValue = 0,
   unit = "em",
   onHandleChange = () => {},
+  onDragEnd = () => {},
 }) {
   const {
     updateElementDimensions,
@@ -37,7 +38,6 @@ export default function RangeFeature({
 
   const percentage = ((initialValue - min) / (max - min)) * 100;
 
-
   function handleChange(value) {
     if (!activeID || !value) return;
 
@@ -58,7 +58,11 @@ export default function RangeFeature({
           activeID
         ].style.transform = `rotate(${newValue}deg)`;
       } else {
-        itemsRefs.current[activeID].style[propertyName] = `${newValue}${unit}`;
+        if (propertyName !== "textCurve") {
+          itemsRefs.current[activeID].style[
+            propertyName
+          ] = `${newValue}${unit}`;
+        }
       }
 
       if (propertyName != "rotate") {
@@ -91,16 +95,16 @@ export default function RangeFeature({
           : item
       )
     );
+
+    if (onDragEnd) {
+      onDragEnd({ value: limitedValue, activeItem });
+    }
   }
 
   function handleInputKeyDown(e) {
     let newValue = parseFloat(initialValue);
 
-    const allowedKeys = [
-      "ArrowUp",
-      "ArrowDown",
-      "Tab",
-    ];
+    const allowedKeys = ["ArrowUp", "ArrowDown", "Tab"];
 
     if (!allowedKeys.includes(e.key) && !e.ctrlKey && !e.metaKey) {
       e.preventDefault();
@@ -144,7 +148,12 @@ export default function RangeFeature({
         align="center"
         gap={6}
         menuButton={({ open }) => (
-          <IconBtn className={`${open ? "active" : ""}`}>{children}</IconBtn>
+          <IconBtn
+            // disabled={!activeItem?.textCurve}
+            className={`${open ? "active" : ""}`}
+          >
+            {children}
+          </IconBtn>
         )}
         className={"ml-3"}
       >
@@ -154,13 +163,18 @@ export default function RangeFeature({
           }}
         >
           <div className="flex items-center justify-between mb-3">
-            <span className="text-[11px] font-medium text-gray-700">{title}</span>
+            <span className="text-[11px] font-medium text-gray-700">
+              {title}
+            </span>
             <div className="flex items-center">
               <div className="flex items-center">
                 <button
                   className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded-l focus:outline-none hover:bg-gray-100"
                   onClick={() => {
-                    const newValue = Math.max(min, parseFloat(initialValue) - parseFloat(step));
+                    const newValue = Math.max(
+                      min,
+                      parseFloat(initialValue) - parseFloat(step)
+                    );
                     const limitedValue = limitDecimalPlaces(newValue);
                     handleChange(limitedValue);
                     handleDragEnd(limitedValue);
@@ -179,7 +193,10 @@ export default function RangeFeature({
                 <button
                   className="w-6 h-6 flex items-center justify-center border border-gray-300 rounded-r focus:outline-none hover:bg-gray-100"
                   onClick={() => {
-                    const newValue = Math.min(max, parseFloat(initialValue) + parseFloat(step));
+                    const newValue = Math.min(
+                      max,
+                      parseFloat(initialValue) + parseFloat(step)
+                    );
                     const limitedValue = limitDecimalPlaces(newValue);
                     handleChange(limitedValue);
                     handleDragEnd(limitedValue);
@@ -192,7 +209,7 @@ export default function RangeFeature({
             </div>
           </div>
 
-          <div className="relative h-8 px-2">
+          <div className="relative h-6 mx-2">
             <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200 rounded-full transform -translate-y-1/2"></div>
 
             <div
@@ -219,7 +236,7 @@ export default function RangeFeature({
               onChange={(e) => handleChange(e.target.value)}
               onMouseUp={(e) => handleDragEnd(e.target.value)}
               onTouchEnd={(e) => handleDragEnd(e.target.value)}
-              className="w-full h-8 absolute top-0 left-0 opacity-0 cursor-pointer z-10"
+              className="w-full h-6 absolute top-0 left-0 opacity-0 cursor-pointer z-10"
             />
           </div>
 

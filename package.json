@@ -14,6 +14,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@radix-ui/react-dialog": "^1.1.11",
     "@szhsin/react-menu": "^4.4.0",
+    "circletype": "^2.3.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.9.4",
     "lodash": "^4.17.21",

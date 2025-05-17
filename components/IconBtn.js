@@ -20,7 +20,7 @@ export default function IconBtn({
   return (
     <button
       className={cn(
-        "text-secondary-text border border-light-gray w-9 aspect-square *:size-5 [&.active]:bg-primary [&.active]:text-white flex items-center justify-center rounded-md bg-very-light-gray hover:bg-slate-200",
+        "disabled:!cursor-not-allowed disabled:opacity-50 text-secondary-text border border-light-gray w-9 aspect-square *:size-5 [&.active]:bg-primary [&.active]:text-white flex items-center justify-center rounded-md bg-very-light-gray hover:bg-slate-200",
         className
       )}
       {...props}

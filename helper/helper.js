@@ -1,95 +1,147 @@
-export function curvedText({
-  text = "Curved Text Example",
-  curveValue = 0,
-  style = {},
-  className = "",
-}) {
-  // Ensure curveValue is within -100 to 100 range
-  const safeValue = Math.max(-100, Math.min(100, curveValue));
 
-  // Split text into individual characters
-  const chars = text.split("");
+import CircleType from "circletype";
 
-  // Calculate the arc angle based on the curve value
-  // At 100%, we want a full semicircle (180 degrees)
-  const totalArcAngle = (safeValue / 100) * 180;
-
-  // Radius calculation - increase with higher curve values for better effect
-  const baseRadius = 100; // Base radius in pixels
-  const radiusMultiplier = Math.max(1, Math.abs(safeValue) / 25); // Increase radius with curve intensity
-  const radius = baseRadius * radiusMultiplier;
-
-  // Calculate the angle step between each character
-  const angleStep = chars.length > 1 ? totalArcAngle / (chars.length - 1) : 0;
-
-  // Process each character and create HTML for it
-  let charElementsHTML = "";
-
-  // Calculate the container height to accommodate the curve
-  const containerHeight =
-    Math.abs(safeValue) > 20 ? `${Math.abs(safeValue) * 1.5}px` : "auto";
-
-  chars.forEach((char, index) => {
-    // Skip spaces, add a non-breaking space instead
-    if (char === " ") {
-      charElementsHTML += "&nbsp;";
-      return;
-    }
-
-    // Calculate angle for this character
-    // For center-aligned text, start from -totalArcAngle/2 to totalArcAngle/2
-    const startAngle = -totalArcAngle / 2;
-    const charAngle = startAngle + index * angleStep;
-
-    // Convert angle to radians for math calculations
-    const charAngleRad = (charAngle * Math.PI) / 180;
-
-    // Calculate position based on polar coordinates
-    // For a circle/arc, we use sin and cos functions
-    const yOffset =
-      safeValue >= 0
-        ? -Math.sin(charAngleRad) * radius // Curve upward
-        : Math.sin(charAngleRad) * radius; // Curve downward
-
-    const xOffset = Math.cos(charAngleRad) * radius - radius;
-
-    // Calculate rotation for this character (tangent to the curve)
-    const charRotation = safeValue >= 0 ? charAngle : -charAngle;
-
-    // Style for this character - apply both position and rotation
-    const charStyle = `
-        display: inline-block;
-        position: absolute;
-        transform-origin: center;
-        transform: translate(${xOffset}px, ${yOffset}px) rotate(${charRotation}deg);
-        transition: transform 0.3s ease-out;
-      `;
-
-    // Add this character with its style to the HTML
-    charElementsHTML += `<span style="${charStyle}">${char}</span>`;
-  });
-
-  // Process any additional styles passed in
-  let additionalStyles = "";
-  if (style) {
-    // Convert style object to CSS string
-    for (const property in style) {
-      // Convert camelCase to kebab-case for CSS
-      const cssProperty = property.replace(/([A-Z])/g, "-$1").toLowerCase();
-      additionalStyles += `${cssProperty}: ${style[property]}; `;
-    }
+export function applyCurvedText(element, text, curvePercent) {
+  if (!element || typeof text !== 'string') {
+    return { 
+      width: 0, 
+      height: 0, 
+      isValid: false,
+      getMeasurements: () => ({ width: 0, height: 0, isValid: false })
+    };
   }
 
-  // Build the container with all the character spans
-  // Position relative to allow absolute positioning of characters
-  const containerHTML = `
-      <div class="curved-text-container ${className || ""}" 
-           style="display: inline-block; position: relative; height: ${containerHeight}; min-width: 100%; text-align: center; ${additionalStyles}">
-        ${charElementsHTML}
-      </div>
-    `;
+  if (element._circleTypeInstance) {
+    element._circleTypeInstance.destroy();
+    element._circleTypeInstance = null;
+  }
 
-  return containerHTML;
+  element.textContent = text;
+
+  if (curvePercent === 0) {
+    const rect = element.getBoundingClientRect();
+    return { 
+      width: Math.round(rect.width), 
+      height: Math.round(rect.height),
+      isValid: true,
+      getMeasurements: () => ({
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+        isValid: true
+      })
+    };
+  }
+
+  try {
+    const radius = 1000 - (Math.abs(curvePercent) / 100) * 950;
+    const isDownward = curvePercent < 0;
+    
+    // Apply CircleType
+    element._circleTypeInstance = new CircleType(element);
+    element._circleTypeInstance.radius(radius).dir(isDownward ? -1 : 1);
+    
+    // Initial measurements (will be incomplete)
+    let initialWidth = element.getBoundingClientRect().width;
+    let initialHeight = element.getBoundingClientRect().height;
+    
+    // Return both the initial measurements and a function to get final measurements
+    return {
+      width: Math.round(initialWidth),
+      height: Math.round(initialHeight),
+      isValid: true,
+      getMeasurements: () => {
+        return new Promise(resolve => {
+          requestAnimationFrame(() => {
+            // Calculate final dimensions using the same logic
+            let width = 0;
+            let height = 0;
+            
+            if (element.children.length > 0) {
+              const spans = element.querySelectorAll('span');
+              
+              let minLeft = Infinity;
+              let maxRight = -Infinity;
+              
+              spans.forEach(span => {
+                const rect = span.getBoundingClientRect();
+                minLeft = Math.min(minLeft, rect.left);
+                maxRight = Math.max(maxRight, rect.right);
+              });
+              
+              if (minLeft !== Infinity && maxRight !== -Infinity) {
+                width = maxRight - minLeft;
+              } else {
+                width = element.getBoundingClientRect().width;
+              }
+              
+              height = element.getBoundingClientRect().height;
+            } else {
+              const rect = element.getBoundingClientRect();
+              width = rect.width;
+              height = rect.height;
+            }
+
+            resolve({
+              width: Math.round(width),
+              height: Math.round(height),
+              isValid: true
+            });
+          });
+        });
+      }
+    };
+  } catch (error) {
+    
+    const rect = element.getBoundingClientRect();
+      
+    return {
+      width: Math.round(rect.width),
+      height: Math.round(rect.height),
+      isValid: false,
+      error: error.message,
+      getMeasurements: () => ({
+        width: Math.round(rect.width),
+        height: Math.round(rect.height),
+        isValid: false,
+        error: error.message
+      })
+    };
+  }
+}
+
+export function cleanupCurvedText(element) {
+  if (element && element._circleTypeInstance) {
+    element._circleTypeInstance.destroy();
+    element._circleTypeInstance = null;
+  }
+}
+
+export function measureCurvedText(text, curvePercent, styleProps = {}) {
+  // Create a temporary element
+  const tempElement = document.createElement('div');
+  
+  // Style the element
+  tempElement.style.position = 'absolute';
+  tempElement.style.visibility = 'hidden';
+  tempElement.style.whiteSpace = 'nowrap';
+  tempElement.style.display = 'inline-block';
+  
+  // Apply provided styles
+  Object.keys(styleProps).forEach(key => {
+    tempElement.style[key] = styleProps[key];
+  });
+  
+  // Add to DOM temporarily
+  document.body.appendChild(tempElement);
+  
+  // Apply curved text and get dimensions
+  const result = applyCurvedText(tempElement, text, curvePercent);
+  
+  // Clean up
+  cleanupCurvedText(tempElement);
+  document.body.removeChild(tempElement);
+  
+  return result;
 }
 
 export function getWidthAndAspectRatio(element) {
@@ -237,62 +289,6 @@ export function addToLocalStorage({ id, allItems, frame }) {
 
 export function removeLocalStorage(id) {
   localStorage.removeItem(`customize-card-data${id || ""}`);
-}
-
-export function getCurvedTextHTML(text = "", curve = 0) {
-  if (!text) return "";
-  if (curve === 0) return `${text}`;
-
-  curve = Math.max(-100, Math.min(100, curve));
-
-  const characters = text.split("");
-  const fontSize = 16;
-  const charWidth = fontSize * 0.6;
-  const arcLength = characters.length * charWidth;
-
-  const totalAngle = (360 * Math.abs(curve)) / 100;
-  const radius = arcLength / ((Math.PI * totalAngle) / 180);
-  const diameter = Math.ceil(radius * 2);
-  const isCurvingDown = curve > 0;
-
-  const startAngle = -totalAngle / 2;
-  const anglePerPixel = totalAngle / arcLength;
-  let currentAngle = startAngle;
-
-  const html = characters
-    .map((char) => {
-      const rotate = currentAngle;
-      const transform = `
-        rotate(${rotate}deg)
-        translateY(${isCurvingDown ? -radius : radius}px)
-        rotate(${-rotate}deg)
-      `;
-      currentAngle += anglePerPixel * charWidth;
-
-      return `<span style="
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform-origin: center;
-        transform: ${transform};
-        white-space: pre;
-      ">${char}</span>`;
-    })
-    .join("");
-
-  return `
-    <div style="
-      width: ${diameter}px;
-      height: ${diameter / (100 / Math.abs(curve))}px;
-      position: relative;
-    ">
-      <div style="
-        translateY: ${isCurvingDown ? -radius : radius}px;
-      ">
-        ${html}
-      </div>
-    </div>
-  `;
 }
 
 export function managePosition(

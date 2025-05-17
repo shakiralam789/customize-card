@@ -1,6 +1,10 @@
 "use client";
 import React, { useEffect } from "react";
-import { getCurvedTextHTML, managePosition } from "@/helper/helper";
+import {
+  applyCurvedText,
+  managePosition,
+  measureCurvedText,
+} from "@/helper/helper";
 import MainContentCom from "./MainContentCom";
 import HandlerCom from "./HandlerCom";
 import useItemsMap from "@/hook/useItemMap";
@@ -18,10 +22,8 @@ export default function InvitationCard(props) {
     horizontalCentralLine,
     frame,
     handlerRefs,
-    mainRefs,
     scrollRef,
     debouncedSetAllItems,
-    debounceTimerRef,
   } = contextProps;
 
   const itemsMap = useItemsMap(allItems);
@@ -29,14 +31,17 @@ export default function InvitationCard(props) {
 
   function handlePrevItem(crrItem) {
     setAllItems((prevItems) => {
-      const newItems = prevItems.map((s) => {
+      let newItems = prevItems.map((s) => {
         const updated = {
           ...s,
           active: s.id === crrItem?.id,
         };
 
         if (s.itemType === "text") {
-          updated.contentEditable = s.id === crrItem?.id && crrItem?.active;
+          return {
+            ...updated,
+            contentEditable: s.id === crrItem?.id && crrItem?.active,
+          };
         }
 
         return updated;
@@ -54,28 +59,8 @@ export default function InvitationCard(props) {
         ) {
           return newItems.filter((item) => item.id !== activeID);
         } else {
-          let refInitText = refEl.innerHTML;
-
-          if (
-            prevActiveItem?.itemType == "text" &&
-            prevActiveItem?.textCurve &&
-            prevActiveItem?.contentEditable
-          ) {
-            requestAnimationFrame(() => {
-              refEl.innerHTML = getCurvedTextHTML(
-                refEl.innerText || "",
-                prevActiveItem?.textCurve
-              );
-            });
-          }
-
           return newItems.map((item) => ({
             ...item,
-            text:
-              item.id === activeID &&
-              !(prevActiveItem?.textCurve && !prevActiveItem?.contentEditable)
-                ? refInitText
-                : item.text,
             isPlaceholder: item.id === activeID ? false : item.isPlaceholder,
           }));
         }
@@ -92,7 +77,7 @@ export default function InvitationCard(props) {
 
     let plch = item?.isPlaceholder;
 
-    let target = e.target.closest(".movable-handle");
+    let target = itemsRefs.current[item.id];
 
     if (plch) {
       if (target) {
@@ -144,12 +129,8 @@ export default function InvitationCard(props) {
     if (!activeID) return;
     let currentHandler = handlerRefs.current[activeID];
     let currentElement = itemsRefs.current[activeID];
-    let currentMain = mainRefs.current[activeID];
     const parent = parentRef.current;
 
-    // First, update the content size
-    currentMain.style.width = `auto`;
-    currentMain.style.height = `auto`;
 
     requestAnimationFrame(() => {
       const { width, height, left, top } = managePosition({
@@ -174,6 +155,11 @@ export default function InvitationCard(props) {
         });
       });
     });
+  }
+
+
+  function setMeasure(){
+    
   }
 
   return (

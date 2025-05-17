@@ -1,6 +1,11 @@
-import { getCurvedTextHTML, getFontFamily } from "@/helper/helper";
+import {
+  applyCurvedText,
+  getCurvedTextHTML,
+  getFontFamily,
+  managePosition,
+} from "@/helper/helper";
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 
 export default function MainContentCom({
   zIndex,
@@ -10,16 +15,73 @@ export default function MainContentCom({
   className,
   ...rest
 }) {
-  const { itemsRefs = {}, defText = {}, mainRefs = {} } = contextProps;
+  const {
+    activeID,
+    itemsRefs = {},
+    defText = {},
+    mainRefs = {},
+    setAllItems,
+    scrollRef,
+    parentRef,
+    handlerRefs,
+    updateSetter,
+  } = contextProps;
 
   useEffect(() => {
-    const element = itemsRefs.current[item.id];
-    if (element) {
-      element.innerHTML = item.isPlaceholder
-        ? "Enter text..."
-        : getCurvedTextHTML(item?.text, item?.textCurve || 0);
+    if (activeID) {
+      let referItem = itemsRefs.current[activeID];
+      if (referItem && item?.contentEditable && item.itemType === "text") {
+        const range = document.createRange();
+        range.selectNodeContents(referItem);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        item.isPlaceholder = false;
+      }
+
+      if (item?.textCurve && item?.textCurve !== 0) {
+        let currentHandler = handlerRefs.current[activeID];
+        let parent = parentRef.current;
+        let position = managePosition({
+          idol: referItem,
+          follower: currentHandler,
+          parent,
+          scrollParent: scrollRef.current,
+          item: item || {},
+        });
+      }
+    } else {
+      const element = itemsRefs.current[item.id];
+      if (element && item.itemType === "text") {
+        if (item.isPlaceholder) {
+          element.innerHTML = "Enter text...";
+        } else {
+          if (item?.textCurve && item?.textCurve !== 0) {
+            const result = applyCurvedText(
+              element,
+              item?.text,
+              item?.textCurve
+            );
+
+            result.getMeasurements().then(({ width, height }) => {
+              // setAllItems((prevItems) =>
+              //   prevItems.map((s) =>
+              //     s.id === item.id ? { ...s, width, height } : s
+              //   )
+              // );
+              // updateSetter({ width, height }, item.id);
+              handlerRefs.current[item.id].style.width = `${width}px`;
+              handlerRefs.current[item.id].style.height = `${height}px`;
+              mainRefs.current[item.id].style.width = `${width}px`;
+              mainRefs.current[item.id].style.height = `${height}px`;
+            });
+          } else {
+            element.innerHTML = item?.text;
+          }
+        }
+      }
     }
-  }, []);
+  }, [item.contentEditable, item.active]);
 
   return (
     <div
@@ -31,7 +93,7 @@ export default function MainContentCom({
           delete mainRefs.current[item.id];
         }
       }}
-      className={`group absolute ${className}`}
+      className={`editable-div-parent group absolute ${className}`}
       style={{
         left: `${item?.position?.x}px`,
         top: `${item?.position?.y}px`,
@@ -42,11 +104,11 @@ export default function MainContentCom({
         width:
           item?.itemType === "text" && item.contentEditable
             ? "auto"
-            : item.width + "px" || "auto",
+            : item.width + "px",
         height:
           item?.itemType === "text" && item.contentEditable
             ? "auto"
-            : item.height + "px" || "auto",
+            : item.height + "px",
         fontSize: `${item.fontSize || defText.fontSize}px`,
         opacity: item?.opacity ?? 1,
       }}

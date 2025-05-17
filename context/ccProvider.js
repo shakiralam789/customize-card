@@ -248,6 +248,24 @@ const CcProvider = ({ children }) => {
     );
   }
 
+  function updateSetter(position, itemId = activeID, rest = {}) {
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              width: position.width,
+              height: position.height,
+              ...(position.top !== undefined && position.left !== undefined
+                ? { position: { y: position.top, x: position.left } }
+                : {}),
+              ...rest,
+            }
+          : item
+      )
+    );
+  }
+
   function updateElementDimensionsByFont({
     prevFont,
     currentFont,
@@ -442,6 +460,7 @@ const CcProvider = ({ children }) => {
         debouncedSetAllItems,
         updateElementDimensionsByFont,
         debounceTimerRef,
+        updateSetter
       }}
     >
       {children}
