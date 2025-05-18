@@ -296,7 +296,7 @@ export function managePosition(
   withAction = true
 ) {
   if (!idol || !parent) return;
-  const rotate = item?.rotate || 0;
+  // const rotate = item?.rotate || 0;
 
   const targetWidth = idol.offsetWidth;
   const targetHeight = idol.offsetHeight;
@@ -327,11 +327,11 @@ export function managePosition(
     follower.style.width = `${targetWidth}px`;
     follower.style.height = `${targetHeight}px`;
     follower.style.left = `${targetLeft}px`;
-    follower.style.top = `${targetTop}px`;
+    // follower.style.top = `${targetTop}px`;
 
     if (idol) {
       idol.parentElement.style.left = `${targetLeft}px`;
-      idol.parentElement.style.top = `${targetTop}px`;
+      // idol.parentElement.style.top = `${targetTop}px`;
     }
   }
 
@@ -340,7 +340,7 @@ export function managePosition(
     height: targetHeight,
     left: targetLeft,
     top: targetTop,
-    rotate: rotate,
+    // rotate: rotate,
   };
 }
 

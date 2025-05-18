@@ -1,11 +1,6 @@
-import {
-  applyCurvedText,
-  getCurvedTextHTML,
-  getFontFamily,
-  managePosition,
-} from "@/helper/helper";
+import { getFontFamily, managePosition } from "@/helper/helper";
 import Image from "next/image";
-import React, { useEffect, useLayoutEffect } from "react";
+import React, { useEffect } from "react";
 
 export default function MainContentCom({
   zIndex,
@@ -20,15 +15,15 @@ export default function MainContentCom({
     itemsRefs = {},
     defText = {},
     mainRefs = {},
-    setAllItems,
     scrollRef,
     parentRef,
     handlerRefs,
-    updateSetter,
+    updatePositionState,
+    updateInnerHTML,
   } = contextProps;
 
   useEffect(() => {
-    if (activeID) {
+    if (activeID && item.contentEditable) {
       let referItem = itemsRefs.current[activeID];
       if (referItem && item?.contentEditable && item.itemType === "text") {
         const range = document.createRange();
@@ -42,6 +37,7 @@ export default function MainContentCom({
       if (item?.textCurve && item?.textCurve !== 0) {
         let currentHandler = handlerRefs.current[activeID];
         let parent = parentRef.current;
+
         let position = managePosition({
           idol: referItem,
           follower: currentHandler,
@@ -49,37 +45,19 @@ export default function MainContentCom({
           scrollParent: scrollRef.current,
           item: item || {},
         });
+
+        updatePositionState(
+          {
+            width: position.width,
+            height: position.height,
+            left: position.left,
+          },
+          activeID
+        );
       }
     } else {
       const element = itemsRefs.current[item.id];
-      if (element && item.itemType === "text") {
-        if (item.isPlaceholder) {
-          element.innerHTML = "Enter text...";
-        } else {
-          if (item?.textCurve && item?.textCurve !== 0) {
-            const result = applyCurvedText(
-              element,
-              item?.text,
-              item?.textCurve
-            );
-
-            result.getMeasurements().then(({ width, height }) => {
-              // setAllItems((prevItems) =>
-              //   prevItems.map((s) =>
-              //     s.id === item.id ? { ...s, width, height } : s
-              //   )
-              // );
-              // updateSetter({ width, height }, item.id);
-              handlerRefs.current[item.id].style.width = `${width}px`;
-              handlerRefs.current[item.id].style.height = `${height}px`;
-              mainRefs.current[item.id].style.width = `${width}px`;
-              mainRefs.current[item.id].style.height = `${height}px`;
-            });
-          } else {
-            element.innerHTML = item?.text;
-          }
-        }
-      }
+      updateInnerHTML({ element, item });
     }
   }, [item.contentEditable, item.active]);
 

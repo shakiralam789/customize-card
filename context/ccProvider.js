@@ -3,7 +3,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import CcContext from "./ccContext";
 import uuid4 from "uuid4";
 import cardData from "../data/cardData";
-import { getCurvedTextHTML, managePosition } from "@/helper/helper";
+import {
+  applyCurvedText,
+  getCurvedTextHTML,
+  managePosition,
+} from "@/helper/helper";
 import _cloneDeep from "lodash/cloneDeep";
 
 const defText = {
@@ -248,7 +252,7 @@ const CcProvider = ({ children }) => {
     );
   }
 
-  function updateSetter(position, itemId = activeID, rest = {}) {
+  function updatePositionState(position, itemId = activeID, rest = {}) {
     setAllItems((prevItems) =>
       prevItems.map((item) =>
         item.id === itemId
@@ -257,7 +261,12 @@ const CcProvider = ({ children }) => {
               width: position.width,
               height: position.height,
               ...(position.top !== undefined && position.left !== undefined
-                ? { position: { y: position.top, x: position.left } }
+                ? {
+                    position: {
+                      y: position.top || item.position.y,
+                      x: position.left || item.position.x,
+                    },
+                  }
                 : {}),
               ...rest,
             }
@@ -354,23 +363,21 @@ const CcProvider = ({ children }) => {
 
     setAllItems(_cloneDeep(previousState));
 
-    setTimeout(() => {
-      previousState.forEach((item) => {
-        if (item.active) {
-          setActiveID(item.id);
-        }
+    previousState.forEach((item) => {
+      if (item.active) {
+        setActiveID(item.id);
+      }
 
-        if (item.itemType === "text") {
-          const element = itemsRefs.current[item.id];
+      if (item.itemType === "text") {
+        const element = itemsRefs.current[item.id];
 
-          if (element) {
-            element.innerHTML = item.isPlaceholder
-              ? "Enter text..."
-              : getCurvedTextHTML(item?.text, item?.textCurve || 0);
-          }
+        if (element) {
+          updateInnerHTML({ element, item });
         }
-      });
-    }, 0);
+      }
+    });
+    // setTimeout(() => {
+    // }, 0);
   };
 
   const redo = () => {
@@ -384,23 +391,40 @@ const CcProvider = ({ children }) => {
 
     undoStack.current.push(_cloneDeep(nextState));
 
-    setTimeout(() => {
-      nextState.forEach((item) => {
-        if (item.active) {
-          setActiveID(item.id);
-        }
-        if (item.itemType === "text") {
-          const element = itemsRefs.current[item.id];
+    // setTimeout(() => {
+    // }, 0);
+    nextState.forEach((item) => {
+      if (item.active) {
+        setActiveID(item.id);
+      }
+      if (item.itemType === "text") {
+        const element = itemsRefs.current[item.id];
 
-          if (element) {
-            element.innerHTML = item.isPlaceholder
-              ? "Enter text..."
-              : getCurvedTextHTML(item?.text, item?.textCurve || 0);
-          }
+        if (element) {
+          updateInnerHTML({ element, item });
         }
-      });
-    }, 0);
+      }
+    });
   };
+
+  function updateInnerHTML({ element, item }) {
+    if (element && item.itemType === "text") {
+      if (item.isPlaceholder) {
+        element.innerHTML = "Enter text...";
+      } else {
+        if (item?.textCurve && item?.textCurve !== 0) {
+          const result = applyCurvedText(element, item?.text, item?.textCurve);
+          console.log('here');
+          
+          result.getMeasurements().then(({ width, height }) => {
+            updatePositionState({ width, height }, item.id);
+          });
+        } else {
+          element.innerHTML = item?.text;
+        }
+      }
+    }
+  }
 
   useEffect(() => {
     const style = document.createElement("style");
@@ -421,6 +445,7 @@ const CcProvider = ({ children }) => {
   return (
     <CcContext.Provider
       value={{
+        updateInnerHTML,
         allItems,
         setAllItems,
         addNewText,
@@ -460,7 +485,7 @@ const CcProvider = ({ children }) => {
         debouncedSetAllItems,
         updateElementDimensionsByFont,
         debounceTimerRef,
-        updateSetter
+        updatePositionState,
       }}
     >
       {children}

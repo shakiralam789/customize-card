@@ -131,7 +131,6 @@ export default function InvitationCard(props) {
     let currentElement = itemsRefs.current[activeID];
     const parent = parentRef.current;
 
-
     requestAnimationFrame(() => {
       const { width, height, left, top } = managePosition({
         idol: currentElement,
@@ -150,16 +149,12 @@ export default function InvitationCard(props) {
             text: s.id === activeID ? innerHTML : s.text,
             width: s.id === activeID ? width : s.width,
             height: s.id === activeID ? height : s.height,
-            position: s.id === activeID ? { x: left, y: top } : s.position,
+            position:
+              s.id === activeID ? { x: left, y: s.position.y } : s.position,
           };
         });
       });
     });
-  }
-
-
-  function setMeasure(){
-    
   }
 
   return (
