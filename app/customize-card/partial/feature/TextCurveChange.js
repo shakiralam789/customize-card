@@ -1,28 +1,41 @@
 import CcContext from "@/context/ccContext";
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import RangeFeature from "./RangeFeature";
-import { getCurvedTextHTML } from "@/helper/helper";
+import { applyCurvedText } from "@/helper/helper";
 
 export default function TextCurveChange() {
-  const { allItems, setAllItems, activeID, itemsRefs } = useContext(CcContext);
+  const { activeID,mainRefs,handlerRefs, itemsRefs, updatePositionState } = useContext(CcContext);
+
+  const position = useRef({});
+
   function handleCurve({ value, activeItem }) {
-    // itemsRefs.current[activeID].innerHTML = getCurvedTextHTML(
-    //   activeItem?.text,
-    //   Number(value) || 0
-    // );
+    if (activeID === null) return;
+    const element = itemsRefs.current[activeItem.id];
+    const result = applyCurvedText(element, activeItem?.text, value);
+    result.getMeasurements().then(({ width, height }) => {
+      position.current = { width, height };
+
+      mainRefs.current[activeID].style.width = `${width}px`;
+      mainRefs.current[activeID].style.height = `${height}px`;
+      handlerRefs.current[activeID].style.width = `${width}px`;
+      handlerRefs.current[activeID].style.height = `${height}px`;
+    });
+  }
+
+  function handleDragend() {
+    const { width, height } = position.current;
+    updatePositionState({ width, height }, activeID);
   }
 
   return (
     <RangeFeature
-      data={allItems}
-      setData={setAllItems}
-      activeID={activeID}
       propertyName="textCurve"
       title="Text curve"
       min={-100}
       max={100}
-      step={5}
+      step={1}
       onHandleChange={handleCurve}
+      onDragEnd={handleDragend}
       defValue={0}
     >
       <svg

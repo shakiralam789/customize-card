@@ -149,7 +149,11 @@ export default function RangeFeature({
         gap={6}
         menuButton={({ open }) => (
           <IconBtn
-            // disabled={!activeItem?.textCurve}
+            disabled={
+              propertyName === "textCurve" && activeItem?.contentEditable
+                ? true
+                : false
+            }
             className={`${open ? "active" : ""}`}
           >
             {children}

@@ -414,8 +414,6 @@ const CcProvider = ({ children }) => {
       } else {
         if (item?.textCurve && item?.textCurve !== 0) {
           const result = applyCurvedText(element, item?.text, item?.textCurve);
-          console.log('here');
-          
           result.getMeasurements().then(({ width, height }) => {
             updatePositionState({ width, height }, item.id);
           });

@@ -1,9 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import {
-  applyCurvedText,
   managePosition,
-  measureCurvedText,
 } from "@/helper/helper";
 import MainContentCom from "./MainContentCom";
 import HandlerCom from "./HandlerCom";

@@ -7,7 +7,7 @@ export function applyCurvedText(element, text, curvePercent) {
       width: 0, 
       height: 0, 
       isValid: false,
-      getMeasurements: () => ({ width: 0, height: 0, isValid: false })
+      getMeasurements: () => Promise.resolve({ width: 0, height: 0, isValid: false })
     };
   }
 
@@ -24,7 +24,8 @@ export function applyCurvedText(element, text, curvePercent) {
       width: Math.round(rect.width), 
       height: Math.round(rect.height),
       isValid: true,
-      getMeasurements: () => ({
+      // Wrap in Promise.resolve to make it return a Promise
+      getMeasurements: () => Promise.resolve({
         width: Math.round(rect.width),
         height: Math.round(rect.height),
         isValid: true
@@ -99,7 +100,8 @@ export function applyCurvedText(element, text, curvePercent) {
       height: Math.round(rect.height),
       isValid: false,
       error: error.message,
-      getMeasurements: () => ({
+      // Wrap in Promise.resolve for consistency
+      getMeasurements: () => Promise.resolve({
         width: Math.round(rect.width),
         height: Math.round(rect.height),
         isValid: false,
@@ -116,33 +118,6 @@ export function cleanupCurvedText(element) {
   }
 }
 
-export function measureCurvedText(text, curvePercent, styleProps = {}) {
-  // Create a temporary element
-  const tempElement = document.createElement('div');
-  
-  // Style the element
-  tempElement.style.position = 'absolute';
-  tempElement.style.visibility = 'hidden';
-  tempElement.style.whiteSpace = 'nowrap';
-  tempElement.style.display = 'inline-block';
-  
-  // Apply provided styles
-  Object.keys(styleProps).forEach(key => {
-    tempElement.style[key] = styleProps[key];
-  });
-  
-  // Add to DOM temporarily
-  document.body.appendChild(tempElement);
-  
-  // Apply curved text and get dimensions
-  const result = applyCurvedText(tempElement, text, curvePercent);
-  
-  // Clean up
-  cleanupCurvedText(tempElement);
-  document.body.removeChild(tempElement);
-  
-  return result;
-}
 
 export function getWidthAndAspectRatio(element) {
   if (!element) {
