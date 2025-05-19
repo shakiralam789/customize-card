@@ -123,7 +123,7 @@ export default function OpacityRange() {
   return (
     <div className="p-2 border border-gray-200 rounded bg-white">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-medium text-gray-700">Opacity</span>
+        <span className="text-xs font-medium text-gray-700">Transparent</span>
         <div className="flex items-center">
           <button
             onClick={() => handleStepClick(-1)}

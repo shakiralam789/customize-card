@@ -2,7 +2,7 @@ import {
   tlRotation,
   trRotation,
   blRotation,
-  brRotation
+  brRotation,
 } from "@/helper/helper";
 import useDraggable from "@/hook/useDraggable";
 import React, { useEffect, useRef, useState } from "react";
@@ -42,11 +42,13 @@ export default function withDraggable(Component) {
       fontSize: item?.fontSize || null,
       top: item?.position?.y,
       left: item?.position?.x,
+      textCurve: item?.textCurve || null,
     });
 
     const initialFontSize = item?.itemType === "text" ? item.fontSize : null;
     const initialWidth = item.width || null;
     const initialHeight = item?.height || null;
+    const initialTextCurve = item?.textCurve || null;
 
     const { isDragging, startDrag, dir } = useDraggable({
       zoomLevel,
@@ -74,6 +76,9 @@ export default function withDraggable(Component) {
             const newFontSize =
               item?.itemType === "text" ? initialFontSize * data?.scale : null;
 
+            if (initialTextCurve !== null) {
+              currentValues.current.textCurve = initialTextCurve / data?.scale;
+            }
             currentValues.current.width = newWidth;
             currentValues.current.height = newHeight;
             currentValues.current.fontSize = newFontSize;
@@ -124,7 +129,7 @@ export default function withDraggable(Component) {
         shouldBeSelected.current = !data?.hasMoved;
         setIsAnyItemDragging(false);
         if (!data.hasMoved) return;
-        const updatedItem = {
+        let updatedItem = {
           ...item,
           rotate: currentValues.current.angle,
           width: currentValues.current.width,
@@ -132,6 +137,13 @@ export default function withDraggable(Component) {
           fontSize: currentValues.current.fontSize,
           position: data.position,
         };
+
+        if (currentValues.current.textCurve) {
+          updatedItem = {
+            ...updatedItem,
+            textCurve: currentValues.current.textCurve,
+          };
+        }
 
         setItemState((prev) => ({
           ...prev,

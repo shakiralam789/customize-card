@@ -1,10 +1,11 @@
 import CcContext from "@/context/ccContext";
 import React, { useContext, useRef } from "react";
 import RangeFeature from "./RangeFeature";
-import { applyCurvedText } from "@/helper/helper";
+import { applyCurvedText, managePosition } from "@/helper/helper";
 
 export default function TextCurveChange() {
-  const { activeID,mainRefs,handlerRefs, itemsRefs, updatePositionState } = useContext(CcContext);
+  const { activeID, mainRefs, handlerRefs, itemsRefs, updatePositionState } =
+    useContext(CcContext);
 
   const position = useRef({});
 
@@ -13,18 +14,36 @@ export default function TextCurveChange() {
     const element = itemsRefs.current[activeItem.id];
     const result = applyCurvedText(element, activeItem?.text, value);
     result.getMeasurements().then(({ width, height }) => {
-      position.current = { width, height };
+      let manaPos = managePosition(
+        {
+          idol: element,
+          follower: handlerRefs.current[activeID],
+          item: activeItem || {},
+        },
+        false
+      );
+
+      position.current = {
+        width,
+        height,
+        left: manaPos.left,
+      };
 
       mainRefs.current[activeID].style.width = `${width}px`;
       mainRefs.current[activeID].style.height = `${height}px`;
       handlerRefs.current[activeID].style.width = `${width}px`;
       handlerRefs.current[activeID].style.height = `${height}px`;
+      // mainRefs.current[activeID].style.left = `${manaPos.left}px`;
+      // handlerRefs.current[activeID].style.left = `${manaPos.left}px`;
     });
   }
 
-  function handleDragend() {
+  function handleDragend({ value, activeItem }) {
     const { width, height } = position.current;
-    updatePositionState({ width, height }, activeID);
+    updatePositionState({ width, height }, activeID, {
+      textCurve: value,
+      position: { x: position.current.left, y: activeItem.position.y },
+    });
   }
 
   return (

@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import {
-  managePosition,
-} from "@/helper/helper";
+import { managePosition } from "@/helper/helper";
 import MainContentCom from "./MainContentCom";
 import HandlerCom from "./HandlerCom";
 import useItemsMap from "@/hook/useItemMap";
@@ -22,6 +20,7 @@ export default function InvitationCard(props) {
     handlerRefs,
     scrollRef,
     debouncedSetAllItems,
+    mainRefs,
   } = contextProps;
 
   const itemsMap = useItemsMap(allItems);
@@ -127,18 +126,23 @@ export default function InvitationCard(props) {
     if (!activeID) return;
     let currentHandler = handlerRefs.current[activeID];
     let currentElement = itemsRefs.current[activeID];
-    const parent = parentRef.current;
+
+    mainRefs.current[activeID].style.width = "auto";
+    mainRefs.current[activeID].style.height = "auto";
 
     requestAnimationFrame(() => {
       const { width, height, left, top } = managePosition({
         idol: currentElement,
         follower: currentHandler,
-        parent,
         scrollParent: scrollRef.current,
         item: activeItem || {},
       });
 
       let innerHTML = e.target.innerHTML == "<br>" ? "" : e.target.innerHTML;
+
+      if (e.target.children.length == 1) {
+        innerHTML = e.target.children[0].innerHTML;
+      }
 
       debouncedSetAllItems((prev) => {
         return prev.map((s) => {

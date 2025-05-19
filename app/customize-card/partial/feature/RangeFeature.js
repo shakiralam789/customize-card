@@ -1,7 +1,7 @@
 import IconBtn from "@/components/IconBtn";
 import MenuItemCom from "@/components/MenuListCom";
 import CcContext from "@/context/ccContext";
-import { limitDecimalPlaces } from "@/helper/helper";
+import { isTextOneLine, limitDecimalPlaces } from "@/helper/helper";
 import useItemsMap from "@/hook/useItemMap";
 import { Menu } from "@szhsin/react-menu";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -30,6 +30,7 @@ export default function RangeFeature({
 
   const itemsMap = useItemsMap(allItems);
   const activeItem = itemsMap.get(activeID);
+  const menuRef = useRef();
 
   const [initialValue, setInitialValue] = useState(getCurrent());
   const positionRef = useRef(activeItem?.position || {});
@@ -65,7 +66,7 @@ export default function RangeFeature({
         }
       }
 
-      if (propertyName != "rotate") {
+      if (propertyName != "rotate" && propertyName != "textCurve") {
         mainRefs.current[activeID].style.width = `auto`;
         mainRefs.current[activeID].style.height = `auto`;
 
@@ -82,19 +83,24 @@ export default function RangeFeature({
 
   function handleDragEnd(value) {
     const limitedValue = limitDecimalPlaces(parseFloat(value));
-
-    setAllItems((prevItems) =>
-      prevItems.map((item) =>
-        item.id === activeID
-          ? {
-              ...item,
-              [propertyName]: limitedValue,
-              width: positionRef.current?.width || activeItem?.width,
-              height: positionRef.current.height || activeItem?.height,
-            }
-          : item
-      )
-    );
+    if (propertyName != "textCurve") {
+      setAllItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === activeID
+            ? {
+                ...item,
+                [propertyName]: limitedValue,
+                width: positionRef.current?.width || activeItem?.width,
+                height: positionRef.current.height || activeItem?.height,
+                position: {
+                  x: positionRef.current?.left || activeItem?.position?.x,
+                  y: activeItem?.position?.y,
+                },
+              }
+            : item
+        )
+      );
+    }
 
     if (onDragEnd) {
       onDragEnd({ value: limitedValue, activeItem });
@@ -142,19 +148,29 @@ export default function RangeFeature({
   return (
     <div className="relative">
       <Menu
-        menuClassName={
-          "w-56 bg-very-light-gray rounded-md border border-gray-200 px-2 pt-2"
-        }
+        ref={menuRef}
+        menuClassName={`${
+          propertyName === "textCurve" &&
+          !isTextOneLine(activeItem?.text || "")?.isOneLine
+            ? "hidden"
+            : ""
+        } w-56 bg-very-light-gray rounded-md border border-gray-200 px-2 pt-2`}
         align="center"
         gap={6}
         menuButton={({ open }) => (
           <IconBtn
             disabled={
-              propertyName === "textCurve" && activeItem?.contentEditable
+              propertyName === "textCurve" &&
+              (activeItem?.contentEditable ||
+                !isTextOneLine(activeItem?.text || "")?.isOneLine)
                 ? true
                 : false
             }
-            className={`${open ? "active" : ""}`}
+            className={`${
+              open && isTextOneLine(activeItem?.text || "")?.isOneLine
+                ? "active"
+                : ""
+            }`}
           >
             {children}
           </IconBtn>

@@ -1,13 +1,13 @@
-
 import CircleType from "circletype";
 
 export function applyCurvedText(element, text, curvePercent) {
-  if (!element || typeof text !== 'string') {
-    return { 
-      width: 0, 
-      height: 0, 
+  if (!element || typeof text !== "string") {
+    return {
+      width: 0,
+      height: 0,
       isValid: false,
-      getMeasurements: () => Promise.resolve({ width: 0, height: 0, isValid: false })
+      getMeasurements: () =>
+        Promise.resolve({ width: 0, height: 0, isValid: false }),
     };
   }
 
@@ -20,61 +20,62 @@ export function applyCurvedText(element, text, curvePercent) {
 
   if (curvePercent === 0) {
     const rect = element.getBoundingClientRect();
-    return { 
-      width: Math.round(rect.width), 
+    return {
+      width: Math.round(rect.width),
       height: Math.round(rect.height),
       isValid: true,
       // Wrap in Promise.resolve to make it return a Promise
-      getMeasurements: () => Promise.resolve({
-        width: Math.round(rect.width),
-        height: Math.round(rect.height),
-        isValid: true
-      })
+      getMeasurements: () =>
+        Promise.resolve({
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+          isValid: true,
+        }),
     };
   }
 
   try {
     const radius = 1000 - (Math.abs(curvePercent) / 100) * 950;
     const isDownward = curvePercent < 0;
-    
+
     // Apply CircleType
     element._circleTypeInstance = new CircleType(element);
     element._circleTypeInstance.radius(radius).dir(isDownward ? -1 : 1);
-    
+
     // Initial measurements (will be incomplete)
     let initialWidth = element.getBoundingClientRect().width;
     let initialHeight = element.getBoundingClientRect().height;
-    
+
     // Return both the initial measurements and a function to get final measurements
     return {
       width: Math.round(initialWidth),
       height: Math.round(initialHeight),
       isValid: true,
       getMeasurements: () => {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
           requestAnimationFrame(() => {
             // Calculate final dimensions using the same logic
             let width = 0;
             let height = 0;
-            
+
             if (element.children.length > 0) {
-              const spans = element.querySelectorAll('span');
-              
+              const spans = element.querySelectorAll("span");
+
               let minLeft = Infinity;
               let maxRight = -Infinity;
-              
-              spans.forEach(span => {
+
+              spans.forEach((span) => {
                 const rect = span.getBoundingClientRect();
                 minLeft = Math.min(minLeft, rect.left);
                 maxRight = Math.max(maxRight, rect.right);
               });
-              
+
               if (minLeft !== Infinity && maxRight !== -Infinity) {
                 width = maxRight - minLeft;
               } else {
                 width = element.getBoundingClientRect().width;
               }
-              
+
               height = element.getBoundingClientRect().height;
             } else {
               const rect = element.getBoundingClientRect();
@@ -85,28 +86,28 @@ export function applyCurvedText(element, text, curvePercent) {
             resolve({
               width: Math.round(width),
               height: Math.round(height),
-              isValid: true
+              isValid: true,
             });
           });
         });
-      }
+      },
     };
   } catch (error) {
-    
     const rect = element.getBoundingClientRect();
-      
+
     return {
       width: Math.round(rect.width),
       height: Math.round(rect.height),
       isValid: false,
       error: error.message,
       // Wrap in Promise.resolve for consistency
-      getMeasurements: () => Promise.resolve({
-        width: Math.round(rect.width),
-        height: Math.round(rect.height),
-        isValid: false,
-        error: error.message
-      })
+      getMeasurements: () =>
+        Promise.resolve({
+          width: Math.round(rect.width),
+          height: Math.round(rect.height),
+          isValid: false,
+          error: error.message,
+        }),
     };
   }
 }
@@ -117,7 +118,6 @@ export function cleanupCurvedText(element) {
     element._circleTypeInstance = null;
   }
 }
-
 
 export function getWidthAndAspectRatio(element) {
   if (!element) {
@@ -267,10 +267,10 @@ export function removeLocalStorage(id) {
 }
 
 export function managePosition(
-  { idol, follower, parent, scrollParent, item },
+  { idol, follower, scrollParent, item },
   withAction = true
 ) {
-  if (!idol || !parent) return;
+  if (!idol) return;
   // const rotate = item?.rotate || 0;
 
   const targetWidth = idol.offsetWidth;
@@ -486,4 +486,25 @@ export function limitDecimalPlaces(value) {
   if (isNaN(parsed)) return value;
 
   return Math.round(parsed * 1000) / 1000;
+}
+
+export function isTextOneLine(text) {
+  if (!text) return { isOneLine: true, text: "" };
+  let testingDiv = document.createElement("div");
+  testingDiv.innerHTML = text;
+
+  if (testingDiv.children.length == 1 || testingDiv.children.length == 0) {
+    return {
+      isOneLine: true,
+      text:
+        testingDiv.children.length == 1
+          ? testingDiv.children[0].innerHTML
+          : text,
+    };
+  } else {
+    return {
+      isOneLine: false,
+      text: text,
+    };
+  }
 }

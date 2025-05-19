@@ -16,7 +16,6 @@ export default function MainContentCom({
     defText = {},
     mainRefs = {},
     scrollRef,
-    parentRef,
     handlerRefs,
     updatePositionState,
     updateInnerHTML,
@@ -36,12 +35,10 @@ export default function MainContentCom({
 
       if (item?.textCurve && item?.textCurve !== 0) {
         let currentHandler = handlerRefs.current[activeID];
-        let parent = parentRef.current;
 
         let position = managePosition({
           idol: referItem,
           follower: currentHandler,
-          parent,
           scrollParent: scrollRef.current,
           item: item || {},
         });

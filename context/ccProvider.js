@@ -6,6 +6,7 @@ import cardData from "../data/cardData";
 import {
   applyCurvedText,
   getCurvedTextHTML,
+  isTextOneLine,
   managePosition,
 } from "@/helper/helper";
 import _cloneDeep from "lodash/cloneDeep";
@@ -182,6 +183,15 @@ const CcProvider = ({ children }) => {
         };
 
         if (item.itemType === "text") {
+          let isOneLine = isTextOneLine(item?.text);
+          if (isOneLine.isOneLine) {
+            newItem.isPlaceholder = false;
+            newItem = {
+              ...newItem,
+              text: isOneLine.text,
+            };
+          }
+
           newItem = {
             ...newItem,
             contentEditable: false,
@@ -208,31 +218,14 @@ const CcProvider = ({ children }) => {
 
     let currentHandler = handlerRefs.current[activeID];
     let currentElement = itemsRefs.current[activeID];
-    const parent = parentRef.current;
+    if (!currentElement) return;
 
-    if (!currentElement || !parent) return;
-
-    const position = managePosition(
-      {
-        idol: currentElement,
-        follower: currentHandler,
-        parent,
-        scrollParent: scrollRef.current,
-        item: activeItem || {},
-      },
-      false
-    );
-
-    if (mainRefs.current[activeID]) {
-      mainRefs.current[activeID].style.width = `${position.width}px`;
-      mainRefs.current[activeID].style.height = `${position.height}px`;
-    }
-
-    if (handlerRefs.current[activeID]) {
-      handlerRefs.current[activeID].style.width = `${position.width}px`;
-      handlerRefs.current[activeID].style.height = `${position.height}px`;
-    }
-
+    const position = managePosition({
+      idol: currentElement,
+      follower: currentHandler,
+      scrollParent: scrollRef.current,
+      item: activeItem || {},
+    });
     return position;
   }
 
