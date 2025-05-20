@@ -21,7 +21,7 @@ export default function MainContentCom({
     updateInnerHTML,
   } = contextProps;
 
-  useEffect(() => {
+  useEffect( () => {
     if (activeID && item.contentEditable) {
       let referItem = itemsRefs.current[activeID];
       if (referItem && item?.contentEditable && item.itemType === "text") {
@@ -34,27 +34,20 @@ export default function MainContentCom({
       }
 
       if (item?.textCurve && item?.textCurve !== 0) {
-        let currentHandler = handlerRefs.current[activeID];
-
-        let position = managePosition({
-          idol: referItem,
-          follower: currentHandler,
-          scrollParent: scrollRef.current,
-          item: item || {},
-        });
-
-        updatePositionState(
+        let position = managePosition(
           {
-            width: position.width,
-            height: position.height,
-            left: position.left,
+            idol: referItem,
+            follower: handlerRefs.current[activeID],
+            scrollParent: scrollRef.current,
+            item: item || {},
           },
-          activeID
+          false
         );
+
+        updatePositionState(position, activeID);
       }
     } else {
-      const element = itemsRefs.current[item.id];
-      updateInnerHTML({ element, item });
+      updateInnerHTML({ element: itemsRefs.current[item.id], item });
     }
   }, [item.contentEditable, item.active]);
 

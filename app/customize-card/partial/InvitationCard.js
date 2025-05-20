@@ -27,8 +27,10 @@ export default function InvitationCard(props) {
   const activeItem = itemsMap.get(activeID);
 
   function handlePrevItem(crrItem) {
+    
     setAllItems((prevItems) => {
       let newItems = prevItems.map((s) => {
+        
         const updated = {
           ...s,
           active: s.id === crrItem?.id,

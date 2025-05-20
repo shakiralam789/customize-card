@@ -314,7 +314,7 @@ export function managePosition(
     width: targetWidth,
     height: targetHeight,
     left: targetLeft,
-    top: targetTop,
+    // top: targetTop,
     // rotate: rotate,
   };
 }
@@ -507,4 +507,28 @@ export function isTextOneLine(text) {
       text: text,
     };
   }
+}
+
+export async function textCurveController({
+  element,
+  mainElement,
+  handleElement,
+  value,
+  activeItem,
+}) {
+
+  const result = applyCurvedText(element, activeItem?.text, value);
+
+  let { width, height } = await result.getMeasurements();
+
+  mainElement.style.width = `${width}px`;
+  mainElement.style.height = `${height}px`;
+  handleElement.style.width = `${width}px`;
+  handleElement.style.height = `${height}px`;
+
+  return managePosition({
+    idol: element,
+    follower: handleElement,
+    item: activeItem || {},
+  });
 }

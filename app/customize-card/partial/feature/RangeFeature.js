@@ -66,13 +66,14 @@ export default function RangeFeature({
         }
       }
 
-      if (propertyName != "rotate" && propertyName != "textCurve") {
+      if (propertyName != "rotate") {
         mainRefs.current[activeID].style.width = `auto`;
         mainRefs.current[activeID].style.height = `auto`;
-
-        requestAnimationFrame(() => {
-          positionRef.current = updateElementDimensions(activeItem);
-        });
+        if(propertyName != "textCurve"){
+          requestAnimationFrame(() => {
+            positionRef.current = updateElementDimensions(activeItem);
+          });
+        }
       }
     }
 

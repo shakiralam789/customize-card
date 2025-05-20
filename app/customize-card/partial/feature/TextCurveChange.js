@@ -1,7 +1,7 @@
 import CcContext from "@/context/ccContext";
 import React, { useContext, useRef } from "react";
 import RangeFeature from "./RangeFeature";
-import { applyCurvedText, managePosition } from "@/helper/helper";
+import { textCurveController } from "@/helper/helper";
 
 export default function TextCurveChange() {
   const { activeID, mainRefs, handlerRefs, itemsRefs, updatePositionState } =
@@ -9,40 +9,24 @@ export default function TextCurveChange() {
 
   const position = useRef({});
 
-  function handleCurve({ value, activeItem }) {
+  async function handleCurve({ value, activeItem }) {
     if (activeID === null) return;
-    const element = itemsRefs.current[activeItem.id];
-    const result = applyCurvedText(element, activeItem?.text, value);
-    result.getMeasurements().then(({ width, height }) => {
-      let manaPos = managePosition(
-        {
-          idol: element,
-          follower: handlerRefs.current[activeID],
-          item: activeItem || {},
-        },
-        false
-      );
-
-      position.current = {
-        width,
-        height,
-        left: manaPos.left,
-      };
-
-      mainRefs.current[activeID].style.width = `${width}px`;
-      mainRefs.current[activeID].style.height = `${height}px`;
-      handlerRefs.current[activeID].style.width = `${width}px`;
-      handlerRefs.current[activeID].style.height = `${height}px`;
-      // mainRefs.current[activeID].style.left = `${manaPos.left}px`;
-      // handlerRefs.current[activeID].style.left = `${manaPos.left}px`;
-    });
+    try {
+      position.current = await textCurveController({
+        element: itemsRefs.current[activeItem.id],
+        mainElement: mainRefs.current[activeID],
+        handleElement: handlerRefs.current[activeID],
+        value,
+        activeItem,
+      });
+    } catch (err) {
+      console.error("Curve update failed:", err);
+    }
   }
 
-  function handleDragend({ value, activeItem }) {
-    const { width, height } = position.current;
-    updatePositionState({ width, height }, activeID, {
+  function handleDragend({ value }) {
+    updatePositionState(position.current, activeID, {
       textCurve: value,
-      position: { x: position.current.left, y: activeItem.position.y },
     });
   }
 

@@ -8,6 +8,7 @@ import {
   getCurvedTextHTML,
   isTextOneLine,
   managePosition,
+  textCurveController,
 } from "@/helper/helper";
 import _cloneDeep from "lodash/cloneDeep";
 
@@ -251,16 +252,12 @@ const CcProvider = ({ children }) => {
         item.id === itemId
           ? {
               ...item,
-              width: position.width,
-              height: position.height,
-              ...(position.top !== undefined && position.left !== undefined
-                ? {
-                    position: {
-                      y: position.top || item.position.y,
-                      x: position.left || item.position.x,
-                    },
-                  }
-                : {}),
+              width: position?.width || item.width,
+              height: position?.height || item.height,
+              position: {
+                y: position?.top || item.position.y,
+                x: position?.left || item.position.x,
+              },
               ...rest,
             }
           : item
@@ -406,10 +403,17 @@ const CcProvider = ({ children }) => {
         element.innerHTML = "Enter text...";
       } else {
         if (item?.textCurve && item?.textCurve !== 0) {
-          const result = applyCurvedText(element, item?.text, item?.textCurve);
-          result.getMeasurements().then(({ width, height }) => {
-            updatePositionState({ width, height }, item.id);
-          });
+          async function fetchData() {
+            let position = await textCurveController({
+              element: element,
+              mainElement: mainRefs.current[item.id],
+              handleElement: handlerRefs.current[item.id],
+              value: item?.textCurve,
+              activeItem: item,
+            });
+            updatePositionState(position, item.id);
+          }
+          fetchData();
         } else {
           element.innerHTML = item?.text;
         }
