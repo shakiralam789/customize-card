@@ -1,7 +1,11 @@
 import IconBtn from "@/components/IconBtn";
 import MenuItemCom from "@/components/MenuListCom";
 import CcContext from "@/context/ccContext";
-import { isTextOneLine, limitDecimalPlaces } from "@/helper/helper";
+import {
+  isTextOneLine,
+  limitDecimalPlaces,
+  textCurveController,
+} from "@/helper/helper";
 import useItemsMap from "@/hook/useItemMap";
 import { Menu } from "@szhsin/react-menu";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -39,6 +43,21 @@ export default function RangeFeature({
 
   const percentage = ((initialValue - min) / (max - min)) * 100;
 
+  async function handleCurveDimensions({ value, activeItem }) {
+    if (activeID === null) return;
+    try {
+      positionRef.current = await textCurveController({
+        element: itemsRefs.current[activeItem.id],
+        mainElement: mainRefs.current[activeID],
+        handleElement: handlerRefs.current[activeID],
+        value,
+        activeItem,
+      });
+    } catch (err) {
+      console.error("Curve update failed:", err);
+    }
+  }
+
   function handleChange(value) {
     if (!activeID || !value) return;
 
@@ -47,29 +66,35 @@ export default function RangeFeature({
 
     setInitialValue(newValue);
 
-    if (mainRefs.current[activeID]) {
-      if (propertyName == "rotate") {
-        mainRefs.current[
-          activeID
-        ].style.transform = `rotate(${newValue}deg) scaleX(${
-          activeItem?.scaleX || 1
-        }) scaleY(${activeItem?.scaleY || 1})`;
+    if (propertyName == "rotate") {
+      mainRefs.current[
+        activeID
+      ].style.transform = `rotate(${newValue}deg) scaleX(${
+        activeItem?.scaleX || 1
+      }) scaleY(${activeItem?.scaleY || 1})`;
 
-        handlerRefs.current[
-          activeID
-        ].style.transform = `rotate(${newValue}deg)`;
+      handlerRefs.current[activeID].style.transform = `rotate(${newValue}deg)`;
+    } else {
+      mainRefs.current[activeID].style.width = `auto`;
+      mainRefs.current[activeID].style.height = `auto`;
+
+      if (propertyName == "textCurve") {
+        console.log("there curve");
+
+        handleCurveDimensions({
+          value: newValue,
+          activeItem,
+        });
       } else {
-        if (propertyName !== "textCurve") {
-          itemsRefs.current[activeID].style[
-            propertyName
-          ] = `${newValue}${unit}`;
-        }
-      }
+        itemsRefs.current[activeID].style[propertyName] = `${newValue}${unit}`;
 
-      if (propertyName != "rotate") {
-        mainRefs.current[activeID].style.width = `auto`;
-        mainRefs.current[activeID].style.height = `auto`;
-        if(propertyName != "textCurve"){
+        if (activeItem?.textCurve && activeItem?.textCurve !== 0) {
+          handleCurveDimensions({
+            value:
+              propertyName == "textCurve" ? newValue : activeItem?.textCurve,
+            activeItem,
+          });
+        } else {
           requestAnimationFrame(() => {
             positionRef.current = updateElementDimensions(activeItem);
           });
@@ -84,24 +109,22 @@ export default function RangeFeature({
 
   function handleDragEnd(value) {
     const limitedValue = limitDecimalPlaces(parseFloat(value));
-    if (propertyName != "textCurve") {
-      setAllItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === activeID
-            ? {
-                ...item,
-                [propertyName]: limitedValue,
-                width: positionRef.current?.width || activeItem?.width,
-                height: positionRef.current.height || activeItem?.height,
-                position: {
-                  x: positionRef.current?.left || activeItem?.position?.x,
-                  y: activeItem?.position?.y,
-                },
-              }
-            : item
-        )
-      );
-    }
+    setAllItems((prevItems) =>
+      prevItems.map((item) =>
+        item.id === activeID
+          ? {
+              ...item,
+              [propertyName]: limitedValue,
+              width: positionRef.current?.width || activeItem?.width,
+              height: positionRef.current.height || activeItem?.height,
+              position: {
+                x: positionRef.current?.left || activeItem?.position?.x,
+                y: activeItem?.position?.y,
+              },
+            }
+          : item
+      )
+    );
 
     if (onDragEnd) {
       onDragEnd({ value: limitedValue, activeItem });

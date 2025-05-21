@@ -1,35 +1,6 @@
-import CcContext from "@/context/ccContext";
-import React, { useContext, useRef } from "react";
 import RangeFeature from "./RangeFeature";
-import { textCurveController } from "@/helper/helper";
 
 export default function TextCurveChange() {
-  const { activeID, mainRefs, handlerRefs, itemsRefs, updatePositionState } =
-    useContext(CcContext);
-
-  const position = useRef({});
-
-  async function handleCurve({ value, activeItem }) {
-    if (activeID === null) return;
-    try {
-      position.current = await textCurveController({
-        element: itemsRefs.current[activeItem.id],
-        mainElement: mainRefs.current[activeID],
-        handleElement: handlerRefs.current[activeID],
-        value,
-        activeItem,
-      });
-    } catch (err) {
-      console.error("Curve update failed:", err);
-    }
-  }
-
-  function handleDragend({ value }) {
-    updatePositionState(position.current, activeID, {
-      textCurve: value,
-    });
-  }
-
   return (
     <RangeFeature
       propertyName="textCurve"
@@ -37,9 +8,8 @@ export default function TextCurveChange() {
       min={-100}
       max={100}
       step={1}
-      onHandleChange={handleCurve}
-      onDragEnd={handleDragend}
       defValue={0}
+      unit="%"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

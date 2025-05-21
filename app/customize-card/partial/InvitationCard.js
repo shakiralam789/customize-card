@@ -77,7 +77,7 @@ export default function InvitationCard(props) {
     let plch = item?.isPlaceholder;
 
     let target = itemsRefs.current[item.id];
-
+    
     if (plch) {
       if (target) {
         target.innerHTML = "";
