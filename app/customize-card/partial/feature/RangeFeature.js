@@ -79,8 +79,6 @@ export default function RangeFeature({
       mainRefs.current[activeID].style.height = `auto`;
 
       if (propertyName == "textCurve") {
-        console.log("there curve");
-
         handleCurveDimensions({
           value: newValue,
           activeItem,

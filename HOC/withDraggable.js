@@ -28,6 +28,7 @@ export default function withDraggable(Component) {
       width: item?.width || null,
       height: item?.height || null,
       fontSize: item?.fontSize || null,
+      textCurve: item?.textCurve || null,
       tlRotate: "tl",
       trRotate: "tr",
       blRotate: "bl",
@@ -48,7 +49,7 @@ export default function withDraggable(Component) {
     const initialFontSize = item?.itemType === "text" ? item.fontSize : null;
     const initialWidth = item.width || null;
     const initialHeight = item?.height || null;
-    const initialTextCurve = item?.textCurve || null;
+    const initialTextCurve = item?.textCurve ?? null;
 
     const { isDragging, startDrag, dir } = useDraggable({
       zoomLevel,
@@ -202,17 +203,21 @@ export default function withDraggable(Component) {
       if (item?.fontSize !== undefined) {
         currentValues.current.fontSize = item.fontSize;
         setItemState((prev) => ({ ...prev, fontSize: item.fontSize }));
-
-        if (hasMounted.current) {
-          hasMounted.current = false;
-          return;
-        }
+      }
+      if (item?.textCurve !== undefined) {
+        currentValues.current.textCurve = item.textCurve;
+        setItemState((prev) => ({ ...prev, textCurve: item.textCurve }));
+      }
+      if (hasMounted.current) {
+        hasMounted.current = false;
+        return;
       }
     }, [
       item?.rotate,
       item?.width,
       item?.height,
       item?.fontSize,
+      item?.textCurve,
       // item?.position?.x,
       // item?.position?.y,
     ]);
