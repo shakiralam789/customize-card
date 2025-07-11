@@ -40,6 +40,8 @@ const defSticker = {
 
 const CcProvider = ({ children }) => {
   const [allItems, setAllItems] = useState([]);
+  const [frame, setFrame] = useState({});
+
   const undoStack = useRef([]);
   const redoStack = useRef([]);
   const [guides, setGuides] = [];
@@ -65,7 +67,6 @@ const CcProvider = ({ children }) => {
   const scrollRef = useRef(null);
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  const [frame, setFrame] = useState({});
 
   const debounceTimerRef = useRef(null);
 
@@ -160,8 +161,10 @@ const CcProvider = ({ children }) => {
 
     let localTItems = localStorage.getItem(storageName);
 
+    
     if (localTItems) {
       let parseItems = JSON.parse(localTItems);
+      console.log(parseItems);
       if (parseItems) {
         items = parseItems?.data?.items || [];
         frameData = parseItems?.data?.frame || {};
